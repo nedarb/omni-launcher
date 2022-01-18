@@ -227,14 +227,17 @@ html {
 .omni-extension .omni-item {
   height: 60px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 .omni-extension .omni-item:hover {
   cursor: pointer;
+  text-decoration: none;
 }
 .omni-extension .omni-item-active,
 .omni-extension .omni-item:hover {
   background-color: var(--select);
-  position: relative;
 }
 .omni-extension .omni-item-active:before,
 .omni-extension .omni-item:hover:before {
@@ -268,7 +271,7 @@ html {
   margin-left: 5%;
   display: inline-block;
   vertical-align: middle;
-  margin-top: -12px;
+  /* margin-top: -12px; */
 }
 .omni-extension .omni-emoji-action {
   display: inline-block;
@@ -284,7 +287,6 @@ html {
   display: inline-block !important;
   margin-left: 10px;
   vertical-align: middle;
-  margin-top: 10px;
 }
 .omni-extension .omni-item-name {
   color: var(--text-2);
