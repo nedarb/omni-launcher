@@ -1,0 +1,1 @@
+../node_modules/htm/preact/standalone.mjs

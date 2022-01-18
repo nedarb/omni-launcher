@@ -1,0 +1,1 @@
+{ "compilerOptions": { "checkJs": true, "lib": ["ES2018", "DOM"] } }
