@@ -1,5 +1,3 @@
-import actions from "./actions.mjs";
-
 import {
   html,
   render,
