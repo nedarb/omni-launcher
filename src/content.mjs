@@ -76,7 +76,6 @@ function OmniItem({ action, index, handleAction, isSelected }) {
   }
 
   return html`<a
-    href="#"
     ref=${ref}
     class="omni-item ${isSelected ? "omni-item-active" : ""}"
     data-type="${action.type}"
@@ -130,21 +129,12 @@ function handleAction(action, eventOptions) {
   }
 }
 
-function SearchResults({ actions, handleAction }) {
+function SearchResultsWrapper({ actions, handleAction }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const total = actions.length;
-  const list =
-    Array.isArray(actions) &&
-    actions.slice(0, 100).map(function (action, index) {
-      return html`<${OmniItem}
-        key=${action.action || action.url}
-        index=${index}
-        action=${action}
-        isSelected=${index === selectedIndex}
-        handleAction=${handleAction}
-      />`;
-    });
-
+  useEffect(() => {
+    console.log(`actions changed`);
+    setSelectedIndex(0);
+  }, [actions]);
   useEffect(() => {
     if (
       actions.length > 0 &&
@@ -169,8 +159,6 @@ function SearchResults({ actions, handleAction }) {
         case "Escape":
           handleAction && handleAction({ action: CloseOmniAction });
           break;
-        // default:
-        // console.warn(`unhandled ${e.key}`, e);
       }
     }
     window.addEventListener("keydown", handler);
@@ -180,7 +168,31 @@ function SearchResults({ actions, handleAction }) {
     };
   }, [selectedIndex, actions, handleAction]);
 
-  return html`<div>
+  return html`<div class="search-results-wrapper">
+    <${SearchResults}
+      actions=${actions}
+      handleAction=${handleAction}
+      selectedIndex=${selectedIndex}
+    />
+  </div>`;
+}
+
+function SearchResults({ actions, handleAction, selectedIndex }) {
+  const total = actions.length;
+  // console.log(`SearchResults`, actions, handleAction);
+  const list =
+    Array.isArray(actions) &&
+    actions.slice(0, 100).map(function (action, index) {
+      return html`<${OmniItem}
+        key=${action.action || action.url}
+        index=${index}
+        action=${action}
+        isSelected=${index === selectedIndex}
+        handleAction=${handleAction}
+      />`;
+    });
+
+  return html`<div class="search-results">
     <div id="omni-list">${list}</div>
     <div id="omni-footer">
       <div id="omni-results">
@@ -199,11 +211,8 @@ function HistorySearch({ searchTerm, handleAction }) {
 
   useEffect(() => {
     console.log("searching history");
-    var tempvalue = searchTerm.replace("/history ", "");
-    var query = "";
-    if (tempvalue != "/history") {
-      query = searchTerm.replace("/history ", "");
-    }
+    const query = searchTerm.replace(/\/history\s*/, "");
+
     console.log("searching history", query);
     chrome.runtime.sendMessage(
       { request: "search-history", query: query },
@@ -215,9 +224,13 @@ function HistorySearch({ searchTerm, handleAction }) {
   }, [searchTerm]);
 
   if (!searched) {
+    console.log(`!searched!`, searched);
     return null;
   }
-  return SearchResults({ actions: searched, handleAction });
+  return html`<${SearchResultsWrapper}
+    actions=${searched}
+    handleAction=${handleAction}
+  />`;
 }
 
 function BookmarksSearch({ searchTerm, allActions, handleAction }) {
@@ -239,11 +252,11 @@ function BookmarksSearch({ searchTerm, allActions, handleAction }) {
     }
   }, [searchTerm, allActions]);
 
-  return SearchResults({ actions: searchedActions, handleAction });
+  return SearchResultsWrapper({ actions: searchedActions, handleAction });
 }
 
 function RenderCommands({ handleAction }) {
-  return SearchResults({
+  return SearchResultsWrapper({
     actions: Commands,
     handleAction,
   });
@@ -327,14 +340,21 @@ function OmniList({ searchTerm, handleAction }) {
     );
   }, [allActions, searchTerm]);
 
+  if (searchTerm === "/") {
+    return RenderCommands({ handleAction });
+  }
+
   if (searchTerm.startsWith("/history")) {
-    return HistorySearch({ searchTerm, handleAction });
+    return html`<${HistorySearch}
+      searchTerm=${searchTerm}
+      handleAction=${handleAction}
+    />`;
   }
   if (searchTerm.startsWith("/bookmarks")) {
     return BookmarksSearch({ searchTerm, allActions, handleAction });
   }
 
-  return SearchResults({ actions: filteredActions, handleAction });
+  return SearchResultsWrapper({ actions: filteredActions, handleAction });
 }
 
 const Shortcuts = {
@@ -353,6 +373,7 @@ function MainApp(props) {
     const newValue = e.target.value;
     setSearch(Shortcuts[newValue] || newValue);
   });
+
   useEffect(() => {
     if (showing) {
       const timeout = setTimeout(
@@ -362,16 +383,15 @@ function MainApp(props) {
       return () => clearTimeout(timeout);
     }
   }, [showing]);
+
   const doHandle = useCallback(
     (action, ...args) => {
-      debugger;
       if (action.shortcut) {
         setSearch(action.shortcut);
         return;
       }
 
       setSearch("");
-      return;
       handleAction(action, ...args);
     },
     [handleAction]
@@ -392,6 +412,7 @@ function MainApp(props) {
             onInput=${onSearchChange}
           />
         </div>
+        <!-- OMNI LIST -->
         <${OmniList}
           searchTerm=${debouncedSearchTerm}
           handleAction=${doHandle}
@@ -426,7 +447,7 @@ function App(props) {
         }
       }
     );
-  });
+  }, []);
 
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
