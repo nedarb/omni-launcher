@@ -1,5 +1,3 @@
-import test from "./actions.mjs";
-console.log(test);
 let actions = [];
 
 // Clear actions and append default ones
