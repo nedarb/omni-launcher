@@ -58,8 +58,8 @@ function OmniItem({ action, index, handleAction, isSelected }) {
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-        return html`<span key=${key} class="omni-shortcut">${key}</span>`;
-      })}
+      return html`<span key=${key} class="omni-shortcut">${key}</span>`;
+    })}
     </div>`;
   }
   const imgUrl =
@@ -154,9 +154,9 @@ function SearchResultsWrapper({ actions, handleAction }) {
           const action = actions[selectedIndex];
           handleAction && handleAction(action, { metaKey: e.metaKey });
           break;
-        case "Escape":
-          handleAction && handleAction({ action: CloseOmniAction });
-          break;
+        // case "Escape":
+        //   handleAction && handleAction({ action: CloseOmniAction });
+        //   break;
       }
     }
     window.addEventListener("keydown", handler);
@@ -289,8 +289,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-            tempvalue
-          )}`;
+          tempvalue
+        )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -395,11 +395,14 @@ function MainApp(props) {
     [handleAction]
   );
 
+  const onOverlayClick = useCallback(() => { handleAction({ action: CloseOmniAction }) }, [handleAction]);
+
   if (!showing) {
     return null;
   }
 
   return html`<div id="omni-extension" class="omni-extension">
+  <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
       <div id="omni">
         <div id="omni-search">
@@ -417,7 +420,6 @@ function MainApp(props) {
         />
       </div>
     </div>
-    <div id="omni-overlay"></div>
   </div>`;
 }
 
@@ -430,6 +432,19 @@ function App(props) {
         setIsOpen((isOpen) => !isOpen);
       }
     });
+
+    function handler(e) {
+      switch (e.key) {
+        case "Escape":
+          setIsOpen(false);
+          break;
+      }
+    }
+    window.addEventListener("keydown", handler);
+    return () => {
+      console.debug("unsub - escape");
+      window.removeEventListener("keydown", handler);
+    };
   }, []);
 
   const actionHandler = useCallback((action, eventOptions) => {
@@ -495,8 +510,7 @@ fetch(chrome.runtime.getURL("/content.html"))
           }
 
           return (
-            `<div class='omni-item ${
-              index === 0 ? "omni-item-active" : ""
+            `<div class='omni-item ${index === 0 ? "omni-item-active" : ""
             }' data-type='` +
             action.type +
             "' data-url='" +
@@ -657,7 +671,7 @@ fetch(chrome.runtime.getURL("/content.html"))
                     .text()
                     .toLowerCase()
                     .indexOf(tempvalue) > -1) &&
-                  $(this).attr("data-type") == "tab"
+                $(this).attr("data-type") == "tab"
               );
             }
           } else if (value.startsWith("/remove")) {
@@ -665,7 +679,7 @@ fetch(chrome.runtime.getURL("/content.html"))
             if (tempvalue == "/remove") {
               $(this).toggle(
                 $(this).attr("data-type") == "bookmark" ||
-                  $(this).attr("data-type") == "tab"
+                $(this).attr("data-type") == "tab"
               );
             } else {
               tempvalue = value.replace("/remove ", "");
@@ -680,8 +694,8 @@ fetch(chrome.runtime.getURL("/content.html"))
                     .text()
                     .toLowerCase()
                     .indexOf(tempvalue) > -1) &&
-                  ($(this).attr("data-type") == "bookmark" ||
-                    $(this).attr("data-type") == "tab")
+                ($(this).attr("data-type") == "bookmark" ||
+                  $(this).attr("data-type") == "tab")
               );
             }
           } else if (value.startsWith("/actions")) {
@@ -701,7 +715,7 @@ fetch(chrome.runtime.getURL("/content.html"))
                     .text()
                     .toLowerCase()
                     .indexOf(tempvalue) > -1) &&
-                  $(this).attr("data-type") == "action"
+                $(this).attr("data-type") == "action"
               );
             }
           } else {
@@ -711,11 +725,11 @@ fetch(chrome.runtime.getURL("/content.html"))
                 .text()
                 .toLowerCase()
                 .indexOf(value) > -1 ||
-                $(this)
-                  .find(".omni-item-desc")
-                  .text()
-                  .toLowerCase()
-                  .indexOf(value) > -1
+              $(this)
+                .find(".omni-item-desc")
+                .text()
+                .toLowerCase()
+                .indexOf(value) > -1
             );
           }
         });

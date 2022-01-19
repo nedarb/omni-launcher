@@ -1,3 +1,6 @@
+/// <reference path="./global.d.ts" />
+import './webextension-polyfill.js';
+
 let actions = [];
 
 // Clear actions and append default ones
@@ -118,7 +121,7 @@ const clearActions = () => {
         action: "url",
         url: "https://notion.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-notion.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-notion.png"),
         keycheck: false,
       },
       {
@@ -128,7 +131,7 @@ const clearActions = () => {
         action: "url",
         url: "https://sheets.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-sheets.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-sheets.png"),
         keycheck: false,
       },
       {
@@ -138,7 +141,7 @@ const clearActions = () => {
         action: "url",
         emoji: false,
         url: "https://docs.new",
-        favIconUrl: chrome.runtime.getURL("assets/logo-docs.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-docs.png"),
         keycheck: false,
       },
       {
@@ -148,7 +151,7 @@ const clearActions = () => {
         action: "url",
         url: "https://slides.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-slides.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-slides.png"),
         keycheck: false,
       },
       {
@@ -158,7 +161,7 @@ const clearActions = () => {
         action: "url",
         url: "https://forms.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-forms.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-forms.png"),
         keycheck: false,
       },
       {
@@ -168,7 +171,7 @@ const clearActions = () => {
         action: "url",
         url: "https://story.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-medium.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-medium.png"),
         keycheck: false,
       },
       {
@@ -178,7 +181,7 @@ const clearActions = () => {
         action: "url",
         url: "https://github.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-github.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-github.png"),
         keycheck: false,
       },
       {
@@ -188,7 +191,7 @@ const clearActions = () => {
         action: "url",
         url: "https://gist.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-github.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-github.png"),
         keycheck: false,
       },
       {
@@ -198,7 +201,7 @@ const clearActions = () => {
         action: "url",
         url: "https://pen.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-codepen.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-codepen.png"),
         keycheck: false,
       },
       {
@@ -208,7 +211,7 @@ const clearActions = () => {
         action: "url",
         url: "https://excel.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-excel.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-excel.png"),
         keycheck: false,
       },
       {
@@ -218,7 +221,7 @@ const clearActions = () => {
         url: "https://powerpoint.new",
         action: "url",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-powerpoint.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-powerpoint.png"),
         keycheck: false,
       },
       {
@@ -228,7 +231,7 @@ const clearActions = () => {
         action: "url",
         url: "https://word.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-word.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-word.png"),
         keycheck: false,
       },
       {
@@ -258,7 +261,7 @@ const clearActions = () => {
         action: "url",
         url: "https://figma.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-figma.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-figma.png"),
         keycheck: false,
       },
       {
@@ -278,7 +281,7 @@ const clearActions = () => {
         action: "url",
         url: "https://www.producthunt.com/posts/new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-producthunt.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-producthunt.png"),
         keycheck: false,
       },
       {
@@ -288,7 +291,7 @@ const clearActions = () => {
         action: "url",
         url: "https://twitter.com/intent/tweet",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-twitter.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-twitter.png"),
         keycheck: false,
       },
       {
@@ -298,7 +301,7 @@ const clearActions = () => {
         action: "url",
         url: "https://playlist.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-spotify.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-spotify.png"),
         keycheck: false,
       },
       {
@@ -308,7 +311,7 @@ const clearActions = () => {
         action: "url",
         url: "https://design.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-canva.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-canva.png"),
         keycheck: false,
       },
       {
@@ -318,7 +321,7 @@ const clearActions = () => {
         action: "url",
         url: "https://episode.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-anchor.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-anchor.png"),
         keycheck: false,
       },
       {
@@ -328,7 +331,7 @@ const clearActions = () => {
         action: "url",
         url: "https://photo.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-photoshop.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-photoshop.png"),
         keycheck: false,
       },
       {
@@ -348,7 +351,7 @@ const clearActions = () => {
         action: "url",
         url: "https://scan.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-qr.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-qr.png"),
         keycheck: false,
       },
       {
@@ -358,7 +361,7 @@ const clearActions = () => {
         action: "url",
         url: "https://task.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-asana.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-asana.png"),
         keycheck: false,
       },
       {
@@ -368,7 +371,7 @@ const clearActions = () => {
         action: "url",
         url: "https://linear.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-linear.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-linear.png"),
         keycheck: false,
       },
       {
@@ -378,7 +381,7 @@ const clearActions = () => {
         action: "url",
         url: "https://todo.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-wip.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-wip.png"),
         keycheck: false,
       },
       {
@@ -388,7 +391,7 @@ const clearActions = () => {
         action: "url",
         url: "https://cal.new",
         emoji: false,
-        favIconUrl: chrome.runtime.getURL("assets/logo-calendar.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-calendar.png"),
         keycheck: false,
       },
       {
@@ -398,7 +401,7 @@ const clearActions = () => {
         action: "url",
         emoji: false,
         url: "https://note.new",
-        favIconUrl: chrome.runtime.getURL("assets/logo-keep.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-keep.png"),
         keycheck: false,
       },
       {
@@ -408,7 +411,7 @@ const clearActions = () => {
         action: "url",
         emoji: false,
         url: "https://meet.new",
-        favIconUrl: chrome.runtime.getURL("assets/logo-meet.png"),
+        favIconUrl: browser.runtime.getURL("assets/logo-meet.png"),
         keycheck: false,
       },
       {
@@ -647,64 +650,61 @@ const clearActions = () => {
 };
 
 // Open on install
-chrome.runtime.onInstalled.addListener((object) => {
+browser.runtime.onInstalled.addListener(async (object) => {
   // Inject Omni on install
-  const manifest = chrome.runtime.getManifest();
+  const manifest = browser.runtime.getManifest();
 
   const injectIntoTab = (tab) => {
     const scripts = manifest.content_scripts[0].js;
     const s = scripts.length;
 
-    chrome.scripting.executeScript({
+    browser.scripting.executeScript({
       target: { tabId: tab.id },
       files: [...scripts],
     });
 
-    chrome.scripting.insertCSS({
+    browser.scripting.insertCSS({
       target: { tabId: tab.id },
       files: [...manifest.content_scripts[0].css],
     });
   };
 
   // Get all windows
-  chrome.windows.getAll(
+  const windows = await browser.windows.getAll(
     {
       populate: true,
-    },
-    (windows) => {
-      let currentWindow;
-      const w = windows.length;
+    });
+  let currentWindow;
+  const w = windows.length;
 
-      for (let i = 0; i < w; i++) {
-        currentWindow = windows[i];
+  for (let i = 0; i < w; i++) {
+    currentWindow = windows[i];
 
-        let currentTab;
-        const t = currentWindow.tabs.length;
+    let currentTab;
+    const t = currentWindow.tabs.length;
 
-        for (let j = 0; j < t; j++) {
-          currentTab = currentWindow.tabs[j];
-          injectIntoTab(currentTab);
-        }
-      }
+    for (let j = 0; j < t; j++) {
+      currentTab = currentWindow.tabs[j];
+      injectIntoTab(currentTab);
     }
-  );
+  }
+
 
   if (object.reason === "install") {
-    chrome.tabs.create({ url: "https://alyssax.com/omni/" });
+    browser.tabs.create({ url: "https://alyssax.com/omni/" });
   }
 });
 
 // Check when the extension button is clicked
-chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, { request: "open-omni" });
+browser.action.onClicked.addListener((tab) => {
+  browser.tabs.sendMessage(tab.id, { request: "open-omni" });
 });
 
 // Listen for the open omni shortcut
-chrome.commands.onCommand.addListener((command) => {
+browser.commands.onCommand.addListener(async (command) => {
   if (command === "open-omni") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
-    });
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+    browser.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
   }
 });
 
@@ -715,32 +715,31 @@ const resetOmni = () => {
 };
 
 // Check if tabs have changed and actions need to be fetched again
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => resetOmni());
-chrome.tabs.onCreated.addListener((tab) => resetOmni());
-chrome.tabs.onRemoved.addListener((tabId, changeInfo) => resetOmni());
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => resetOmni());
+browser.tabs.onCreated.addListener((tab) => resetOmni());
+browser.tabs.onRemoved.addListener((tabId, changeInfo) => resetOmni());
 
 // Get the current tab
 const getCurrentTab = async () => {
   const queryOptions = { active: true, currentWindow: true };
-  const [tab] = await chrome.tabs.query(queryOptions);
+  const [tab] = await browser.tabs.query(queryOptions);
   return tab;
 };
 
 // Get tabs to populate in the actions
-const getTabs = () => {
-  chrome.tabs.query({}, (tabs) => {
-    tabs.forEach((tab) => {
-      tab.desc = "Chrome tab";
-      tab.keycheck = false;
-      tab.action = "switch-tab";
-      tab.type = "tab";
-    });
-    actions = tabs.concat(actions);
+const getTabs = async () => {
+  const tabs = await browser.tabs.query({})
+  tabs.forEach((tab) => {
+    tab.desc = "Chrome tab";
+    tab.keycheck = false;
+    tab.action = "switch-tab";
+    tab.type = "tab";
   });
+  actions = tabs.concat(actions);
 };
 
 // Get bookmarks to populate in the actions
-const getBookmarks = () => {
+const getBookmarks = async () => {
   const process_bookmark = (bookmarks) => {
     for (const bookmark of bookmarks) {
       if (bookmark.url) {
@@ -762,35 +761,31 @@ const getBookmarks = () => {
     }
   };
 
-  chrome.bookmarks.getRecent(100, process_bookmark);
+  process_bookmark(await browser.bookmarks.getRecent(100));
 };
 
 // Lots of different actions
 const switchTab = (tab) => {
-  chrome.tabs.highlight({
+  browser.tabs.highlight({
     tabs: tab.index,
     windowId: tab.windowId,
   });
-  chrome.windows.update(tab.windowId, { focused: true });
+  browser.windows.update(tab.windowId, { focused: true });
 };
 const goBack = (tab) => {
-  chrome.tabs.goBack({
-    tabs: tab.index,
-  });
+  browser.tabs.goBack(tab.id);
 };
 const goForward = (tab) => {
-  chrome.tabs.goForward({
-    tabs: tab.index,
-  });
+  browser.tabs.goForward(tab.id);
 };
 const duplicateTab = (tab) => {
   getCurrentTab().then((response) => {
-    chrome.tabs.duplicate(response.id);
+    browser.tabs.duplicate(response.id);
   });
 };
 const createBookmark = (tab) => {
   getCurrentTab().then((response) => {
-    chrome.bookmarks.create({
+    browser.bookmarks.create({
       title: response.title,
       url: response.url,
     });
@@ -798,19 +793,19 @@ const createBookmark = (tab) => {
 };
 const muteTab = (mute) => {
   getCurrentTab().then((response) => {
-    chrome.tabs.update(response.id, { muted: mute });
+    browser.tabs.update(response.id, { muted: mute });
   });
 };
 const reloadTab = () => {
-  chrome.tabs.reload();
+  browser.tabs.reload();
 };
 const pinTab = (pin) => {
   getCurrentTab().then((response) => {
-    chrome.tabs.update(response.id, { pinned: pin });
+    browser.tabs.update(response.id, { pinned: pin });
   });
 };
 const clearAllData = () => {
-  chrome.browsingData.remove(
+  browser.browsingData.remove(
     {
       since: new Date().getTime(),
     },
@@ -832,47 +827,47 @@ const clearAllData = () => {
   );
 };
 const clearBrowsingData = () => {
-  chrome.browsingData.removeHistory({ since: 0 });
+  browser.browsingData.removeHistory({ since: 0 });
 };
 const clearCookies = () => {
-  chrome.browsingData.removeCookies({ since: 0 });
+  browser.browsingData.removeCookies({ since: 0 });
 };
 const clearCache = () => {
-  chrome.browsingData.removeCache({ since: 0 });
+  browser.browsingData.removeCache({ since: 0 });
 };
 const clearLocalStorage = () => {
-  chrome.browsingData.removeLocalStorage({ since: 0 });
+  browser.browsingData.removeLocalStorage({ since: 0 });
 };
 const clearPasswords = () => {
-  chrome.browsingData.removePasswords({ since: 0 });
+  browser.browsingData.removePasswords({ since: 0 });
 };
 const openChromeUrl = (url) => {
-  chrome.tabs.create({ url: "chrome://" + url + "/" });
+  browser.tabs.create({ url: "chrome://" + url + "/" });
 };
 const openIncognito = () => {
-  chrome.windows.create({ incognito: true });
+  browser.windows.create({ incognito: true });
 };
 const closeWindow = (id) => {
-  chrome.windows.remove(id);
+  browser.windows.remove(id);
 };
 const closeTab = (tab) => {
-  chrome.tabs.remove(tab.id);
+  browser.tabs.remove(tab.id);
 };
 const closeCurrentTab = () => {
   getCurrentTab().then(closeTab);
 };
 const removeBookmark = (bookmark) => {
-  chrome.bookmarks.remove(bookmark.id);
+  browser.bookmarks.remove(bookmark.id);
 };
 
 // Receive messages from any tab
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.request) {
     case "get-actions":
       clearActions();
       getTabs();
       getBookmarks();
-      sendResponse({ actions: actions, test });
+      sendResponse({ actions: actions });
       break;
     case "switch-tab":
       switchTab(message.tab);
@@ -941,7 +936,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       closeCurrentTab();
       break;
     case "search-history":
-      chrome.history
+      browser.history
         .search({
           text: message.query,
           maxResults: 1000,
@@ -959,7 +954,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       return true;
     case "search-bookmarks":
-      chrome.bookmarks.search({ query: message.query }).then((data) => {
+      browser.bookmarks.search({ query: message.query }).then((data) => {
         // The index property of the bookmark appears to be causing issues, iterating separately...
         data
           .filter((x) => x.index == 0)

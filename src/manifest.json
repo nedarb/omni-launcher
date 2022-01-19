@@ -33,7 +33,7 @@
     {
       "matches": ["<all_urls>"],
       "run_at": "document_end",
-      "js": ["jquery.js", "content_loader.js"],
+      "js": ["jquery.js", "webextension-polyfill.js", "content_loader.js"],
       "css": ["content.css"]
     }
   ],
@@ -49,7 +49,14 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["tabs", "activeTab", "bookmarks", "browsingData", "history", "scripting"],
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "bookmarks",
+    "browsingData",
+    "history",
+    "scripting"
+  ],
   "host_permissions": [
     "https://www.googleapis.com/*",
     "https://gstatic.com/*",

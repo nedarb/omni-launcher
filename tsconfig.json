@@ -1,1 +1,10 @@
-{ "compilerOptions": { "checkJs": true, "lib": ["ES2018", "DOM"] } }
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "checkJs": true,
+        "lib": [
+            "ES2018",
+            "DOM"
+        ]
+    }
+}

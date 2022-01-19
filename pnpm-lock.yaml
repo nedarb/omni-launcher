@@ -1,18 +1,24 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@types/webextension-polyfill': ^0.8.2
   htm: ^3.1.0
   jshint: ^2.13.3
   preact: ^10.6.4
   webextension-polyfill: ^0.8.0
 
 devDependencies:
+  '@types/webextension-polyfill': 0.8.2
   htm: 3.1.0
   jshint: 2.13.3
   preact: 10.6.4
   webextension-polyfill: 0.8.0
 
 packages:
+
+  /@types/webextension-polyfill/0.8.2:
+    resolution: {integrity: sha512-Pd+p5AQx6s78jr4gDC2p3vbw+uxP2DLLqE9iAJJpZ+OUqDm3txr6uN2wUBEwjVgZTNdBHPsxawGvPCTipF2s6w==}
+    dev: true
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
