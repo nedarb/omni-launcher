@@ -1,3 +1,6 @@
+/// <reference path="./global.d.ts" />
+import "./webextension-polyfill.js";
+
 import {
   html,
   render,
@@ -6,6 +9,7 @@ import {
   useEffect,
   useCallback,
   useRef,
+  useMemo,
 } from "./standalone.mjs";
 import useDebounce from "./useDebounce.mjs";
 
@@ -38,9 +42,21 @@ const Commands = [
     type: "command",
     shortcut: "/actions",
   },
+  {
+    title: "Remove",
+    desc: "Remove a tab or a bookmark",
+    type: "command",
+    shortcut: "/remove",
+  },
 ];
 
-function OmniItem({ action, index, handleAction, isSelected }) {
+function OmniItem({
+  action,
+  index,
+  handleAction,
+  isSelected,
+  selectVerb = "Select",
+}) {
   const ref = useRef(null);
   const handleClick = useCallback(
     (e) => {
@@ -58,12 +74,12 @@ function OmniItem({ action, index, handleAction, isSelected }) {
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-      return html`<span key=${key} class="omni-shortcut">${key}</span>`;
-    })}
+        return html`<span key=${key} class="omni-shortcut">${key}</span>`;
+      })}
     </div>`;
   }
   const imgUrl =
-    action.favIconUrl || chrome.runtime.getURL("/assets/globe.svg");
+    action.favIconUrl || browser.runtime.getURL("/assets/globe.svg");
   var img = html`<img
     src="${imgUrl}"
     class="omni-icon"
@@ -86,7 +102,9 @@ function OmniItem({ action, index, handleAction, isSelected }) {
       <div class="omni-item-desc">${action.url || action.shortcut}</div>
     </div>
     ${keys}
-    <div class="omni-select">Select <span class="omni-shortcut">⏎</span></div>
+    <div class="omni-select">
+      ${selectVerb} <span class="omni-shortcut">⏎</span>
+    </div>
   </a>`;
 }
 
@@ -127,7 +145,11 @@ function handleAction(action, eventOptions) {
   }
 }
 
-function SearchResultsWrapper({ actions, handleAction }) {
+function SearchResultsWrapper({
+  actions,
+  handleAction,
+  selectVerb = "Select",
+}) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
     console.log(`actions changed`);
@@ -171,11 +193,17 @@ function SearchResultsWrapper({ actions, handleAction }) {
       actions=${actions}
       handleAction=${handleAction}
       selectedIndex=${selectedIndex}
+      selectVerb=${selectVerb}
     />
   </div>`;
 }
 
-function SearchResults({ actions, handleAction, selectedIndex }) {
+function SearchResults({
+  actions,
+  handleAction,
+  selectedIndex,
+  selectVerb = "Select",
+}) {
   const total = actions.length;
   // console.log(`SearchResults`, actions, handleAction);
   const list =
@@ -186,6 +214,7 @@ function SearchResults({ actions, handleAction, selectedIndex }) {
         index=${index}
         action=${action}
         isSelected=${index === selectedIndex}
+        selectVerb=${selectVerb}
         handleAction=${handleAction}
       />`;
     });
@@ -207,18 +236,17 @@ function SearchResults({ actions, handleAction, selectedIndex }) {
 function HistorySearch({ searchTerm, handleAction }) {
   const [searched, setSearched] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     console.log("searching history");
     const query = searchTerm.replace(/\/history\s*/, "");
 
     console.log("searching history", query);
-    chrome.runtime.sendMessage(
-      { request: "search-history", query: query },
-      function (response) {
-        console.log("got history: ", response.history);
-        setSearched(response.history || []);
-      }
-    );
+    const response = await browser.runtime.sendMessage({
+      request: "search-history",
+      query: query,
+    });
+    console.log("got history: ", response.history);
+    setSearched(response.history || []);
   }, [searchTerm]);
 
   if (!searched) {
@@ -234,45 +262,67 @@ function HistorySearch({ searchTerm, handleAction }) {
 function BookmarksSearch({ searchTerm, allActions, handleAction }) {
   const [searchedActions, setSearchedActions] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     var tempvalue = searchTerm.replace("/bookmarks ", "");
     if (tempvalue != "/bookmarks" && tempvalue != "") {
       const query = searchTerm.replace("/bookmarks ", "");
-      chrome.runtime.sendMessage(
-        { request: "search-bookmarks", query },
-        function (response) {
-          console.log("got bookmarks", response);
-          setSearchedActions(response.bookmarks);
-        }
-      );
+      const response = await browser.runtime.sendMessage({
+        request: "search-bookmarks",
+        query,
+      });
+      console.log("got bookmarks", response);
+      setSearchedActions(response.bookmarks);
     } else {
       setSearchedActions(allActions.filter((x) => x.type == "bookmark"));
     }
   }, [searchTerm, allActions]);
 
-  return SearchResultsWrapper({ actions: searchedActions, handleAction });
+  return html`<${SearchResultsWrapper}
+    actions=${searchedActions}
+    handleAction=${handleAction}
+  />`;
 }
 
 function RenderCommands({ handleAction }) {
-  return SearchResultsWrapper({
-    actions: Commands,
-    handleAction,
-  });
+  return html`<${SearchResultsWrapper}
+    actions=${Commands}
+    handleAction=${handleAction}
+  />`;
+}
+
+function RemoveList({ searchTerm, actions, handleAction }) {
+  const filtered = useMemo(() => {
+    const lower = searchTerm.toLowerCase();
+    return actions.filter(
+      (a) =>
+        (a.type === "bookmark" || a.type === "tab") &&
+        (a.title.toLowerCase().includes(lower) ||
+          a.url?.toLowerCase().includes(lower))
+    );
+  }, [searchTerm, actions]);
+  const doHandle = useCallback(
+    (action, options, ...args) => {
+      console.log(`Removing ${action.title}`, action);
+      handleAction(action, { ...options, request: "remove" }, ...args);
+    },
+    [actions, handleAction]
+  );
+
+  return html`<${SearchResultsWrapper}
+    actions=${filtered}
+    handleAction=${doHandle}
+    selectVerb="Remove"
+  />`;
 }
 
 function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
-  useEffect(() => {
-    const t = setTimeout(() => {
-      chrome.runtime.sendMessage(
-        { request: "get-actions" },
-        function (response) {
-          setAllActions(response.actions);
-        }
-      );
-    }, 50);
-    return () => clearTimeout(t);
+  useEffect(async () => {
+    const response = await browser.runtime.sendMessage({
+      request: "get-actions",
+    });
+    setAllActions(response.actions);
   }, []);
 
   useEffect(() => {
@@ -289,8 +339,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-          tempvalue
-        )}`;
+            tempvalue
+          )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -323,6 +373,16 @@ function OmniList({ searchTerm, handleAction }) {
       filters.push(
         (a) => a.type === "action" && a.title.toLowerCase().includes(tempvalue)
       );
+    } else if (lowerTerm.startsWith("/remove")) {
+      // $(this).attr("data-type") == "bookmark" ||
+      //$(this).attr("data-type") == "tab"
+      const tempvalue = lowerTerm.replace(/\/remove\s*/, "");
+      filters.push(
+        (a) =>
+          (a.type === "action" || a.type === "tab") &&
+          (a.title.toLowerCase().includes(tempvalue) ||
+            a.url?.toLowerCase().includes(tempvalue))
+      );
     } else {
       filters.push(
         (action) =>
@@ -342,6 +402,14 @@ function OmniList({ searchTerm, handleAction }) {
     return RenderCommands({ handleAction });
   }
 
+  if (searchTerm.startsWith("/remove")) {
+    return html`<${RemoveList}
+      actions=${allActions}
+      searchTerm=${searchTerm.replace(/^\/remove\s*/, "")}
+      handleAction=${handleAction}
+    />`;
+  }
+
   if (searchTerm.startsWith("/history")) {
     return html`<${HistorySearch}
       searchTerm=${searchTerm}
@@ -349,10 +417,17 @@ function OmniList({ searchTerm, handleAction }) {
     />`;
   }
   if (searchTerm.startsWith("/bookmarks")) {
-    return BookmarksSearch({ searchTerm, allActions, handleAction });
+    return html`<${BookmarksSearch}
+      searchTerm=${searchTerm}
+      allActions=${allActions}
+      handleAction=${handleAction}
+    />`;
   }
 
-  return SearchResultsWrapper({ actions: filteredActions, handleAction });
+  return html`<${SearchResultsWrapper}
+    actions=${filteredActions}
+    handleAction=${handleAction}
+  />`;
 }
 
 const Shortcuts = {
@@ -360,6 +435,7 @@ const Shortcuts = {
   "/t": "/tabs ",
   "/b": "/bookmarks ",
   "/a": "/actions ",
+  "/r": "/remove",
 };
 
 function MainApp(props) {
@@ -369,6 +445,11 @@ function MainApp(props) {
   const input = useRef(null);
   const onSearchChange = useCallback((e) => {
     const newValue = e.target.value;
+    const shortcut = Shortcuts[newValue];
+    if (shortcut) {
+      setSearch(shortcut + " ");
+      return;
+    }
     setSearch(Shortcuts[newValue] || newValue);
   });
 
@@ -395,14 +476,16 @@ function MainApp(props) {
     [handleAction]
   );
 
-  const onOverlayClick = useCallback(() => { handleAction({ action: CloseOmniAction }) }, [handleAction]);
+  const onOverlayClick = useCallback(() => {
+    handleAction({ action: CloseOmniAction });
+  }, [handleAction]);
 
   if (!showing) {
     return null;
   }
 
   return html`<div id="omni-extension" class="omni-extension">
-  <div id="omni-overlay" onClick=${onOverlayClick}></div>
+    <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
       <div id="omni">
         <div id="omni-search">
@@ -427,7 +510,7 @@ function App(props) {
   const [isOpen, setIsOpen] = useState(true);
   useEffect(() => {
     // Recieve messages from background
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.request == "open-omni") {
         setIsOpen((isOpen) => !isOpen);
       }
@@ -447,475 +530,22 @@ function App(props) {
     };
   }, []);
 
-  const actionHandler = useCallback((action, eventOptions) => {
+  const actionHandler = useCallback(async (action, eventOptions) => {
     setIsOpen(false);
 
-    console.log(`HANDLING ACTION!`, action);
-    chrome.runtime.sendMessage(
-      { request: action.action, tab: action },
-      (response) => {
-        if (response === false) {
-          console.warn(`NOTHING DONE IN BG FOR ${action.action}`, action);
-          handleAction(action, eventOptions);
-        }
-      }
-    );
+    console.log(`HANDLING ACTION!`, action, eventOptions);
+    const response = await browser.runtime.sendMessage({
+      request: eventOptions?.request || action.action,
+      tab: action,
+      action,
+    });
+    if (response === false) {
+      console.warn(`NOTHING DONE IN BG FOR ${action.action}`, action);
+      handleAction(action, eventOptions);
+    }
   }, []);
 
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-// Append the omni into the current page
-fetch(chrome.runtime.getURL("/content.html"))
-  .then((res) => res.text())
-  .then(async (data) => {
-    render(html`<${App} />`, document.getElementById("omni-extension-wrapper"));
-    return;
-
-    document.body.innerHTML += data;
-
-    var isOpen = false;
-    var actions = [];
-    var isFiltered = false;
-
-    // Request actions from the background
-    chrome.runtime.sendMessage({ request: "get-actions" }, function (response) {
-      actions = response.actions;
-      populateOmni();
-    });
-
-    function renderActions(actions) {
-      const destEl = document.querySelector("#omni-extension #omni-list");
-      destEl.innerHTML = actions
-        .map(function (action, index) {
-          var keys = "";
-          if (action.keycheck) {
-            keys = "<div class='omni-keys'>";
-            action.keys.forEach(function (key) {
-              keys += "<span class='omni-shortcut'>" + key + "</span>";
-            });
-            keys += "</div>";
-          }
-          const imgUrl =
-            action.favIconUrl || chrome.runtime.getURL("/assets/globe.svg");
-          var img =
-            "<img src='" +
-            imgUrl +
-            "' alt='favicon' onerror='this.src=&quot;" +
-            chrome.runtime.getURL("/assets/globe.svg") +
-            "&quot;' class='omni-icon'>";
-          if (action.emoji) {
-            img =
-              "<span class='omni-emoji-action'>" + action.emojiChar + "</span>";
-          }
-
-          return (
-            `<div class='omni-item ${index === 0 ? "omni-item-active" : ""
-            }' data-type='` +
-            action.type +
-            "' data-url='" +
-            action.url +
-            "'>" +
-            img +
-            "<div class='omni-item-details'><div class='omni-item-name'>" +
-            action.title +
-            "</div><div class='omni-item-desc'>" +
-            action.url +
-            "</div></div>" +
-            keys +
-            "<div class='omni-select'>Select <span class='omni-shortcut'>⏎</span></div></div>"
-          );
-        })
-        .join("\n");
-      $(".omni-extension #omni-results").html(actions.length + " results");
-    }
-
-    // Add actions to the omni
-    function populateOmni() {
-      renderActions(actions);
-    }
-
-    // Add filtered actions to the omni
-    function populateOmniFilter(actions) {
-      isFiltered = true;
-      renderActions(actions);
-    }
-
-    // Open the omni
-    function openOmni() {
-      chrome.runtime.sendMessage(
-        { request: "get-actions" },
-        function (response) {
-          isOpen = true;
-          actions = response.actions;
-          populateOmni();
-          document.querySelector("#omni-extension input").value = "";
-          $("html, body").stop();
-          $("#omni-extension").removeClass("omni-closing");
-          window.setTimeout(function () {
-            $("#omni-extension input").focus();
-          }, 100);
-        }
-      );
-    }
-
-    // Close the omni
-    function closeOmni() {
-      isOpen = false;
-      $("#omni-extension").addClass("omni-closing");
-    }
-
-    // Hover over an action in the omni
-    function hoverItem() {
-      const el = document.querySelector(".omni-item-active");
-      el.classList.remove("omni-item-active");
-      $(this).addClass("omni-item-active");
-    }
-
-    // Autocomplete commands. Since they all start with different letters, it can be the default behavior
-    function checkShortHand(e, value) {
-      const el = document.querySelector(".omni-extension input");
-      if (e.keyCode != 8) {
-        if (value == "/t") {
-          el.value = "/tabs ";
-        } else if (value == "/b") {
-          el.value = "/bookmarks ";
-        } else if (value == "/h") {
-          el.value = "/history ";
-        } else if (value == "/r") {
-          el.value = "/remove ";
-        } else if (value == "/a") {
-          el.value = "/actions ";
-        }
-      } else {
-        if (
-          value == "/tabs" ||
-          value == "/bookmarks" ||
-          value == "/actions" ||
-          value == "/remove" ||
-          value == "/history"
-        ) {
-          el.value = "";
-        }
-      }
-      return el.value;
-    }
-
-    function debounce(fn, duration = 200) {
-      let timeout = null;
-      return function (...args) {
-        const self = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(fn.bind(self, ...args), duration);
-      };
-    }
-
-    // Search for an action in the omni
-    function search(e) {
-      if (
-        e.keyCode == 37 ||
-        e.keyCode == 38 ||
-        e.keyCode == 39 ||
-        e.keyCode == 40 ||
-        e.keyCode == 13 ||
-        e.keyCode == 37
-      ) {
-        return;
-      }
-      var value = checkShortHand(e, this.value.toLowerCase()).toLowerCase();
-      if (value.startsWith("/history")) {
-        var tempvalue = value.replace("/history ", "");
-        var query = "";
-        if (tempvalue != "/history") {
-          query = value.replace("/history ", "");
-        }
-        chrome.runtime.sendMessage(
-          { request: "search-history", query: query },
-          function (response) {
-            populateOmniFilter(response.history);
-          }
-        );
-      } else if (value.startsWith("/bookmarks")) {
-        var tempvalue = value.replace("/bookmarks ", "");
-        if (tempvalue != "/bookmarks" && tempvalue != "") {
-          const query = value.replace("/bookmarks ", "");
-          chrome.runtime.sendMessage(
-            { request: "search-bookmarks", query },
-            function (response) {
-              populateOmniFilter(response.bookmarks);
-            }
-          );
-        } else {
-          populateOmniFilter(actions.filter((x) => x.type == "bookmark"));
-        }
-      } else {
-        if (isFiltered) {
-          populateOmni();
-          isFiltered = false;
-        }
-        $("#omni-extension #omni-list .omni-item").filter(function () {
-          if (value.startsWith("/tabs")) {
-            var tempvalue = value.replace("/tabs ", "");
-            if (tempvalue == "/tabs") {
-              $(this).toggle($(this).attr("data-type") == "tab");
-            } else {
-              tempvalue = value.replace("/tabs ", "");
-              $(this).toggle(
-                ($(this)
-                  .find(".omni-item-name")
-                  .text()
-                  .toLowerCase()
-                  .indexOf(tempvalue) > -1 ||
-                  $(this)
-                    .find(".omni-item-desc")
-                    .text()
-                    .toLowerCase()
-                    .indexOf(tempvalue) > -1) &&
-                $(this).attr("data-type") == "tab"
-              );
-            }
-          } else if (value.startsWith("/remove")) {
-            var tempvalue = value.replace("/remove ", "");
-            if (tempvalue == "/remove") {
-              $(this).toggle(
-                $(this).attr("data-type") == "bookmark" ||
-                $(this).attr("data-type") == "tab"
-              );
-            } else {
-              tempvalue = value.replace("/remove ", "");
-              $(this).toggle(
-                ($(this)
-                  .find(".omni-item-name")
-                  .text()
-                  .toLowerCase()
-                  .indexOf(tempvalue) > -1 ||
-                  $(this)
-                    .find(".omni-item-desc")
-                    .text()
-                    .toLowerCase()
-                    .indexOf(tempvalue) > -1) &&
-                ($(this).attr("data-type") == "bookmark" ||
-                  $(this).attr("data-type") == "tab")
-              );
-            }
-          } else if (value.startsWith("/actions")) {
-            var tempvalue = value.replace("/actions ", "");
-            if (tempvalue == "/actions") {
-              $(this).toggle($(this).attr("data-type") == "action");
-            } else {
-              tempvalue = value.replace("/actions ", "");
-              $(this).toggle(
-                ($(this)
-                  .find(".omni-item-name")
-                  .text()
-                  .toLowerCase()
-                  .indexOf(tempvalue) > -1 ||
-                  $(this)
-                    .find(".omni-item-desc")
-                    .text()
-                    .toLowerCase()
-                    .indexOf(tempvalue) > -1) &&
-                $(this).attr("data-type") == "action"
-              );
-            }
-          } else {
-            $(this).toggle(
-              $(this)
-                .find(".omni-item-name")
-                .text()
-                .toLowerCase()
-                .indexOf(value) > -1 ||
-              $(this)
-                .find(".omni-item-desc")
-                .text()
-                .toLowerCase()
-                .indexOf(value) > -1
-            );
-          }
-        });
-      }
-      $(".omni-extension #omni-results").html(
-        $("#omni-extension #omni-list .omni-item:visible").length + " results"
-      );
-      $(".omni-item-active").removeClass("omni-item-active");
-      $(".omni-extension #omni-list .omni-item:visible")
-        .first()
-        .addClass("omni-item-active");
-    }
-
-    // Handle actions from the omni
-    function handleAction(e) {
-      const action = actions.find(
-        (x) =>
-          x.title ==
-          document.querySelector(".omni-item-active .omni-item-name")
-            .textContent
-      );
-      closeOmni();
-      const val = document
-        .querySelector(".omni-extension input")
-        .value.toLowerCase();
-      if (val.startsWith("/remove")) {
-        chrome.runtime.sendMessage({
-          request: "remove",
-          type: action.type,
-          action: action,
-        });
-      } else if (val.toLowerCase().startsWith("/history")) {
-        const url = document.querySelector(".omni-item-active").dataset.url;
-        if (e.ctrlKey || e.metaKey) {
-          window.open(url, "_self");
-        } else {
-          window.open(url);
-        }
-      } else {
-        chrome.runtime.sendMessage({ request: action.action, tab: action });
-        switch (action.action) {
-          case "bookmark":
-            if (e.ctrlKey || e.metaKey) {
-              window.open(action.url);
-            } else {
-              window.open(action.url, "_self");
-            }
-            break;
-          case "scroll-bottom":
-            window.scrollTo(0, document.body.scrollHeight);
-            break;
-          case "scroll-top":
-            window.scrollTo(0, 0);
-            break;
-          case "navigation":
-            if (e.ctrlKey) {
-              window.open(action.url);
-            } else {
-              window.open(action.url, "_self");
-            }
-            break;
-          case "fullscreen":
-            var elem = document.documentElement;
-            elem.requestFullscreen();
-            break;
-          case "new-tab":
-            window.open("");
-            break;
-          case "email":
-            window.open("mailto:");
-            break;
-          case "url":
-            if (e.ctrlKey || e.metaKey) {
-              window.open(action.url);
-            } else {
-              window.open(action.url, "_self");
-            }
-            break;
-        }
-      }
-
-      // Fetch actions again
-      chrome.runtime.sendMessage(
-        { request: "get-actions" },
-        function (response) {
-          actions = response.actions;
-          populateOmni();
-        }
-      );
-    }
-
-    // Customize the shortcut to open the Omni box
-    function openShortcuts() {
-      chrome.runtime.sendMessage({ request: "extensions/shortcuts" });
-    }
-
-    // Check which keys are down
-    var down = [];
-
-    document.addEventListener("keydown", function (e) {
-      down[e.keyCode] = true;
-      down[e.key] = true;
-      if (down[38]) {
-        // Up key
-        const activeEl = document.querySelector(".omni-item-active");
-        if ($(activeEl).prevAll("div").not(":hidden").first().length) {
-          var previous = $(activeEl).prevAll("div").not(":hidden").first();
-          activeEl.classList.remove("omni-item-active");
-          previous.addClass("omni-item-active");
-          previous[0].scrollIntoView({ block: "nearest", inline: "nearest" });
-        }
-      } else if (down[40]) {
-        // Down key
-        const activeEl = document.querySelector(".omni-item-active");
-        if ($(activeEl).nextAll("div").not(":hidden").first().length) {
-          var next = $(activeEl).nextAll("div").not(":hidden").first();
-          activeEl.classList.remove("omni-item-active");
-          next.addClass("omni-item-active");
-          next[0].scrollIntoView({ block: "nearest", inline: "nearest" });
-        }
-      }
-    });
-    document.addEventListener("keyup", function (e) {
-      if (down[18] && down[16] && down[80]) {
-        if (actions.find((x) => x.action == "pin") != undefined) {
-          chrome.runtime.sendMessage({ request: "pin-tab" });
-        } else {
-          chrome.runtime.sendMessage({ request: "unpin-tab" });
-        }
-        chrome.runtime.sendMessage(
-          { request: "get-actions" },
-          function (response) {
-            actions = response.actions;
-            populateOmni();
-          }
-        );
-      } else if (down[18] && down[16] && down[77]) {
-        if (actions.find((x) => x.action == "mute") != undefined) {
-          chrome.runtime.sendMessage({ request: "mute-tab" });
-        } else {
-          chrome.runtime.sendMessage({ request: "unmute-tab" });
-        }
-        chrome.runtime.sendMessage(
-          { request: "get-actions" },
-          function (response) {
-            actions = response.actions;
-            populateOmni();
-          }
-        );
-      } else if (down[18] && down[16] && down[67]) {
-        window.open("mailto:");
-      }
-
-      if (down[27] && isOpen) {
-        // Esc key
-        closeOmni();
-      } else if (down[13] && isOpen) {
-        // Enter key
-        handleAction(e);
-      }
-
-      down = [];
-    });
-
-    // Recieve messages from background
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      if (message.request == "open-omni") {
-        if (isOpen) {
-          closeOmni();
-        } else {
-          openOmni();
-        }
-      }
-    });
-
-    // Events
-    $(document).on("click", "#open-page-omni-extension-thing", openShortcuts);
-    $(document).on(
-      "mouseover",
-      ".omni-extension .omni-item:not(.omni-item-active)",
-      hoverItem
-    );
-    document
-      .querySelector(".omni-extension input")
-      .addEventListener("keyup", debounce(search));
-    // $(document).on("keyup", ".omni-extension input", debounce(search));
-    $(document).on("click", ".omni-item-active", handleAction);
-    $(document).on("click", ".omni-extension #omni-overlay", closeOmni);
-  });
+render(html`<${App} />`, document.getElementById("omni-extension-wrapper"));
