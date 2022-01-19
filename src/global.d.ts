@@ -1,4 +1,4 @@
 import Browser from 'webextension-polyfill';
 declare global {
-  var browser: typeof Browser;
+  const browser: typeof Browser;
 }
