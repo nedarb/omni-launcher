@@ -74,29 +74,29 @@ function OmniItem({
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-        return html`<span key=${key} class="omni-shortcut">${key}</span>`;
-      })}
+      return html`<span key=${key} class="omni-shortcut">${key}</span>`;
+    })}
     </div>`;
   }
   const imgUrl =
     action.favIconUrl || browser.runtime.getURL("/assets/globe.svg");
-  var img = html`<img
+  const img = html`<img
     src="${imgUrl}"
     class="omni-icon"
     alt="${action.title}"
   />`;
-  if (action.emoji) {
-    img = html`<span class="omni-emoji-action">${action.emojiChar}</span>`;
-  }
+  const emoji = action.emoji ? html`<span class="omni-emoji-action">${action.emojiChar}</span>` : null;
 
   return html`<a
     ref=${ref}
+    key=${action.id || action.url || action.action}
     class="omni-item ${isSelected ? "omni-item-active" : ""}"
     data-type="${action.type}"
+    data-icon="${action.favIconUrl}"
     data-url="${action.url}"
     onClick=${handleClick}
   >
-    ${img}
+    ${emoji || img}
     <div class="omni-item-details">
       <div class="omni-item-name">${action.title}</div>
       <div class="omni-item-desc">${action.url || action.shortcut}</div>
@@ -150,6 +150,7 @@ function SearchResultsWrapper({
   handleAction,
   selectVerb = "Select",
 }) {
+  console.log(`SearchResultsWrapper`, actions);
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
     console.log(`actions changed`);
@@ -204,13 +205,14 @@ function SearchResults({
   selectedIndex,
   selectVerb = "Select",
 }) {
+  const sliced = useMemo(() => actions.slice(0, 250), [actions]);
   const total = actions.length;
   // console.log(`SearchResults`, actions, handleAction);
   const list =
     Array.isArray(actions) &&
-    actions.slice(0, 100).map(function (action, index) {
+    sliced.map(function (action, index) {
       return html`<${OmniItem}
-        key=${action.action || action.url}
+        key=${action.id || action.url || action.action}
         index=${index}
         action=${action}
         isSelected=${index === selectedIndex}
@@ -243,7 +245,8 @@ function HistorySearch({ searchTerm, handleAction }) {
     console.log("searching history", query);
     const response = await browser.runtime.sendMessage({
       request: "search-history",
-      query: query,
+      query,
+      maxResults: 300,
     });
     console.log("got history: ", response.history);
     setSearched(response.history || []);
@@ -318,10 +321,15 @@ function RemoveList({ searchTerm, actions, handleAction }) {
 function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
+  const [historySearchResults, setHistorySearchResults] = useState([]);
   useEffect(async () => {
     const response = await browser.runtime.sendMessage({
       request: "get-actions",
     });
+    console.log(`get-actions`, response.actions.reduce((map, item) => {
+      map[item.type] = (map[item.type] || 0) + 1;
+      return map;
+    }, {}), response.actions);
     setAllActions(response.actions);
   }, []);
 
@@ -339,8 +347,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-            tempvalue
-          )}`;
+          tempvalue
+        )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -398,9 +406,20 @@ function OmniList({ searchTerm, handleAction }) {
     );
   }, [allActions, searchTerm]);
 
-  if (searchTerm === "/") {
-    return RenderCommands({ handleAction });
-  }
+  useEffect(async () => {
+    if (searchTerm && searchTerm.startsWith("/")) {
+      return;
+    }
+
+    console.log("searching history", searchTerm);
+    const response = await browser.runtime.sendMessage({
+      request: "search-history",
+      query: searchTerm,
+      maxResults: 30,
+    });
+    console.log("got history: ", response.history);
+    setHistorySearchResults(response.history || []);
+  }, [searchTerm]);
 
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}
@@ -424,17 +443,21 @@ function OmniList({ searchTerm, handleAction }) {
     />`;
   }
 
+  if (searchTerm.startsWith("/") && !Commands.some(a => searchTerm.startsWith(a.shortcut))) {
+    return html`<${RenderCommands} handleAction=${handleAction} />`;
+  }
+
   return html`<${SearchResultsWrapper}
-    actions=${filteredActions}
+    actions=${[...filteredActions, ...historySearchResults]}
     handleAction=${handleAction}
   />`;
 }
 
 const Shortcuts = {
-  "/h": "/history ",
-  "/t": "/tabs ",
-  "/b": "/bookmarks ",
-  "/a": "/actions ",
+  "/h": "/history",
+  "/t": "/tabs",
+  "/b": "/bookmarks",
+  "/a": "/actions",
   "/r": "/remove",
 };
 
@@ -451,7 +474,7 @@ function MainApp(props) {
       return;
     }
     setSearch(Shortcuts[newValue] || newValue);
-  });
+  }, []);
 
   useEffect(() => {
     if (showing) {
@@ -460,6 +483,8 @@ function MainApp(props) {
         100
       );
       return () => clearTimeout(timeout);
+    } else {
+      setSearch("");
     }
   }, [showing]);
 

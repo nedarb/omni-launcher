@@ -249,7 +249,6 @@ html {
   background-color: var(--accent);
 }
 .omni-extension .omni-select {
-  float: right;
   vertical-align: middle;
   color: var(--text-3);
   font-size: 12px;
@@ -287,6 +286,8 @@ html {
   display: inline-block !important;
   margin-left: 10px;
   vertical-align: middle;
+  flex: 1 1 auto;
+  overflow: hidden;
 }
 .omni-extension .omni-item-name {
   color: var(--text-2);
@@ -295,7 +296,6 @@ html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 460px;
 }
 .omni-extension .omni-item-active .omni-item-name,
 .omni-extension .omni-item:hover .omni-item-name {
@@ -308,7 +308,6 @@ html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 460px;
 }
 .omni-extension #omni-footer {
   height: 45px;
