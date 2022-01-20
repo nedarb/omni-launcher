@@ -703,7 +703,8 @@ browser.action.onClicked.addListener((tab) => {
 browser.commands.onCommand.addListener(async (command) => {
   if (command === "open-omni") {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
-    browser.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
+    if (tabs.length > 0)
+      browser.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
   }
 });
 

@@ -20,19 +20,24 @@ const Commands = [
     title: "History",
     desc: "Search browsing history",
     type: "command",
-    shortcut: "/history",
+    shortcut: "/h",
+    searchPrefix: "/history",
+    emoji: true,
+    emojiChar: "🏛"
   },
   {
     title: "Tabs",
     desc: "Search your open tabs",
     type: "command",
-    shortcut: "/tabs",
+    shortcut: "/t",
+    searchPrefix: "/tabs",
   },
   {
     title: "Bookmarks",
     desc: "Search bookmarks",
     type: "command",
-    shortcut: "/bookmarks",
+    shortcut: "/b",
+    searchPrefix: "/bookmarks",
     emoji: true,
     emojiChar: "📕",
   },
@@ -40,13 +45,17 @@ const Commands = [
     title: "Actions",
     desc: "Search actions",
     type: "command",
-    shortcut: "/actions",
+    shortcut: "/a",
+    searchPrefix: "/actions",
   },
   {
     title: "Remove",
     desc: "Remove a tab or a bookmark",
     type: "command",
-    shortcut: "/remove",
+    shortcut: "/r",
+    searchPrefix: "/remove",
+    emoji: true,
+    emojiChar: "🧹",
   },
 ];
 
@@ -74,7 +83,7 @@ function OmniItem({
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-      return html`<span key=${key} class="omni-shortcut">${key}</span>`;
+      return html`<span key=${key} key=${key} class="omni-shortcut">${key}</span>`;
     })}
     </div>`;
   }
@@ -99,7 +108,7 @@ function OmniItem({
     ${emoji || img}
     <div class="omni-item-details">
       <div class="omni-item-name">${action.title}</div>
-      <div class="omni-item-desc">${action.url || action.shortcut}</div>
+      <div class="omni-item-desc">${action.url || action.searchPrefix}</div>
     </div>
     ${keys}
     <div class="omni-select">
@@ -121,6 +130,7 @@ function handleAction(action, eventOptions) {
     case "url":
     case "bookmark":
     case "navigation":
+    case "history":
       openUrl();
       break;
     case "fullscreen":
@@ -150,10 +160,9 @@ function SearchResultsWrapper({
   handleAction,
   selectVerb = "Select",
 }) {
-  console.log(`SearchResultsWrapper`, actions);
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
-    console.log(`actions changed`);
+    // console.log(`actions changed`);
     setSelectedIndex(0);
   }, [actions]);
   useEffect(() => {
@@ -248,7 +257,6 @@ function HistorySearch({ searchTerm, handleAction }) {
       query,
       maxResults: 300,
     });
-    console.log("got history: ", response.history);
     setSearched(response.history || []);
   }, [searchTerm]);
 
@@ -326,10 +334,10 @@ function OmniList({ searchTerm, handleAction }) {
     const response = await browser.runtime.sendMessage({
       request: "get-actions",
     });
-    console.log(`get-actions`, response.actions.reduce((map, item) => {
-      map[item.type] = (map[item.type] || 0) + 1;
-      return map;
-    }, {}), response.actions);
+    // console.log(`get-actions`, response.actions.reduce((map, item) => {
+    //   map[item.type] = (map[item.type] || 0) + 1;
+    //   return map;
+    // }, {}), response.actions);
     setAllActions(response.actions);
   }, []);
 
@@ -407,17 +415,16 @@ function OmniList({ searchTerm, handleAction }) {
   }, [allActions, searchTerm]);
 
   useEffect(async () => {
-    if (searchTerm && searchTerm.startsWith("/")) {
+    if (!searchTerm && searchTerm.startsWith("/")) {
       return;
     }
 
-    console.log("searching history", searchTerm);
+    // console.log("searching history", searchTerm);
     const response = await browser.runtime.sendMessage({
       request: "search-history",
       query: searchTerm,
       maxResults: 30,
     });
-    console.log("got history: ", response.history);
     setHistorySearchResults(response.history || []);
   }, [searchTerm]);
 
@@ -443,7 +450,7 @@ function OmniList({ searchTerm, handleAction }) {
     />`;
   }
 
-  if (searchTerm.startsWith("/") && !Commands.some(a => searchTerm.startsWith(a.shortcut))) {
+  if (searchTerm.startsWith("/") && !Commands.some(a => searchTerm.startsWith(a.searchPrefix))) {
     return html`<${RenderCommands} handleAction=${handleAction} />`;
   }
 
@@ -490,8 +497,8 @@ function MainApp(props) {
 
   const doHandle = useCallback(
     (action, ...args) => {
-      if (action.shortcut) {
-        setSearch(action.shortcut);
+      if (action.searchPrefix) {
+        setSearch(action.searchPrefix);
         return;
       }
 
@@ -559,6 +566,11 @@ function App(props) {
     setIsOpen(false);
 
     console.log(`HANDLING ACTION!`, action, eventOptions);
+    if (action.action === "history") {
+      handleAction(action, eventOptions);
+      return;
+    }
+
     const response = await browser.runtime.sendMessage({
       request: eventOptions?.request || action.action,
       tab: action,
