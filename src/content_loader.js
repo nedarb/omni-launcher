@@ -8,14 +8,5 @@
   div.id = "omni-extension-wrapper";
   document.body.appendChild(div);
 
-  async function listener(message) {
-    if (message.request == "open-omni") {
-      chrome.runtime.onMessage.removeListener(listener);
-
-      await import(src);
-    }
-  }
-
-  // Recieve messages from background
-  chrome.runtime.onMessage.addListener(listener);
+  await import(src);
 })();

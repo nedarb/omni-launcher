@@ -412,7 +412,7 @@ function MainApp(props) {
 }
 
 function App() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     // Recieve messages from background
     browser.runtime.onMessage.addListener((message) => {
