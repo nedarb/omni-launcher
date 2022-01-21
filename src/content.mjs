@@ -12,6 +12,7 @@ import {
   useMemo,
 } from "./standalone.mjs";
 import useDebounce from "./useDebounce.mjs";
+import useAsyncState from "./hooks/useAsyncState.mjs";
 
 const CloseOmniAction = "close-omni";
 
@@ -197,7 +198,7 @@ function SearchResultsWrapper({
     }
     window.addEventListener("keydown", handler);
     return () => {
-      console.debug("unsub");
+      // console.debug("unsub");
       window.removeEventListener("keydown", handler);
     };
   }, [selectedIndex, actions, handleAction]);
@@ -333,7 +334,28 @@ function RemoveList({ searchTerm, actions, handleAction }) {
 function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
-  const [historySearchResults, setHistorySearchResults] = useState([]);
+  // const [historySearchResults, setHistorySearchResults] = useState([]);
+
+  // console.log("foobar");
+  const historySearchResults = useAsyncState(
+    async () => {
+      if (!searchTerm || searchTerm.startsWith("/")) {
+        return;
+      }
+
+      console.log("searching history", searchTerm);
+      const response = await browser.runtime.sendMessage({
+        request: "search-history",
+        query: searchTerm,
+        maxResults: 30,
+      });
+      return response.history;
+    },
+    [],
+    [searchTerm]
+  );
+  // console.log("tempHistory", tempHistory);
+
   useEffect(async () => {
     const response = await browser.runtime.sendMessage({
       request: "get-actions",
@@ -418,19 +440,19 @@ function OmniList({ searchTerm, handleAction }) {
     );
   }, [allActions, searchTerm]);
 
-  useEffect(async () => {
-    if (!searchTerm && searchTerm.startsWith("/")) {
-      return;
-    }
+  // useEffect(async () => {
+  //   if (!searchTerm && searchTerm.startsWith("/")) {
+  //     return;
+  //   }
 
-    // console.log("searching history", searchTerm);
-    const response = await browser.runtime.sendMessage({
-      request: "search-history",
-      query: searchTerm,
-      maxResults: 30,
-    });
-    setHistorySearchResults(response.history || []);
-  }, [searchTerm]);
+  //   console.log("searching history", searchTerm);
+  //   const response = await browser.runtime.sendMessage({
+  //     request: "search-history",
+  //     query: searchTerm,
+  //     maxResults: 30,
+  //   });
+  //   setHistorySearchResults(response.history || []);
+  // }, [searchTerm]);
 
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}
@@ -462,7 +484,7 @@ function OmniList({ searchTerm, handleAction }) {
   }
 
   return html`<${SearchResultsWrapper}
-    actions=${[...filteredActions, ...historySearchResults]}
+    actions=${[...filteredActions, ...(historySearchResults || [])]}
     handleAction=${handleAction}
   />`;
 }
