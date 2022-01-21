@@ -599,7 +599,7 @@ function App(props) {
     setIsOpen(false);
 
     console.log(`HANDLING ACTION!`, action, eventOptions);
-    if (action.action === "history") {
+    if (action.action === "history" && action.url) {
       handleAction(action, eventOptions);
       return;
     }

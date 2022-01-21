@@ -248,6 +248,9 @@ html {
   width: 2px;
   background-color: var(--accent);
 }
+.omni-extension .omni-item:hover:before {
+  background-color: var(--accent-hover);
+}
 .omni-extension .omni-select {
   vertical-align: middle;
   color: var(--text-3);
