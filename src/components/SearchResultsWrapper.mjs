@@ -11,6 +11,7 @@ function OmniItem({
   action,
   index,
   handleAction,
+  onOverItem,
   isSelected,
   selectVerb = "Select",
 }) {
@@ -21,6 +22,10 @@ function OmniItem({
       handleAction && handleAction(action, e);
     },
     [action, handleAction]
+  );
+  const onMouseEnter = useCallback(
+    () => onOverItem && onOverItem(index),
+    [index]
   );
   useEffect(() => {
     if (isSelected) {
@@ -56,6 +61,7 @@ function OmniItem({
     data-icon="${action.favIconUrl}"
     data-url="${action.url}"
     onClick=${handleClick}
+    onMouseenter=${onMouseEnter}
   >
     ${emoji || img}
     <div class="omni-item-details">
@@ -72,6 +78,7 @@ function OmniItem({
 function SearchResults({
   actions,
   handleAction,
+  onOverItem,
   selectedIndex,
   selectVerb = "Select",
 }) {
@@ -85,6 +92,7 @@ function SearchResults({
         key=${action.id || action.url || action.action}
         index=${index}
         action=${action}
+        onOverItem=${onOverItem}
         isSelected=${index === selectedIndex}
         selectVerb=${selectVerb}
         handleAction=${handleAction}
@@ -148,12 +156,18 @@ export default function SearchResultsWrapper({
     };
   }, [selectedIndex, actions, handleAction]);
 
+  const onOverItem = useCallback(
+    (newIndex) => setSelectedIndex(newIndex),
+    [actions]
+  );
+
   return html`<div class="search-results-wrapper">
     <${SearchResults}
       actions=${actions}
       handleAction=${handleAction}
       selectedIndex=${selectedIndex}
       selectVerb=${selectVerb}
+      onOverItem=${onOverItem}
     />
   </div>`;
 }
