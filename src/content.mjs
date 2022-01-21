@@ -4,7 +4,6 @@ import "./webextension-polyfill.js";
 import {
   html,
   render,
-  Component,
   useState,
   useEffect,
   useCallback,
@@ -13,6 +12,7 @@ import {
 } from "./standalone.mjs";
 import useDebounce from "./useDebounce.mjs";
 import useAsyncState from "./hooks/useAsyncState.mjs";
+import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
 
 const CloseOmniAction = "close-omni";
 
@@ -60,68 +60,6 @@ const Commands = [
   },
 ];
 
-function OmniItem({
-  action,
-  index,
-  handleAction,
-  isSelected,
-  selectVerb = "Select",
-}) {
-  const ref = useRef(null);
-  const handleClick = useCallback(
-    (e) => {
-      e.preventDefault(true);
-      handleAction && handleAction(action, e);
-    },
-    [action, handleAction]
-  );
-  useEffect(() => {
-    if (isSelected) {
-      ref?.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
-    }
-  }, [ref, isSelected]);
-  var keys = "";
-  if (action.keycheck) {
-    keys = html`<div class="omni-keys">
-      ${action.keys.map(function (key) {
-        return html`<span key=${key} key=${key} class="omni-shortcut"
-          >${key}</span
-        >`;
-      })}
-    </div>`;
-  }
-  const imgUrl =
-    action.favIconUrl || browser.runtime.getURL("/assets/globe.svg");
-  const img = html`<img
-    src="${imgUrl}"
-    class="omni-icon"
-    alt="${action.title}"
-  />`;
-  const emoji = action.emoji
-    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
-    : null;
-
-  return html`<a
-    ref=${ref}
-    key=${action.id || action.url || action.action}
-    class="omni-item ${isSelected ? "omni-item-active" : ""}"
-    data-type="${action.type}"
-    data-icon="${action.favIconUrl}"
-    data-url="${action.url}"
-    onClick=${handleClick}
-  >
-    ${emoji || img}
-    <div class="omni-item-details">
-      <div class="omni-item-name">${action.title}</div>
-      <div class="omni-item-desc">${action.url || action.searchPrefix}</div>
-    </div>
-    ${keys}
-    <div class="omni-select">
-      ${selectVerb} <span class="omni-shortcut">⏎</span>
-    </div>
-  </a>`;
-}
-
 function handleAction(action, eventOptions) {
   const openUrl = (url = action.url) =>
     eventOptions?.metaKey ? window.open(url) : window.open(url, "_self");
@@ -160,110 +98,28 @@ function handleAction(action, eventOptions) {
   }
 }
 
-function SearchResultsWrapper({
-  actions,
-  handleAction,
-  selectVerb = "Select",
-}) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  useEffect(() => {
-    // console.log(`actions changed`);
-    setSelectedIndex(0);
-  }, [actions]);
-  useEffect(() => {
-    if (
-      actions.length > 0 &&
-      (selectedIndex >= actions.length || isNaN(selectedIndex))
-    ) {
-      setSelectedIndex(actions.length - 1);
-    }
-
-    function handler(e) {
-      const len = actions.length;
-      switch (e.key) {
-        case "ArrowUp":
-          setSelectedIndex((i) => Math.max(0, i - 1));
-          break;
-        case "ArrowDown":
-          setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
-          break;
-        case "Enter":
-          const action = actions[selectedIndex];
-          handleAction && handleAction(action, { metaKey: e.metaKey });
-          break;
-        // case "Escape":
-        //   handleAction && handleAction({ action: CloseOmniAction });
-        //   break;
-      }
-    }
-    window.addEventListener("keydown", handler);
-    return () => {
-      // console.debug("unsub");
-      window.removeEventListener("keydown", handler);
-    };
-  }, [selectedIndex, actions, handleAction]);
-
-  return html`<div class="search-results-wrapper">
-    <${SearchResults}
-      actions=${actions}
-      handleAction=${handleAction}
-      selectedIndex=${selectedIndex}
-      selectVerb=${selectVerb}
-    />
-  </div>`;
-}
-
-function SearchResults({
-  actions,
-  handleAction,
-  selectedIndex,
-  selectVerb = "Select",
-}) {
-  const sliced = useMemo(() => actions.slice(0, 250), [actions]);
-  const total = actions.length;
-  // console.log(`SearchResults`, actions, handleAction);
-  const list =
-    Array.isArray(actions) &&
-    sliced.map(function (action, index) {
-      return html`<${OmniItem}
-        key=${action.id || action.url || action.action}
-        index=${index}
-        action=${action}
-        isSelected=${index === selectedIndex}
-        selectVerb=${selectVerb}
-        handleAction=${handleAction}
-      />`;
-    });
-
-  return html`<div class="search-results">
-    <div id="omni-list">${list}</div>
-    <div id="omni-footer">
-      <div id="omni-results">
-        ${list.length}${list.length < total ? "+" : ""} results
-      </div>
-      <div id="omni-arrows">
-        Use arrow keys <span class="omni-shortcut">↑</span
-        ><span class="omni-shortcut">↓</span> to navigate
-      </div>
-    </div>
-  </div>`;
-}
-
 function HistorySearch({ searchTerm, handleAction }) {
-  const [searched, setSearched] = useState([]);
+  // const [searched, setSearched] = useState([]);
+  const searched = useAsyncState(
+    async () => {
+      console.log("searching history");
+      const query = searchTerm.replace(/\/history\s*/, "");
 
-  useEffect(async () => {
-    console.log("searching history");
-    const query = searchTerm.replace(/\/history\s*/, "");
+      if (!query) {
+        return [];
+      }
 
-    console.log("searching history", query);
-    const response = await browser.runtime.sendMessage({
-      request: "search-history",
-      query,
-      maxResults: 300,
-    });
-    setSearched(response.history || []);
-  }, [searchTerm]);
+      console.log("searching history", query);
+      const response = await browser.runtime.sendMessage({
+        request: "search-history",
+        query,
+        maxResults: 300,
+      });
+      return response.history;
+    },
+    [],
+    [searchTerm]
+  );
 
   if (!searched) {
     console.log(`!searched!`, searched);
@@ -276,22 +132,24 @@ function HistorySearch({ searchTerm, handleAction }) {
 }
 
 function BookmarksSearch({ searchTerm, allActions, handleAction }) {
-  const [searchedActions, setSearchedActions] = useState([]);
-
-  useEffect(async () => {
-    var tempvalue = searchTerm.replace("/bookmarks ", "");
-    if (tempvalue != "/bookmarks" && tempvalue != "") {
-      const query = searchTerm.replace("/bookmarks ", "");
-      const response = await browser.runtime.sendMessage({
-        request: "search-bookmarks",
-        query,
-      });
-      console.log("got bookmarks", response);
-      setSearchedActions(response.bookmarks);
-    } else {
-      setSearchedActions(allActions.filter((x) => x.type == "bookmark"));
-    }
-  }, [searchTerm, allActions]);
+  const searchedActions = useAsyncState(
+    async () => {
+      const tempvalue = searchTerm.replace("/bookmarks ", "");
+      if (tempvalue != "/bookmarks" && tempvalue != "") {
+        const query = searchTerm.replace("/bookmarks ", "");
+        const response = await browser.runtime.sendMessage({
+          request: "search-bookmarks",
+          query,
+        });
+        console.log("got bookmarks", response);
+        return response.bookmarks;
+      } else {
+        return allActions.filter((x) => x.type == "bookmark");
+      }
+    },
+    [],
+    [searchTerm, allActions]
+  );
 
   return html`<${SearchResultsWrapper}
     actions=${searchedActions}
@@ -557,7 +415,7 @@ function App() {
   const [isOpen, setIsOpen] = useState(true);
   useEffect(() => {
     // Recieve messages from background
-    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((message) => {
       if (message.request == "open-omni") {
         setIsOpen((isOpen) => !isOpen);
       }
