@@ -23,7 +23,7 @@ const Commands = [
     shortcut: "/h",
     searchPrefix: "/history",
     emoji: true,
-    emojiChar: "🏛"
+    emojiChar: "🏛",
   },
   {
     title: "Tabs",
@@ -83,8 +83,10 @@ function OmniItem({
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-      return html`<span key=${key} key=${key} class="omni-shortcut">${key}</span>`;
-    })}
+        return html`<span key=${key} key=${key} class="omni-shortcut"
+          >${key}</span
+        >`;
+      })}
     </div>`;
   }
   const imgUrl =
@@ -94,7 +96,9 @@ function OmniItem({
     class="omni-icon"
     alt="${action.title}"
   />`;
-  const emoji = action.emoji ? html`<span class="omni-emoji-action">${action.emojiChar}</span>` : null;
+  const emoji = action.emoji
+    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
+    : null;
 
   return html`<a
     ref=${ref}
@@ -355,8 +359,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-          tempvalue
-        )}`;
+            tempvalue
+          )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -450,7 +454,10 @@ function OmniList({ searchTerm, handleAction }) {
     />`;
   }
 
-  if (searchTerm.startsWith("/") && !Commands.some(a => searchTerm.startsWith(a.searchPrefix))) {
+  if (
+    searchTerm.startsWith("/") &&
+    !Commands.some((a) => searchTerm.startsWith(a.searchPrefix))
+  ) {
     return html`<${RenderCommands} handleAction=${handleAction} />`;
   }
 
@@ -512,14 +519,18 @@ function MainApp(props) {
     handleAction({ action: CloseOmniAction });
   }, [handleAction]);
 
-  if (!showing) {
-    return null;
-  }
+  // if (!showing) {
+  //   return null;
+  // }
 
-  return html`<div id="omni-extension" class="omni-extension">
+  return html`<div
+    id="omni-extension"
+    class="omni-extension ${!showing ? "omni-closing" : ""}"
+  >
     <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
-      <div id="omni">
+      ${showing &&
+      html`<div id="omni">
         <div id="omni-search">
           <input
             ref=${input}
@@ -533,7 +544,7 @@ function MainApp(props) {
           searchTerm=${debouncedSearchTerm}
           handleAction=${doHandle}
         />
-      </div>
+      </div>`}
     </div>
   </div>`;
 }
