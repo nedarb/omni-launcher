@@ -440,20 +440,6 @@ function OmniList({ searchTerm, handleAction }) {
     );
   }, [allActions, searchTerm]);
 
-  // useEffect(async () => {
-  //   if (!searchTerm && searchTerm.startsWith("/")) {
-  //     return;
-  //   }
-
-  //   console.log("searching history", searchTerm);
-  //   const response = await browser.runtime.sendMessage({
-  //     request: "search-history",
-  //     query: searchTerm,
-  //     maxResults: 30,
-  //   });
-  //   setHistorySearchResults(response.history || []);
-  // }, [searchTerm]);
-
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}
       actions=${allActions}
@@ -541,10 +527,6 @@ function MainApp(props) {
     handleAction({ action: CloseOmniAction });
   }, [handleAction]);
 
-  // if (!showing) {
-  //   return null;
-  // }
-
   return html`<div
     id="omni-extension"
     class="omni-extension ${!showing ? "omni-closing" : ""}"
@@ -571,7 +553,7 @@ function MainApp(props) {
   </div>`;
 }
 
-function App(props) {
+function App() {
   const [isOpen, setIsOpen] = useState(true);
   useEffect(() => {
     // Recieve messages from background

@@ -953,7 +953,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       return { history: data };
     }
     case "search-bookmarks": {
-      const data = await browser.bookmarks.search({ query: message.query })
+      const data = await browser.bookmarks.search({ query: message.query });
       // The index property of the bookmark appears to be causing issues, iterating separately...
       data
         .filter((x) => x.index == 0)
