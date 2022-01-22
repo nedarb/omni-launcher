@@ -105,15 +105,11 @@ function HistorySearch({ searchTerm, handleAction }) {
       console.log("searching history");
       const query = searchTerm.replace(/\/history\s*/, "");
 
-      if (!query) {
-        return [];
-      }
-
       console.log("searching history", query);
       const response = await browser.runtime.sendMessage({
         request: "search-history",
         query,
-        maxResults: 300,
+        maxResults: !query ? 30 : 300,
       });
       return response.history;
     },
@@ -420,20 +416,27 @@ function App() {
         setIsOpen((isOpen) => !isOpen);
       }
     });
-
-    function handler(e) {
-      switch (e.key) {
-        case "Escape":
-          setIsOpen(false);
-          break;
-      }
-    }
-    window.addEventListener("keydown", handler);
-    return () => {
-      console.debug("unsub - escape");
-      window.removeEventListener("keydown", handler);
-    };
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const onKeyDown = (e) => {
+        switch (e.key) {
+          case "Escape":
+            if (isOpen) {
+              setIsOpen(false);
+              e.preventDefault();
+            }
+            break;
+        }
+      };
+      window.addEventListener("keydown", onKeyDown);
+      return () => {
+        console.debug("unsub - escape");
+        window.removeEventListener("keydown", onKeyDown);
+      };
+    }
+  }, [isOpen]);
 
   const actionHandler = useCallback(async (action, eventOptions) => {
     setIsOpen(false);

@@ -1,11 +1,9 @@
 /// <reference path="./global.d.ts" />
-import './webextension-polyfill.js';
-
-let actions = [];
+import "./webextension-polyfill.js";
 
 // Clear actions and append default ones
 const clearActions = async () => {
-  const response = await getCurrentTab()
+  const response = await getCurrentTab();
   const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   let muteaction = {
     title: "Mute tab",
@@ -51,7 +49,7 @@ const clearActions = async () => {
       keys: ["⌥", "⇧", "P"],
     };
   }
-  actions = [
+  const actions = [
     {
       title: "New tab",
       desc: "Open a new tab",
@@ -646,6 +644,8 @@ const clearActions = async () => {
       }
     }
   }
+
+  return actions;
 };
 
 // Open on install
@@ -669,10 +669,9 @@ browser.runtime.onInstalled.addListener(async (object) => {
   };
 
   // Get all windows
-  const windows = await browser.windows.getAll(
-    {
-      populate: true,
-    });
+  const windows = await browser.windows.getAll({
+    populate: true,
+  });
   let currentWindow;
   const w = windows.length;
 
@@ -688,7 +687,6 @@ browser.runtime.onInstalled.addListener(async (object) => {
     }
   }
 
-
   if (object.reason === "install") {
     browser.tabs.create({ url: "https://alyssax.com/omni/" });
   }
@@ -702,22 +700,25 @@ browser.action.onClicked.addListener((tab) => {
 // Listen for the open omni shortcut
 browser.commands.onCommand.addListener(async (command) => {
   if (command === "open-omni") {
-    const tabs = await browser.tabs.query({ active: true, currentWindow: true })
+    const tabs = await browser.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
     if (tabs.length > 0)
       browser.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
   }
 });
 
-const resetOmni = async () => {
-  await clearActions();
-  await getTabs();
-  await getBookmarks();
-};
+// const resetOmni = async () => {
+//   await clearActions();
+//   await getTabs();
+//   await getBookmarks();
+// };
 
-// Check if tabs have changed and actions need to be fetched again
-browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => resetOmni());
-browser.tabs.onCreated.addListener((tab) => resetOmni());
-browser.tabs.onRemoved.addListener((tabId, changeInfo) => resetOmni());
+// // Check if tabs have changed and actions need to be fetched again
+// browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => resetOmni());
+// browser.tabs.onCreated.addListener((tab) => resetOmni());
+// browser.tabs.onRemoved.addListener((tabId, changeInfo) => resetOmni());
 
 // Get the current tab
 const getCurrentTab = async () => {
@@ -728,23 +729,23 @@ const getCurrentTab = async () => {
 
 // Get tabs to populate in the actions
 const getTabs = async () => {
-  const tabs = await browser.tabs.query({})
-  tabs.forEach((tab) => {
-    tab.desc = "Chrome tab";
-    tab.keycheck = false;
-    tab.action = "switch-tab";
-    tab.type = "tab";
-  });
-  actions = tabs.concat(actions);
-  return actions;
+  const tabs = await browser.tabs.query({});
+  return tabs.map((tab) => ({
+    ...tab,
+    desc: "Chrome tab",
+    keycheck: false,
+    action: "switch-tab",
+    type: "tab",
+  }));
 };
 
 // Get bookmarks to populate in the actions
 const getBookmarks = async () => {
+  const result = [];
   const process_bookmark = (bookmarks) => {
     for (const bookmark of bookmarks) {
       if (bookmark.url) {
-        actions.push({
+        result.push({
           title: bookmark.title,
           desc: "Bookmark",
           id: bookmark.id,
@@ -763,7 +764,7 @@ const getBookmarks = async () => {
   };
 
   process_bookmark(await browser.bookmarks.getRecent(100));
-  return actions;
+  return result;
 };
 
 // Lots of different actions
@@ -862,14 +863,19 @@ const removeBookmark = (bookmark) => {
   browser.bookmarks.remove(bookmark.id);
 };
 
+async function getActions() {
+  return [
+    ...(await getTabs()),
+    ...(await clearActions()),
+    ...(await getBookmarks()),
+  ];
+}
+
 // Receive messages from any tab
 browser.runtime.onMessage.addListener(async (message, sender) => {
   switch (message.request) {
     case "get-actions":
-      await clearActions();
-      await getTabs();
-      await getBookmarks();
-      return { actions: actions };
+      return { actions: await getActions() };
     case "switch-tab":
       switchTab(message.tab);
       break;
@@ -937,12 +943,12 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       closeCurrentTab();
       break;
     case "search-history": {
-      const data = await browser.history
-        .search({
-          text: message.query,
-          maxResults: message.maxResults || 1000,
-          startTime: 31536000000 * 5,
-        })
+      console.debug(`searching history for "${message.query}"`, message);
+      const data = await browser.history.search({
+        text: message.query,
+        maxResults: message.maxResults || 1000,
+        startTime: 31536000000 * 5,
+      });
       for (const action of data) {
         action.type = "history";
         action.emoji = true;
@@ -992,6 +998,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 });
 
 // Get actions
-clearActions();
-getTabs();
-getBookmarks();
+// clearActions();
+// getTabs();
+// getBookmarks();
