@@ -691,7 +691,7 @@ browser.runtime.onInstalled.addListener(async (object) => {
 
   const injectIntoTab = async (tab) => {
     const { url, id: tabId, status } = tab;
-    console.log(`injecting scripts into tab ${url}`, tab);
+    console.log(`injecting scripts into tab ${url}`);
     if (!url.toLowerCase().startsWith('http')) {
       console.debug(`Skipping ${tab.url}`);
       return;
@@ -705,17 +705,15 @@ browser.runtime.onInstalled.addListener(async (object) => {
     const scripts = manifest.content_scripts[0].js;
     const s = scripts.length;
 
-    const scriptResult = await browser.scripting.executeScript({
+    await browser.scripting.executeScript({
       target: { tabId },
       files: [...scripts],
     });
-    console.log(scriptResult)
 
-    const cssResult = await browser.scripting.insertCSS({
+    await browser.scripting.insertCSS({
       target: { tabId },
       files: [...manifest.content_scripts[0].css],
     });
-    console.log(cssResult);
   };
 
   // Get all windows
