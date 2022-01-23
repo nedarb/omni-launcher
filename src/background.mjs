@@ -689,37 +689,47 @@ browser.runtime.onInstalled.addListener(async (object) => {
   // Inject Omni on install
   const manifest = browser.runtime.getManifest();
 
-  const injectIntoTab = (tab) => {
+  const injectIntoTab = async (tab) => {
+    const { url, id: tabId, status } = tab;
+    console.log(`injecting scripts into tab ${url}`, tab);
+    if (!url.toLowerCase().startsWith('http')) {
+      console.debug(`Skipping ${tab.url}`);
+      return;
+    }
+
+    if (status === "unloaded") {
+      console.debug(`Skipping ${tab.url} because it's status is "unloaded".`);
+      return;
+    }
+
     const scripts = manifest.content_scripts[0].js;
     const s = scripts.length;
 
-    browser.scripting.executeScript({
-      target: { tabId: tab.id },
+    const scriptResult = await browser.scripting.executeScript({
+      target: { tabId },
       files: [...scripts],
     });
+    console.log(scriptResult)
 
-    browser.scripting.insertCSS({
-      target: { tabId: tab.id },
+    const cssResult = await browser.scripting.insertCSS({
+      target: { tabId },
       files: [...manifest.content_scripts[0].css],
     });
+    console.log(cssResult);
   };
 
   // Get all windows
   const windows = await browser.windows.getAll({
     populate: true,
   });
-  let currentWindow;
-  const w = windows.length;
 
-  for (let i = 0; i < w; i++) {
-    currentWindow = windows[i];
-
-    let currentTab;
-    const t = currentWindow.tabs.length;
-
-    for (let j = 0; j < t; j++) {
-      currentTab = currentWindow.tabs[j];
-      injectIntoTab(currentTab);
+  for (const currentWindow of windows) {
+    for (const currentTab of currentWindow.tabs) {
+      try {
+        await injectIntoTab(currentTab);
+      } catch (e) {
+        console.error(`Problem injecting into tab ${currentTab.url}`, e);
+      }
     }
   }
 

@@ -34,7 +34,7 @@
     {
       "matches": ["<all_urls>"],
       "run_at": "document_end",
-      "js": ["jquery.js", "webextension-polyfill.js", "content_loader.js"],
+      "js": ["content_loader.js"],
       "css": ["content.css"]
     }
   ],
