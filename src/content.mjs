@@ -13,6 +13,16 @@ import {
 import useDebounce from "./useDebounce.mjs";
 import useAsyncState from "./hooks/useAsyncState.mjs";
 import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
+import * as ActionNames from "./ActionNames.mjs";
+
+const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
+if (openSearchDescEl) {
+  browser.runtime.sendMessage({
+    request: "add-search-engine",
+    title: document.title,
+    url: openSearchDescEl.href,
+  });
+}
 
 const CloseOmniAction = "close-omni";
 
@@ -185,15 +195,46 @@ function RemoveList({ searchTerm, actions, handleAction }) {
   />`;
 }
 
+function CustomSearch({ handleAction, searchTerm, customAction }) {
+  const tempvalue = searchTerm.replace(
+    new RegExp("^" + customAction.title + "\\s*", "i"),
+    ""
+  );
+  console.log("custom action search!", customAction, tempvalue);
+  const urlTemplate = customAction.url;
+  return html`<${SearchResultsWrapper}
+    actions=${[
+      {
+        title: `Search ${customAction.title} for ${tempvalue}`,
+        desc: `Search ${customAction.title} for ${tempvalue}`,
+        type: "action",
+        url: urlTemplate.replace("{searchTerms}", tempvalue),
+        favIconUrl: customAction.favIconUrl,
+        action: "url",
+        // emoji: true,
+        // emojiChar: "🗄",
+        keycheck: false,
+      },
+    ]}
+    handleAction=${handleAction}
+  />`;
+}
+
 function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
-  // const [historySearchResults, setHistorySearchResults] = useState([]);
+  const lowerTerm = searchTerm.toLowerCase();
+
+  const customAction = allActions.find(
+    (a) =>
+      a.action === ActionNames.CustomSearch &&
+      lowerTerm.startsWith(a.title.trim().toLowerCase())
+  );
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
     async () => {
-      if (!searchTerm || searchTerm.startsWith("/")) {
+      if (!searchTerm || searchTerm.startsWith("/") || customAction) {
         return;
       }
 
@@ -222,10 +263,9 @@ function OmniList({ searchTerm, handleAction }) {
   }, []);
 
   useEffect(() => {
-    const lowerTerm = searchTerm.toLowerCase();
     if (
       lowerTerm.startsWith("/history") ||
-      lowerTerm.startsWith("/bookmarks")
+      lowerTerm.startsWith("/bookmarks" || customAction)
     ) {
       return;
     }
@@ -293,6 +333,15 @@ function OmniList({ searchTerm, handleAction }) {
       )
     );
   }, [allActions, searchTerm]);
+
+  // check custom action
+  if (customAction) {
+    return html`<${CustomSearch}
+      customAction=${customAction}
+      searchTerm=${searchTerm}
+      handleAction=${handleAction}
+    />`;
+  }
 
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}

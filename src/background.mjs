@@ -1,9 +1,22 @@
 /// <reference path="./global.d.ts" />
+import {
+  getCustomActions,
+  upsertCustomAction,
+} from "./services/customActions.mjs";
 import "./webextension-polyfill.js";
+
+import * as txml from "./txml.mjs";
+import { CustomSearch, Options } from "./ActionNames.mjs";
+
+const PermissionNames = {
+  BrowsingData: "browsingData",
+};
 
 // Clear actions and append default ones
 const clearActions = async () => {
   const response = await getCurrentTab();
+  const { permissions: currentPermissions } =
+    await browser.permissions.getAll();
   const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   let muteaction = {
     title: "Mute tab",
@@ -49,6 +62,9 @@ const clearActions = async () => {
       keys: ["⌥", "⇧", "P"],
     };
   }
+  /**
+   * @type {Array<import("./global.js").Action>}
+   */
   const actions = [
     {
       title: "New tab",
@@ -581,6 +597,7 @@ const clearActions = async () => {
       emojiChar: "🗄",
       keycheck: false,
       keys: ["⌘", "D"],
+      requiresPermission: PermissionNames.BrowsingData,
     },
     {
       title: "Clear local storage",
@@ -602,7 +619,26 @@ const clearActions = async () => {
       keycheck: false,
       keys: ["⌘", "D"],
     },
+    {
+      title: "Options",
+      desc: "Omni options",
+      type: "action",
+      action: Options,
+      favIconUrl: browser.runtime.getURL("assets/logo-48.png"),
+    },
   ];
+
+  for (const action of actions) {
+    if (action.requiresPermission) {
+      // check if have permission
+      action.hasPermission = currentPermissions.includes(
+        action.requiresPermission
+      );
+      // if (!action.hasPermission) {
+      //   action.emojiChar = "🚫";
+      // }
+    }
+  }
 
   if (!isMac) {
     for (let action of actions) {
@@ -866,6 +902,7 @@ const removeBookmark = (bookmark) => {
 async function getActions() {
   return [
     ...(await getTabs()),
+    ...(await getCustomActions()),
     ...(await clearActions()),
     ...(await getBookmarks()),
   ];
@@ -923,6 +960,10 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       break;
     case "remove-passwords":
       clearPasswords();
+      break;
+    case Options:
+      browser.runtime.openOptionsPage();
+      break;
     case "history": // Fallthrough
     case "downloads":
     case "extensions":
@@ -992,10 +1033,64 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         closeTab(message.action);
       }
       break;
+    case "add-search-engine":
+      return await addSearchEngine(message.title, message.url);
+      break;
     default:
+      console.warn(`Unable to handle message`, message);
       return false;
   }
 });
+
+async function addSearchEngine(title, url) {
+  console.debug(`Adding search engine ${title}`);
+  const response = await fetch(url);
+  const text = await response.text();
+  console.debug(`got response from ${url} for ${title}:`, text);
+  const parsed = txml.parse(text);
+  console.log(`parsed: `, parsed);
+  const el = parsed.find((el) => el.tagName === "OpenSearchDescription");
+
+  if (typeof el !== "string" && el.tagName === "OpenSearchDescription") {
+    /*
+  {
+      title: "Bookmark",
+      desc: "Create a bookmark",
+      type: "action",
+      action: "create-bookmark",
+      emoji: true,
+      emojiChar: "📕",
+      keycheck: true,
+      keys: ["⌘", "D"],
+    },
+  */
+    const props = { action: CustomSearch };
+    for (const child of el.children) {
+      if (typeof child !== "string") {
+        const { tagName: name } = child;
+        const value = child.children[0];
+        switch (name) {
+          case "ShortName":
+            props.title = value;
+            break;
+          case "Description":
+            props.desc = value;
+            break;
+          case "Image":
+            props.favIconUrl = value;
+            break;
+          case "Url":
+            props.url = child.attributes.template;
+        }
+      }
+    }
+
+    console.log(`determined action: `, props);
+    if (props.title && props.url) {
+      await upsertCustomAction(props);
+    }
+  }
+}
 
 // Get actions
 // clearActions();

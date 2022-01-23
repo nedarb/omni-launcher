@@ -1,6 +1,9 @@
 html {
   scroll-behavior: smooth;
 }
+:root {
+  --overlay-width: 700px;
+}
 /* Scrollbar size */
 ::-webkit-scrollbar {
   width: 10px;
@@ -91,7 +94,7 @@ html {
   src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
 }
 .omni-extension * {
-  display: block;
+  /* display: block; */
 }
 .omni-extension .omni-item-details * {
   line-height: normal;
@@ -102,7 +105,7 @@ html {
 }
 .omni-extension #omni-wrap {
   position: fixed;
-  width: 700px;
+  width: var(--overlay-width);
   border: 1px solid transparent;
   border-radius: 5px;
   margin: auto;
@@ -185,7 +188,7 @@ html {
   padding-left: 3px;
   padding-right: 3px;
 }
-.omni-extension input {
+.omni-extension .omni-search input {
   background: transparent;
   border: 0px;
   outline: none;
@@ -230,6 +233,15 @@ html {
   display: flex;
   align-items: center;
   position: relative;
+  background-color: var(--background);
+}
+.omni-extension .omni-item:before {
+  height: 100%;
+  position: absolute;
+  display: block;
+  content: "";
+  width: 2px;
+  background-color: var(--background);
 }
 .omni-extension .omni-item:hover {
   cursor: pointer;

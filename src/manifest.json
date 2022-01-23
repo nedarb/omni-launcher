@@ -29,6 +29,7 @@
     "service_worker": "background.mjs",
     "type": "module"
   },
+  "options_page": "./options/options.html",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -49,11 +50,12 @@
       "matches": ["<all_urls>"]
     }
   ],
+  "optional_permissions": ["browsingData"],
   "permissions": [
     "tabs",
+    "storage",
     "activeTab",
     "bookmarks",
-    "browsingData",
     "history",
     "scripting"
   ],

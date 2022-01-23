@@ -21,6 +21,7 @@
     "htm": "^3.1.0",
     "jshint": "^2.13.3",
     "preact": "^10.6.4",
+    "txml": "^5.1.1",
     "webextension-polyfill": "^0.8.0"
   }
 }
