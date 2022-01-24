@@ -45,6 +45,7 @@ export default function OmniItem({
   const emoji = action.emoji
     ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
     : null;
+  const missingPermissions = action.hasPermission === false;
 
   return html`<a
     ref=${ref}
@@ -64,8 +65,10 @@ export default function OmniItem({
       </div>
     </div>
     ${keys}
-    <div class="omni-select">
-      ${selectVerb} <span class="omni-shortcut">⏎</span>
+    <div class="omni-select ${missingPermissions && "needs-permission"}">
+      ${missingPermissions
+        ? html`Allow this action ➤`
+        : html`${selectVerb} <span class="omni-shortcut">⏎</span>`}
     </div>
   </a>`;
 }
