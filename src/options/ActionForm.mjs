@@ -35,7 +35,6 @@ function Input({ label, name, value, onChange }) {
 
 export default function ActionForm({ action, onDraftAction }) {
   const [draftAction, setDraftAction] = useState({ ...action });
-  console.log(`action`, action);
   const hasUnsavedChanges =
     JSON.stringify(action) !== JSON.stringify(draftAction);
   const handleFieldChange = useCallback(
@@ -53,7 +52,12 @@ export default function ActionForm({ action, onDraftAction }) {
     onDraftAction && onDraftAction(action);
     setDraftAction({ ...action });
   };
-  return html`<form>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formEl = e.target;
+    debugger;
+  };
+  return html`<form onSubmit=${handleSubmit}>
     Action: ${action.action}
     ${action.favIconUrl &&
     html`<img src=${action.favIconUrl} width="16" height="16" />`}
@@ -62,6 +66,7 @@ export default function ActionForm({ action, onDraftAction }) {
       name="title"
       value=${draftAction.title}
       onChange=${handleFieldChange}
+      required="required"
     />
     <${Input}
       label="Description"

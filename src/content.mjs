@@ -205,7 +205,7 @@ function CustomSearch({ handleAction, searchTerm, customAction }) {
   return html`<${SearchResultsWrapper}
     actions=${[
       {
-        title: `Search ${customAction.title} for ${tempvalue}`,
+        title: customAction.title,
         desc: `Search ${customAction.title} for ${tempvalue}`,
         type: "action",
         url: urlTemplate.replace("{searchTerms}", tempvalue),
@@ -275,8 +275,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-          tempvalue
-        )}`;
+            tempvalue
+          )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -437,7 +437,7 @@ function MainApp(props) {
     <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
       ${showing &&
-    html`<div id="omni">
+      html`<div id="omni">
         <div id="omni-search" class="omni-search">
           <input
             ref=${input}

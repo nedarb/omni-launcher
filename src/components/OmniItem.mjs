@@ -59,7 +59,9 @@ export default function OmniItem({
     ${emoji || img}
     <div class="omni-item-details">
       <div class="omni-item-name">${action.title}</div>
-      <div class="omni-item-desc">${action.url || action.searchPrefix}</div>
+      <div class="omni-item-desc">
+        ${action.desc || action.url || action.searchPrefix}
+      </div>
     </div>
     ${keys}
     <div class="omni-select">
