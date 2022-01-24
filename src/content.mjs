@@ -225,11 +225,8 @@ function OmniList({ searchTerm, handleAction }) {
   const [filteredActions, setFiltered] = useState([]);
   const lowerTerm = searchTerm.toLowerCase();
 
-  const customAction = allActions.find(
-    (a) =>
-      a.action === ActionNames.CustomSearch &&
-      lowerTerm.startsWith(a.title.trim().toLowerCase())
-  );
+  const customActions = allActions.filter((a) => a.action === ActionNames.CustomSearch);
+  const customAction = customActions.find((a) => lowerTerm.startsWith(a.title.trim().toLowerCase()));
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
@@ -275,8 +272,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-            tempvalue
-          )}`;
+          tempvalue
+        )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -392,6 +389,7 @@ function MainApp(props) {
   const debouncedSearchTerm = useDebounce(search, 250);
   const input = useRef(null);
   const onSearchChange = useCallback((e) => {
+    e.preventDefault();
     const newValue = e.target.value;
     const shortcut = Shortcuts[newValue];
     if (shortcut) {
@@ -437,7 +435,7 @@ function MainApp(props) {
     <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
       ${showing &&
-      html`<div id="omni">
+    html`<div id="omni">
         <div id="omni-search" class="omni-search">
           <input
             ref=${input}
