@@ -16,11 +16,13 @@ import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
 import * as ActionNames from "./ActionNames.mjs";
 
 const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
+const favIconEl = document.head.querySelector(`link[rel*="icon"]`);
 if (openSearchDescEl) {
   browser.runtime.sendMessage({
     request: "add-search-engine",
     title: document.title,
     url: openSearchDescEl.href,
+    favIconUrl: favIconEl?.href
   });
 }
 
@@ -206,7 +208,7 @@ function CustomSearch({ handleAction, searchTerm, customAction }) {
     actions=${[
       {
         title: customAction.title,
-        desc: `Search ${customAction.title} for ${tempvalue}`,
+        desc: tempvalue ? `Search ${customAction.title} for ${tempvalue}` : `Search ${customAction.title}`,
         type: "action",
         url: urlTemplate.replace("{searchTerms}", tempvalue),
         favIconUrl: customAction.favIconUrl,

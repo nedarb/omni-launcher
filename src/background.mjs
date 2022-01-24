@@ -727,17 +727,15 @@ browser.runtime.onInstalled.addListener(async (object) => {
     const scripts = manifest.content_scripts[0].js;
     const s = scripts.length;
 
-    const scriptResult = await browser.scripting.executeScript({
+    await browser.scripting.executeScript({
       target: { tabId },
       files: [...scripts],
     });
-    console.log(scriptResult);
 
-    const cssResult = await browser.scripting.insertCSS({
+    await browser.scripting.insertCSS({
       target: { tabId },
       files: [...manifest.content_scripts[0].css],
     });
-    console.log(cssResult);
   };
 
   // Get all windows
@@ -908,7 +906,7 @@ async function getActions() {
 browser.runtime.onMessage.addListener(async (message, sender) => {
   console.debug(`got message`, message);
   const hasPermission = message.action?.hasPermission;
-  
+
   if (hasPermission === false) {
     browser.runtime.openOptionsPage();
     return;
@@ -1038,7 +1036,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       }
       break;
     case "add-search-engine":
-      return await addSearchEngine(message.title, message.url);
+      return await addSearchEngine(message.title, message.url, message.favIconUrl);
       break;
     default:
       console.warn(`Unable to handle message`, message);
@@ -1046,7 +1044,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   }
 });
 
-async function addSearchEngine(title, url) {
+async function addSearchEngine(title, url, favIconUrl) {
   console.debug(`Adding search engine ${title}`);
   const response = await fetch(url);
   const text = await response.text();
@@ -1084,9 +1082,32 @@ async function addSearchEngine(title, url) {
             props.favIconUrl = value;
             break;
           case "Url":
-            props.url = child.attributes.template;
+            const { type, template } = child.attributes;
+            if (type === "application/opensearchdescription+xml") {
+              console.warn(`skipping type ${type} with url ${template}`);
+            } else {
+              props.url = template;
+            }
         }
       }
+    }
+
+    // checking image URL...
+    if (props.favIconUrl) {
+      try {
+        const r = await fetch(props.favIconUrl);
+        if (!r.ok) {
+          throw new Error(r.statusText);
+        }
+        console.debug(`icon is valid for ${props.title} at ${props.favIconUrl}`, r);
+      } catch (e) {
+        console.warn(`icon is invalid valid for ${props.title} at ${props.favIconUrl}`, e);
+        delete props.favIconUrl;
+      }
+    }
+
+    if (!props.favIconUrl && favIconUrl) {
+      props.favIconUrl = favIconUrl;
     }
 
     console.log(`determined action: `, props);
