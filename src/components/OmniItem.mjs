@@ -1,5 +1,9 @@
 import { html, useCallback, useEffect, useRef } from "../standalone.mjs";
 
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
 export default function OmniItem({
   action,
   index,
@@ -29,10 +33,10 @@ export default function OmniItem({
   if (action.keycheck) {
     keys = html`<div class="omni-keys">
       ${action.keys.map(function (key) {
-        return html`<span key=${key} key=${key} class="omni-shortcut"
+      return html`<span key=${key} key=${key} class="omni-shortcut"
           >${key}</span
         >`;
-      })}
+    })}
     </div>`;
   }
   const imgUrl =
@@ -47,10 +51,12 @@ export default function OmniItem({
     : null;
   const missingPermissions = action.hasPermission === false;
 
+  const incognitoIcon = action.incognito === true ? html`<img src="${browser.runtime.getURL("/assets/incognito.svg")}" class="incognito" />` : null;
+
   return html`<a
     ref=${ref}
     key=${action.id || action.url || action.action}
-    class="omni-item ${isSelected ? "omni-item-active" : ""}"
+    class="omni-item ${classNames(isSelected && "omni-item-active", action.incognito && "incognito")}"
     data-type="${action.type}"
     data-icon="${action.favIconUrl}"
     data-url="${action.url}"
@@ -61,15 +67,15 @@ export default function OmniItem({
     <div class="omni-item-details">
       <div class="omni-item-name">${action.title}</div>
       <div class="omni-item-desc">
-        ${action.desc || action.searchPrefix}
+        ${action.desc || action.searchPrefix} ${incognitoIcon}
         ${action.url && html` <span class="url">(${action.url})</span>`}
       </div>
     </div>
     ${keys}
     <div class="omni-select ${missingPermissions && "needs-permission"}">
       ${missingPermissions
-        ? html`Allow this action ➤`
-        : html`${selectVerb} <span class="omni-shortcut">⏎</span>`}
+      ? html`Allow this action ➤`
+      : html`${selectVerb} <span class="omni-shortcut">⏎</span>`}
     </div>
   </a>`;
 }
