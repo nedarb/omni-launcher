@@ -68,12 +68,15 @@ export default function SearchResultsWrapper({
       const len = actions.length;
       switch (e.key) {
         case "ArrowUp":
+          e.preventDefault();
           setSelectedIndex((i) => Math.max(0, i - 1));
           break;
         case "ArrowDown":
+          e.preventDefault();
           setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
           break;
         case "Enter":
+          e.preventDefault();
           const action = actions[selectedIndex];
           handleAction && handleAction(action, { metaKey: e.metaKey });
           break;
