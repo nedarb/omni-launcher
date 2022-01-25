@@ -68,6 +68,10 @@ You can run Omni locally without having to install it from the Chrome Store. Her
 3. Drag the [src folder](https://github.com/alyssaxuu/omni/tree/master/src) (make sure it's a folder and not a ZIP file, so unzip first), or click on the "Load unpacked" button and locate the folder.
 4. That's it, you will now be able to use Omni locally.
 
+## Tools used
+
+- https://boxy-svg.com/
+
 ## Libraries used
 
 - [jQuery](https://jquery.com/) - for better event handling and DOM manipulation
