@@ -74,7 +74,7 @@ You can run Omni locally without having to install it from the Chrome Store. Her
 
 ## Libraries used
 
-- [jQuery](https://jquery.com/) - for better event handling and DOM manipulation
+- Preact
 
 #
 
