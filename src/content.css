@@ -48,6 +48,8 @@ html {
     --select: #17191e;
     --accent: #6068d2;
     --accent-hover: #484fac;
+    --accent: rgb(255, 100, 38);
+    --accent-hover: rgb(248, 149, 36);
     --shortcut: #383e4a;
     --placeholder: #63687b;
     --background-2: #292d36;

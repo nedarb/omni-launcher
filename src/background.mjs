@@ -646,7 +646,7 @@ const clearActions = async () => {
       desc: "Omni options",
       type: "action",
       action: Options,
-      favIconUrl: browser.runtime.getURL("assets/logo-48.png"),
+      favIconUrl: browser.runtime.getURL("assets/logo-small-rounded.svg"),
     },
   ];
 
