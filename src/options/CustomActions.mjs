@@ -27,7 +27,6 @@ function CustomSearch({ action }) {
   const [draft, setDraft] = useState(action);
   const onDraftAction = useCallback(
     (draftAction) => {
-      console.log("got draft", draftAction);
       setDraft(draftAction);
     },
     [action]

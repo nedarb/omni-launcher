@@ -272,6 +272,10 @@ html {
   margin-top: 20px;
   margin-right: 5%;
 }
+.omni-extension .omni-select.needs-permission {
+  display: block;
+  color: red;
+}
 .omni-extension .omni-select span {
   margin-left: 3px;
 }

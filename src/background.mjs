@@ -6,7 +6,24 @@ import {
 import "./webextension-polyfill.js";
 
 import * as txml from "./txml.mjs";
-import { CustomSearch, Options } from "./ActionNames.mjs";
+import {
+  ClearAllBrowsingData,
+  ClearCache,
+  ClearCookies,
+  ClearHistory,
+  ClearLocalStorage,
+  ClearPasswords,
+  CustomSearch,
+  Options,
+} from "./ActionNames.mjs";
+import {
+  clearAllData,
+  clearBrowsingData,
+  clearCache,
+  clearCookies,
+  clearLocalStorage,
+  clearPasswords,
+} from "./actions/browsingDataActions.mjs";
 
 const PermissionNames = {
   BrowsingData: "browsingData",
@@ -562,7 +579,8 @@ const clearActions = async () => {
       title: "Clear all browsing data",
       desc: "Clear all of your browsing data",
       type: "action",
-      action: "remove-all",
+      action: ClearAllBrowsingData,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🧹",
       keycheck: false,
@@ -572,7 +590,8 @@ const clearActions = async () => {
       title: "Clear browsing history",
       desc: "Clear all of your browsing history",
       type: "action",
-      action: "remove-history",
+      action: ClearHistory,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🗂",
       keycheck: false,
@@ -582,7 +601,8 @@ const clearActions = async () => {
       title: "Clear cookies",
       desc: "Clear all cookies",
       type: "action",
-      action: "remove-cookies",
+      action: ClearCookies,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🍪",
       keycheck: false,
@@ -592,7 +612,7 @@ const clearActions = async () => {
       title: "Clear cache",
       desc: "Clear the cache",
       type: "action",
-      action: "remove-cache",
+      action: ClearCache,
       emoji: true,
       emojiChar: "🗄",
       keycheck: false,
@@ -603,7 +623,8 @@ const clearActions = async () => {
       title: "Clear local storage",
       desc: "Clear the local storage",
       type: "action",
-      action: "remove-local-storage",
+      action: ClearLocalStorage,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "📦",
       keycheck: false,
@@ -613,7 +634,8 @@ const clearActions = async () => {
       title: "Clear passwords",
       desc: "Clear all saved passwords",
       type: "action",
-      action: "remove-passwords",
+      action: ClearPasswords,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🔑",
       keycheck: false,
@@ -691,8 +713,8 @@ browser.runtime.onInstalled.addListener(async (object) => {
 
   const injectIntoTab = async (tab) => {
     const { url, id: tabId, status } = tab;
-    console.log(`injecting scripts into tab ${url}`);
-    if (!url.toLowerCase().startsWith('http')) {
+    console.log(`injecting scripts into tab ${url}`, tab);
+    if (!url.toLowerCase().startsWith("http")) {
       console.debug(`Skipping ${tab.url}`);
       return;
     }
@@ -851,43 +873,7 @@ const pinTab = (pin) => {
     browser.tabs.update(response.id, { pinned: pin });
   });
 };
-const clearAllData = () => {
-  browser.browsingData.remove(
-    {
-      since: new Date().getTime(),
-    },
-    {
-      appcache: true,
-      cache: true,
-      cacheStorage: true,
-      cookies: true,
-      downloads: true,
-      fileSystems: true,
-      formData: true,
-      history: true,
-      indexedDB: true,
-      localStorage: true,
-      passwords: true,
-      serviceWorkers: true,
-      webSQL: true,
-    }
-  );
-};
-const clearBrowsingData = () => {
-  browser.browsingData.removeHistory({ since: 0 });
-};
-const clearCookies = () => {
-  browser.browsingData.removeCookies({ since: 0 });
-};
-const clearCache = () => {
-  browser.browsingData.removeCache({ since: 0 });
-};
-const clearLocalStorage = () => {
-  browser.browsingData.removeLocalStorage({ since: 0 });
-};
-const clearPasswords = () => {
-  browser.browsingData.removePasswords({ since: 0 });
-};
+
 const openChromeUrl = (url) => {
   browser.tabs.create({ url: "chrome://" + url + "/" });
 };
@@ -918,6 +904,14 @@ async function getActions() {
 
 // Receive messages from any tab
 browser.runtime.onMessage.addListener(async (message, sender) => {
+  console.debug(`got message`, message);
+  const hasPermission = message.action?.hasPermission;
+
+  if (hasPermission === false) {
+    browser.runtime.openOptionsPage();
+    return;
+  }
+
   switch (message.request) {
     case "get-actions":
       return { actions: await getActions() };
@@ -951,22 +945,22 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     case "unpin":
       pinTab(false);
       break;
-    case "remove-all":
+    case ClearAllBrowsingData:
       clearAllData();
       break;
-    case "remove-history":
+    case ClearHistory:
       clearBrowsingData();
       break;
-    case "remove-cookies":
+    case ClearCookies:
       clearCookies();
       break;
-    case "remove-cache":
+    case ClearCache:
       clearCache();
       break;
-    case "remove-local-storage":
+    case ClearLocalStorage:
       clearLocalStorage();
       break;
-    case "remove-passwords":
+    case ClearPasswords:
       clearPasswords();
       break;
     case Options:
@@ -1042,7 +1036,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       }
       break;
     case "add-search-engine":
-      return await addSearchEngine(message.title, message.url);
+      return await addSearchEngine(message.title, message.url, message.favIconUrl);
       break;
     default:
       console.warn(`Unable to handle message`, message);
@@ -1050,7 +1044,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   }
 });
 
-async function addSearchEngine(title, url) {
+async function addSearchEngine(title, url, favIconUrl) {
   console.debug(`Adding search engine ${title}`);
   const response = await fetch(url);
   const text = await response.text();
@@ -1088,9 +1082,32 @@ async function addSearchEngine(title, url) {
             props.favIconUrl = value;
             break;
           case "Url":
-            props.url = child.attributes.template;
+            const { type, template } = child.attributes;
+            if (type === "application/opensearchdescription+xml") {
+              console.warn(`skipping type ${type} with url ${template}`);
+            } else {
+              props.url = template;
+            }
         }
       }
+    }
+
+    // checking image URL...
+    if (props.favIconUrl) {
+      try {
+        const r = await fetch(props.favIconUrl);
+        if (!r.ok) {
+          throw new Error(r.statusText);
+        }
+        console.debug(`icon is valid for ${props.title} at ${props.favIconUrl}`, r);
+      } catch (e) {
+        console.warn(`icon is invalid valid for ${props.title} at ${props.favIconUrl}`, e);
+        delete props.favIconUrl;
+      }
+    }
+
+    if (!props.favIconUrl && favIconUrl) {
+      props.favIconUrl = favIconUrl;
     }
 
     console.log(`determined action: `, props);
