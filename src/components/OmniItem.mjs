@@ -61,7 +61,8 @@ export default function OmniItem({
     <div class="omni-item-details">
       <div class="omni-item-name">${action.title}</div>
       <div class="omni-item-desc">
-        ${action.desc || action.url || action.searchPrefix}
+        ${action.desc || action.searchPrefix}
+        ${action.url && html` <span class="url">(${action.url})</span>`}
       </div>
     </div>
     ${keys}
