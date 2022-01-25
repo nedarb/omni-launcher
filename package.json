@@ -1,5 +1,5 @@
 {
-  "name": "omni",
+  "name": "omni-preact",
   "version": "1.0.0",
   "description": "![Preview](preview.gif) <br> <br> The most powerful interface for Chrome 🔥",
   "main": "index.js",
