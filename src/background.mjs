@@ -1063,7 +1063,7 @@ async function addSearchEngine(title, url, favIconUrl) {
   console.log(`parsed: `, parsed);
   const el = parsed.find((el) => el.tagName === "OpenSearchDescription");
 
-  if (typeof el !== "string" && el.tagName === "OpenSearchDescription") {
+  if (el && typeof el !== "string" && el.tagName === "OpenSearchDescription") {
     /*
   {
       title: "Bookmark",
@@ -1124,6 +1124,10 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     if (!props.favIconUrl && favIconUrl) {
       props.favIconUrl = favIconUrl;
+    }
+
+    if (!props.shortcut && props.url) {
+      props.shortcut = new URL(props.url).host;
     }
 
     console.log(`determined action: `, props);
