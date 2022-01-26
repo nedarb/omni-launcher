@@ -11,6 +11,10 @@ body {
 form {
   display: block;
 }
+form .buttons {
+  gap: 1em;
+  display: flex;
+}
 form label {
   display: flex;
   gap: 1em;
@@ -18,11 +22,16 @@ form label {
 form label > span {
   align-self: center;
 }
-form input {
+form input,
+form button {
   display: inline-block;
   background-color: var(--background-2);
   color: var(--text-2);
   border: 1px solid var(--border);
+}
+form input:hover,
+form button:hover {
+  background-color: var(--placeholder);
 }
 form label input {
   flex: 1 0 auto;

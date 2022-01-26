@@ -8,6 +8,8 @@ import {
 import {
   getCustomActions,
   addCustomAction,
+  upsertCustomAction,
+  deleteAction,
 } from "../services/customActions.mjs";
 import OmniItem from "../components/OmniItem.mjs";
 import ActionForm from "./ActionForm.mjs";
@@ -23,7 +25,7 @@ import ActionForm from "./ActionForm.mjs";
       keys: ["⌘", "T"],
 */
 
-function CustomSearch({ action }) {
+function CustomSearch({ action, onSave, onDelete }) {
   const [draft, setDraft] = useState(action);
   const onDraftAction = useCallback(
     (draftAction) => {
@@ -32,7 +34,12 @@ function CustomSearch({ action }) {
     [action]
   );
   return html`<div class="custom-action">
-    <${ActionForm} action=${action} onDraftAction=${onDraftAction} />
+    <${ActionForm}
+      action=${action}
+      onDraftAction=${onDraftAction}
+      onSave=${onSave}
+      onDelete=${onDelete}
+    />
     <div class="preview">
       Preview:
       <${OmniItem} action=${draft} />
@@ -71,9 +78,34 @@ export default function CustomActions() {
     [actions]
   );
 
+  const onSave = useCallback(
+    async (draftAction) => {
+      console.info(`saving action`, draftAction);
+      const actionsAfterUpsert = await upsertCustomAction(draftAction);
+      setActions(actionsAfterUpsert);
+    },
+    [actions]
+  );
+
+  const onDelete = useCallback(
+    async (action) => {
+      console.debug(`deleting custom action ${action.title}`);
+      setActions(await deleteAction(action));
+    },
+    [actions]
+  );
+
   return html`<div>
     <h2>Custom actions:</h2>
-    ${actions.map((a) => html`<${CustomSearch} key=${a.url} action=${a} />`)}
+    ${actions.map(
+      (a) =>
+        html`<${CustomSearch}
+          key=${a.url}
+          action=${a}
+          onSave=${onSave}
+          onDelete=${onDelete}
+        />`
+    )}
     <form onSubmit=${handleSubmit}>
       <div>Name: <input name="name" type="text" value="MDN" /></div>
       <div>
