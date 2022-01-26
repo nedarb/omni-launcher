@@ -48,8 +48,15 @@ export async function getCustomActionsImpl() {
       console.warn(`Removing duplicate ${entry.url}`, entry);
       entries[i] = null;
       migrated = true;
-    } else if (!entry.id) {
+      continue;
+    }
+
+    if (!entry.id) {
       entry.id = uuid();
+      migrated = true;
+    }
+    if (!entry.shortcut) {
+      entry.shortcut = new URL(entry.url).host;
       migrated = true;
     }
     urls.add(entry.url);

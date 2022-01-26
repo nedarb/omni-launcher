@@ -124,13 +124,13 @@ export default function ActionForm({
       onChange=${handleFieldChange}
     />
     <span class="buttons">
-      <button onClick=${handleDelete}>Delete</button>
       ${hasUnsavedChanges &&
-      html`<input type="submit" value="Save" /><input
+    html`<input type="submit" value="Save" /><input
           type="reset"
           value="Revert"
           onClick=${handleReset}
         />`}
+        <button onClick=${handleDelete}>Delete</button>
     </span>
   </form>`;
 }

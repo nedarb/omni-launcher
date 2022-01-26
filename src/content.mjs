@@ -199,7 +199,7 @@ function RemoveList({ searchTerm, actions, handleAction }) {
 
 function CustomSearch({ handleAction, searchTerm, customAction }) {
   const tempvalue = searchTerm.replace(
-    new RegExp("^" + customAction.title + "\\s*", "i"),
+    new RegExp("^" + customAction.shortcut + "\\s*", "i"),
     ""
   );
   console.log("custom action search!", customAction, tempvalue);
@@ -228,7 +228,7 @@ function OmniList({ searchTerm, handleAction }) {
   const lowerTerm = searchTerm.toLowerCase();
 
   const customActions = allActions.filter((a) => a.action === ActionNames.CustomSearch);
-  const customAction = customActions.find((a) => lowerTerm.startsWith(a.title.trim().toLowerCase()));
+  const customAction = customActions.find((a) => lowerTerm.startsWith(a.shortcut.trim().toLowerCase()));
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
