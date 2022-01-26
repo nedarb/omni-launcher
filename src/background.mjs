@@ -1,5 +1,6 @@
 /// <reference path="./global.d.ts" />
 import {
+  getCustomActionForOpenXmlUrl,
   getCustomActions,
   upsertCustomAction,
 } from "./services/customActions.mjs";
@@ -1036,7 +1037,11 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       }
       break;
     case "add-search-engine":
-      return await addSearchEngine(message.title, message.url, message.favIconUrl);
+      return await addSearchEngine(
+        message.title,
+        message.url,
+        message.favIconUrl
+      );
       break;
     default:
       console.warn(`Unable to handle message`, message);
@@ -1045,6 +1050,11 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 });
 
 async function addSearchEngine(title, url, favIconUrl) {
+  const existingAction = await getCustomActionForOpenXmlUrl(url);
+  if (existingAction) {
+    return;
+  }
+
   console.debug(`Adding search engine ${title}`);
   const response = await fetch(url);
   const text = await response.text();
@@ -1066,7 +1076,7 @@ async function addSearchEngine(title, url, favIconUrl) {
       keys: ["⌘", "D"],
     },
   */
-    const props = { action: CustomSearch };
+    const props = { action: CustomSearch, openSearchXmlUrl: url };
     for (const child of el.children) {
       if (typeof child !== "string") {
         const { tagName: name } = child;
@@ -1099,9 +1109,15 @@ async function addSearchEngine(title, url, favIconUrl) {
         if (!r.ok) {
           throw new Error(r.statusText);
         }
-        console.debug(`icon is valid for ${props.title} at ${props.favIconUrl}`, r);
+        console.debug(
+          `icon is valid for ${props.title} at ${props.favIconUrl}`,
+          r
+        );
       } catch (e) {
-        console.warn(`icon is invalid valid for ${props.title} at ${props.favIconUrl}`, e);
+        console.warn(
+          `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
+          e
+        );
         delete props.favIconUrl;
       }
     }

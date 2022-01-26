@@ -33,15 +33,34 @@ function Input({ label, name, value, onChange }) {
   /></label>`;
 }
 
-export default function ActionForm({ action, onDraftAction }) {
+function areObjsEqual(obj1, obj2) {
+  if (typeof obj1 === "object" && !Array.isArray(obj1)) {
+    const toArray = (o) =>
+      Object.keys(o)
+        .sort()
+        .map((key) => [key, o[key]]);
+    return areObjsEqual(toArray(obj1), toArray(obj2));
+  }
+
+  return JSON.stringify(obj1) === JSON.stringify(obj2);
+}
+
+export default function ActionForm({
+  action,
+  onDraftAction,
+  onSave,
+  onDelete,
+}) {
   const [draftAction, setDraftAction] = useState({ ...action });
-  const hasUnsavedChanges =
-    JSON.stringify(action) !== JSON.stringify(draftAction);
+  const hasUnsavedChanges = !areObjsEqual(action, draftAction);
   const handleFieldChange = useCallback(
     (e) => {
       const inputEl = e.target;
       const { name, value } = inputEl;
       const newDraftAction = { ...draftAction, [name]: value };
+      if (!value) {
+        delete newDraftAction[name];
+      }
       onDraftAction && onDraftAction(newDraftAction);
       setDraftAction(newDraftAction);
     },
@@ -54,8 +73,19 @@ export default function ActionForm({ action, onDraftAction }) {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formEl = e.target;
-    debugger;
+    // const formEl = e.target;
+    // save draft action
+    onSave && onSave(draftAction);
+  };
+  const handleDelete = (e) => {
+    e.preventDefault();
+    if (
+      confirm(
+        `Are you sure you want to remove custom search action ${action.title}?`
+      )
+    ) {
+      onDelete && onDelete(action);
+    }
   };
   return html`<form onSubmit=${handleSubmit}>
     Action: ${action.action}
@@ -65,6 +95,13 @@ export default function ActionForm({ action, onDraftAction }) {
       label="Title"
       name="title"
       value=${draftAction.title}
+      onChange=${handleFieldChange}
+      required="required"
+    />
+    <${Input}
+      label="Shortcut"
+      name="shortcut"
+      value=${draftAction.shortcut}
       onChange=${handleFieldChange}
       required="required"
     />
@@ -86,11 +123,14 @@ export default function ActionForm({ action, onDraftAction }) {
       value=${draftAction.favIconUrl}
       onChange=${handleFieldChange}
     />
-    ${hasUnsavedChanges &&
-    html`<input type="submit" value="Save" /><input
-        type="reset"
-        value="Revert"
-        onClick=${handleReset}
-      />`}
+    <span class="buttons">
+      <button onClick=${handleDelete}>Delete</button>
+      ${hasUnsavedChanges &&
+      html`<input type="submit" value="Save" /><input
+          type="reset"
+          value="Revert"
+          onClick=${handleReset}
+        />`}
+    </span>
   </form>`;
 }
