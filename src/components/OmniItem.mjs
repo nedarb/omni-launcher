@@ -65,7 +65,7 @@ export default function OmniItem({
   >
     ${emoji || img}
     <div class="omni-item-details">
-      <div class="omni-item-name">${action.title}</div>
+      <div class="omni-item-name">${action.title} ${action.shortcut && html`<span class="shortcut">${action.shortcut}</span>`}</div>
       <div class="omni-item-desc">
         ${action.desc || action.searchPrefix} ${incognitoIcon}
         ${action.url && html` <span class="url">(${action.url})</span>`}

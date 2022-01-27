@@ -312,12 +312,19 @@ html {
   overflow: hidden;
 }
 .omni-extension .omni-item-name {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
   color: var(--text-2);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.omni-extension .omni-item-name .shortcut {
+  font-family: monospace;
+  font-weight: bold;
 }
 .omni-extension img.incognito {
   width: 16px;

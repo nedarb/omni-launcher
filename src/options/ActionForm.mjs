@@ -104,7 +104,7 @@ export default function ActionForm({
       name="shortcut"
       value=${draftAction.shortcut}
       onChange=${handleFieldChange}
-      pattern="[\\w\\d]+"
+      pattern="[\\w\\d\\.]+"
       required="required"
     />
     <${Input}

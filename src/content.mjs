@@ -14,6 +14,7 @@ import useDebounce from "./useDebounce.mjs";
 import useAsyncState from "./hooks/useAsyncState.mjs";
 import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
 import * as ActionNames from "./ActionNames.mjs";
+import filterActions from "./services/actionsFilter.mjs";
 
 const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
 const favIconEl = document.head.querySelector(`link[rel*="icon"]`);
@@ -22,7 +23,7 @@ if (openSearchDescEl) {
     request: "add-search-engine",
     title: document.title,
     url: openSearchDescEl.href,
-    favIconUrl: favIconEl?.href
+    favIconUrl: favIconEl?.href,
   });
 }
 
@@ -208,7 +209,9 @@ function CustomSearch({ handleAction, searchTerm, customAction }) {
     actions=${[
       {
         title: customAction.title,
-        desc: tempvalue ? `Search ${customAction.title} for ${tempvalue}` : `Search ${customAction.title}`,
+        desc: tempvalue
+          ? `Search ${customAction.title} for ${tempvalue}`
+          : `Search ${customAction.title}`,
         type: "action",
         url: urlTemplate.replace("{searchTerms}", tempvalue),
         favIconUrl: customAction.favIconUrl,
@@ -227,8 +230,12 @@ function OmniList({ searchTerm, handleAction }) {
   const [filteredActions, setFiltered] = useState([]);
   const lowerTerm = searchTerm.toLowerCase();
 
-  const customActions = allActions.filter((a) => a.action === ActionNames.CustomSearch);
-  const customAction = customActions.find((a) => lowerTerm.startsWith(a.shortcut.trim().toLowerCase()));
+  const customActions = allActions.filter(
+    (a) => a.action === ActionNames.CustomSearch
+  );
+  const customAction = customActions.find(
+    (a) => lowerTerm.split(" ")[0].toLowerCase() === a.shortcut
+  );
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
@@ -293,54 +300,22 @@ function OmniList({ searchTerm, handleAction }) {
       return;
     }
 
-    const filters = [];
-
-    if (lowerTerm.startsWith("/tabs")) {
-      const tempvalue = searchTerm.replace(/\/tabs\s*/, "").toLowerCase();
-      filters.push(
-        (a) =>
-          a.type === "tab" &&
-          (a.title.toLowerCase().includes(tempvalue) ||
-            a.url.toLowerCase().includes(tempvalue))
-      );
-    } else if (lowerTerm.startsWith("/actions")) {
-      const tempvalue = lowerTerm.replace(/\/actions\s*/, "");
-      filters.push(
-        (a) => a.type === "action" && a.title.toLowerCase().includes(tempvalue)
-      );
-    } else if (lowerTerm.startsWith("/remove")) {
-      // $(this).attr("data-type") == "bookmark" ||
-      //$(this).attr("data-type") == "tab"
-      const tempvalue = lowerTerm.replace(/\/remove\s*/, "");
-      filters.push(
-        (a) =>
-          (a.type === "action" || a.type === "tab") &&
-          (a.title.toLowerCase().includes(tempvalue) ||
-            a.url?.toLowerCase().includes(tempvalue))
-      );
-    } else {
-      filters.push(
-        (action) =>
-          action.title.toLowerCase().includes(lowerTerm) ||
-          action.url?.toLowerCase().includes(lowerTerm)
-      );
-    }
-
-    setFiltered(
-      allActions.filter((action) =>
-        filters.reduce((val, filter) => val && filter(action), true)
-      )
-    );
+    const filtered = filterActions(searchTerm, allActions);
+    console.log(`filtered down to `, filtered);
+    setFiltered(filtered);
   }, [allActions, searchTerm]);
 
   // check custom action
-  if (customAction) {
-    return html`<${CustomSearch}
-      customAction=${customAction}
-      searchTerm=${searchTerm}
-      handleAction=${handleAction}
-    />`;
-  }
+  // if (customAction) {
+  //   const query = searchTerm.split(" ").slice(1).join(" ");
+  //   if (query) {
+  //     return html`<${CustomSearch}
+  //       customAction=${customAction}
+  //       searchTerm=${searchTerm}
+  //       handleAction=${handleAction}
+  //     />`;
+  //   }
+  // }
 
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}
