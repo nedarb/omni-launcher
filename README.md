@@ -9,17 +9,15 @@ With Omni you can use Chrome like a pro. Manage tabs, bookmarks, your browser hi
 
 [👉 Get it now](https://chrome.google.com/webstore/detail/omni/mapjgeachilmcbbokkgcbgpbakaaeehi?hl=en&authuser=0)
 
-<a href="https://www.producthunt.com/posts/omni-3?utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-omni-3" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=326242&theme=light&period=daily" alt="Omni - The all-in-one tool to supercharge your productivity | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
-
-Made by [Alyssa X](https://alyssax.com)
+_NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome extension by [Alyssa X](https://alyssax.com).** It started to greatly deviate so a separate extension was created with permission._ 
 
 ## Table of contents
 
 - [Features](#features)
 - [Controlling the interface](#controlling-the-interface)
-	- [Opening Omni](#opening-omni)
-	- [Closing Omni](#closing-omni)
-	- [Switching between dark and light mode](#switching-between-dark-and-light-mode)
+  - [Opening Omni](#opening-omni)
+  - [Closing Omni](#closing-omni)
+  - [Switching between dark and light mode](#switching-between-dark-and-light-mode)
 - [List of commands](#list-of-commands)
 - [Self-hosting Omni](#self-hosting-omni)
 - [Libraries used](#libraries-used)
@@ -32,9 +30,9 @@ Made by [Alyssa X](https://alyssax.com)
 
 ### Opening Omni
 
-To open Omni, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can change the shortcut by going to chrome://extensions/shortcuts.
+To open Omni, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can configure a custom shortcut by going to chrome://extensions/shortcuts.
 
-Alternatively you can click on the extension icon in the toolbar to toggle it.
+You can also click on the extension icon in the toolbar to toggle it.
 
 ### Closing Omni
 
@@ -61,21 +59,19 @@ You can use a variety of commands with Omni to perform actions or filter your re
 - **/remove**: Remove a bookmark or close a tab
 
 ## Self-hosting Omni
-You can run Omni locally without having to install it from the Chrome Store. Here's how:
 
-1. Download the code. In the web version of GitHub, you can do that by clicking the green "Code" button, and then "Download ZIP".
-2. Go to chrome://extensions/ in your browser, and [enable developer mode](https://developer.chrome.com/docs/extensions/mv2/faq/#:~:text=You%20can%20start%20by%20turning,a%20packaged%20extension%2C%20and%20more.).
-3. Drag the [src folder](https://github.com/alyssaxuu/omni/tree/master/src) (make sure it's a folder and not a ZIP file, so unzip first), or click on the "Load unpacked" button and locate the folder.
-4. That's it, you will now be able to use Omni locally.
+You can run this Chrome extension locally by:
+
+1. Clone this repo
+2. Install NPM dependencies (install [pnpm here](https://pnpm.io/installation)): `npm i` or `pnpm i` 
+3. Go to chrome://extensions/ in your browser, and [enable developer mode](https://developer.chrome.com/docs/extensions/mv2/faq/#:~:text=You%20can%20start%20by%20turning,a%20packaged%20extension%2C%20and%20more.).
+4. Hit "Load unpacked" to load an unpacked extension
+5. Select the `./src` folder
+
+## Libraries used
+
+- [Preact](https://preactjs.com/)
 
 ## Tools used
 
 - https://boxy-svg.com/
-
-## Libraries used
-
-- Preact
-
-#
-
-Feel free to reach out to me through email at hi@alyssax.com or [on Twitter](https://twitter.com/alyssaxuu) if you have any questions or feedback! Hope you find this useful 💜

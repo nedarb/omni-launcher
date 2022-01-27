@@ -126,16 +126,16 @@ const clearActions = async () => {
       keycheck: true,
       keys: ["⌘", "⇧", "R"],
     },
-    {
-      title: "Help",
-      desc: "Get help with Omni on GitHub",
-      type: "action",
-      action: "url",
-      url: "https://github.com/alyssaxuu/omni",
-      emoji: true,
-      emojiChar: "🤔",
-      keycheck: false,
-    },
+    // {
+    //   title: "Help",
+    //   desc: "Get help with Omni on GitHub",
+    //   type: "action",
+    //   action: "url",
+    //   url: "omni-help.html",
+    //   emoji: true,
+    //   emojiChar: "🤔",
+    //   keycheck: false,
+    // },
     {
       title: "Compose email",
       desc: "Compose a new email",
@@ -755,7 +755,8 @@ browser.runtime.onInstalled.addListener(async (object) => {
   }
 
   if (object.reason === "install") {
-    browser.tabs.create({ url: "https://alyssax.com/omni/" });
+    // TODO: open a tab with instructions what to do next
+    // browser.tabs.create({ url: "omni-help.html" });
   }
 });
 

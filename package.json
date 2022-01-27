@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alyssaxuu/omni.git"
+    "url": "git@github.com:nedarb/omni-preact.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alyssaxuu/omni/issues"
+    "url": "https://github.com/nedarb/omni-preact/issues"
   },
-  "homepage": "https://github.com/alyssaxuu/omni#readme",
+  "homepage": "https://github.com/nedarb/omni-preact#readme",
   "devDependencies": {
     "@types/webextension-polyfill": "^0.8.2",
     "htm": "^3.1.0",
