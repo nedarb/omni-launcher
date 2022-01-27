@@ -21,7 +21,7 @@ const ActionFields = [
   { name: "favIconUrl", label: "Icon URL" },
 ];
 
-function Input({ label, name, value, onChange }) {
+function Input({ label, name, value, pattern, onChange }) {
   return html`<label
     ><span>${label}:</span>
     <input
@@ -29,6 +29,7 @@ function Input({ label, name, value, onChange }) {
       type="text"
       value="${value}"
       onInput=${onChange}
+      pattern="${pattern}"
       required="required"
   /></label>`;
 }
@@ -103,6 +104,7 @@ export default function ActionForm({
       name="shortcut"
       value=${draftAction.shortcut}
       onChange=${handleFieldChange}
+      pattern="[\\w\\d]+"
       required="required"
     />
     <${Input}
