@@ -9,10 +9,18 @@ import {
   useCallback,
 } from "../standalone.mjs";
 import CustomActions from "./CustomActions.mjs";
-import OmniItem from "../components/OmniItem.mjs";
 
 const manifest = browser.runtime.getManifest();
 const optionalPermissions = manifest.optional_permissions || [];
+
+function getPermissionLabel(name) {
+  switch (name) {
+    case "browsingData":
+      return "Browsing data";
+    default:
+      return name;
+  }
+}
 
 function OptionalPermission({ name, isEnabled, onToggle }) {
   const handleToggle = useCallback(
@@ -20,9 +28,9 @@ function OptionalPermission({ name, isEnabled, onToggle }) {
     [name, isEnabled, onToggle]
   );
   return html`<tr key=${name}>
-    <td>${name}</td>
-    <td>${JSON.stringify(isEnabled)}</td>
-    <td><button onClick=${handleToggle}>Toggle</button></td>
+    <td>${getPermissionLabel(name)}</td>
+    <td>${isEnabled ? "Yes" : "No"}</td>
+    <td><button onClick=${handleToggle}>${isEnabled ? "Disable" : "Enable"}</button></td>
   </tr>`;
 }
 
@@ -45,7 +53,7 @@ function MyCmp() {
       if (result) {
         setHasPermission((existing) => {
           const allButThis = existing.filter((p) => p.name !== name);
-          return [...allButThis, { [name]: false }];
+          return [...allButThis, { name, isEnabled: false }];
         });
       }
     } else {
@@ -53,7 +61,7 @@ function MyCmp() {
       if (result) {
         setHasPermission((existing) => {
           const allButThis = existing.filter((p) => p.name !== name);
-          return [...allButThis, { [name]: result }];
+          return [...allButThis, { name, isEnabled: result }];
         });
       }
     }

@@ -22,15 +22,15 @@ form label {
 form label > span {
   align-self: center;
 }
-form input,
-form button {
+input,
+button {
   display: inline-block;
   background-color: var(--background-2);
   color: var(--text-2);
   border: 1px solid var(--border);
 }
-form input:hover,
-form button:hover {
+input:hover,
+button:hover {
   background-color: var(--placeholder);
 }
 form label input {
