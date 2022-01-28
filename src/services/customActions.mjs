@@ -59,6 +59,10 @@ export async function getCustomActionsImpl() {
       entry.shortcut = new URL(entry.url).host;
       migrated = true;
     }
+    if (!entry.desc) {
+      entry.desc = entry.title;
+      migrated = true;
+    }
     urls.add(entry.url);
   }
   if (migrated) {

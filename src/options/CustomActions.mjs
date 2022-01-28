@@ -13,6 +13,7 @@ import {
 } from "../services/customActions.mjs";
 import OmniItem from "../components/OmniItem.mjs";
 import ActionForm from "./ActionForm.mjs";
+import { byStringSelector } from "../utils/sorters.mjs";
 
 /*
       title: "New tab",
@@ -126,7 +127,7 @@ export default function CustomActions() {
 
   return html`<div>
     <h2>Custom actions:</h2>
-    ${actions.map(
+    ${actions.sort(byStringSelector(action => action.title)).map(
     (a) =>
       html`<${CustomSearch}
           key=${a.url}

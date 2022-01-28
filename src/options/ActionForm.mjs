@@ -90,8 +90,6 @@ export default function ActionForm({
   };
   return html`<form onSubmit=${handleSubmit}>
     Action: ${action.action}
-    ${action.favIconUrl &&
-    html`<img src=${action.favIconUrl} width="16" height="16" />`}
     <${Input}
       label="Title"
       name="title"
@@ -104,7 +102,7 @@ export default function ActionForm({
       name="shortcut"
       value=${draftAction.shortcut}
       onChange=${handleFieldChange}
-      pattern="[\\w\\d\\.]+"
+      pattern="[\\w\\d\\.-]+"
       required="required"
     />
     <${Input}
