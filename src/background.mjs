@@ -994,14 +994,15 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         maxResults: message.maxResults || 1000,
         startTime: 31536000000 * 5,
       });
-      for (const action of data) {
-        action.type = "history";
-        action.emoji = true;
-        action.emojiChar = "🏛";
-        action.action = "history";
-        action.keyCheck = false;
-      }
-      return { history: data };
+      const history = data.map(action => ({
+        ...action,
+        type: "history",
+        emoji: true,
+        emojiChar: "🏛",
+        action: "history",
+        keyCheck: false
+      }));
+      return { history };
     }
     case "search-bookmarks": {
       const data = await browser.bookmarks.search({ query: message.query });
