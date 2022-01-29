@@ -1,0 +1,51 @@
+@import "../content.css";
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+}
+.preview {
+  width: var(--overlay-width);
+}
+
+form {
+  display: block;
+}
+form .buttons {
+  gap: 1em;
+  display: flex;
+}
+form label {
+  display: flex;
+  gap: 1em;
+}
+form label > span {
+  align-self: center;
+}
+input,
+button {
+  display: inline-block;
+  background-color: var(--background-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+input:hover,
+button:hover {
+  background-color: var(--placeholder);
+}
+form label input {
+  flex: 1 0 auto;
+}
+form input:invalid {
+  border-color: red;
+}
+
+.custom-action {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.custom-action > * {
+  flex: 0 1 auto;
+  flex-basis: 50%;
+}

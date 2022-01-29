@@ -1,9 +1,40 @@
 /// <reference path="./global.d.ts" />
+import {
+  getCustomActionForOpenXmlUrl,
+  getCustomActions,
+  upsertCustomAction,
+} from "./services/customActions.mjs";
 import "./webextension-polyfill.js";
+
+import * as txml from "./txml.mjs";
+import {
+  ClearAllBrowsingData,
+  ClearCache,
+  ClearCookies,
+  ClearHistory,
+  ClearLocalStorage,
+  ClearPasswords,
+  CustomSearch,
+  Options,
+} from "./ActionNames.mjs";
+import {
+  clearAllData,
+  clearBrowsingData,
+  clearCache,
+  clearCookies,
+  clearLocalStorage,
+  clearPasswords,
+} from "./actions/browsingDataActions.mjs";
+
+const PermissionNames = {
+  BrowsingData: "browsingData",
+};
 
 // Clear actions and append default ones
 const clearActions = async () => {
   const response = await getCurrentTab();
+  const { permissions: currentPermissions } =
+    await browser.permissions.getAll();
   const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
   let muteaction = {
     title: "Mute tab",
@@ -49,6 +80,9 @@ const clearActions = async () => {
       keys: ["⌥", "⇧", "P"],
     };
   }
+  /**
+   * @type {Array<import("./global.js").Action>}
+   */
   const actions = [
     {
       title: "New tab",
@@ -92,16 +126,16 @@ const clearActions = async () => {
       keycheck: true,
       keys: ["⌘", "⇧", "R"],
     },
-    {
-      title: "Help",
-      desc: "Get help with Omni on GitHub",
-      type: "action",
-      action: "url",
-      url: "https://github.com/alyssaxuu/omni",
-      emoji: true,
-      emojiChar: "🤔",
-      keycheck: false,
-    },
+    // {
+    //   title: "Help",
+    //   desc: "Get help with Omni on GitHub",
+    //   type: "action",
+    //   action: "url",
+    //   url: "omni-help.html",
+    //   emoji: true,
+    //   emojiChar: "🤔",
+    //   keycheck: false,
+    // },
     {
       title: "Compose email",
       desc: "Compose a new email",
@@ -546,7 +580,8 @@ const clearActions = async () => {
       title: "Clear all browsing data",
       desc: "Clear all of your browsing data",
       type: "action",
-      action: "remove-all",
+      action: ClearAllBrowsingData,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🧹",
       keycheck: false,
@@ -556,7 +591,8 @@ const clearActions = async () => {
       title: "Clear browsing history",
       desc: "Clear all of your browsing history",
       type: "action",
-      action: "remove-history",
+      action: ClearHistory,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🗂",
       keycheck: false,
@@ -566,7 +602,8 @@ const clearActions = async () => {
       title: "Clear cookies",
       desc: "Clear all cookies",
       type: "action",
-      action: "remove-cookies",
+      action: ClearCookies,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🍪",
       keycheck: false,
@@ -576,17 +613,19 @@ const clearActions = async () => {
       title: "Clear cache",
       desc: "Clear the cache",
       type: "action",
-      action: "remove-cache",
+      action: ClearCache,
       emoji: true,
       emojiChar: "🗄",
       keycheck: false,
       keys: ["⌘", "D"],
+      requiresPermission: PermissionNames.BrowsingData,
     },
     {
       title: "Clear local storage",
       desc: "Clear the local storage",
       type: "action",
-      action: "remove-local-storage",
+      action: ClearLocalStorage,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "📦",
       keycheck: false,
@@ -596,13 +635,33 @@ const clearActions = async () => {
       title: "Clear passwords",
       desc: "Clear all saved passwords",
       type: "action",
-      action: "remove-passwords",
+      action: ClearPasswords,
+      requiresPermission: PermissionNames.BrowsingData,
       emoji: true,
       emojiChar: "🔑",
       keycheck: false,
       keys: ["⌘", "D"],
     },
+    {
+      title: "Options",
+      desc: "Omni options",
+      type: "action",
+      action: Options,
+      favIconUrl: browser.runtime.getURL("assets/logo-small-rounded.svg"),
+    },
   ];
+
+  for (const action of actions) {
+    if (action.requiresPermission) {
+      // check if have permission
+      action.hasPermission = currentPermissions.includes(
+        action.requiresPermission
+      );
+      // if (!action.hasPermission) {
+      //   action.emojiChar = "🚫";
+      // }
+    }
+  }
 
   if (!isMac) {
     for (let action of actions) {
@@ -653,17 +712,29 @@ browser.runtime.onInstalled.addListener(async (object) => {
   // Inject Omni on install
   const manifest = browser.runtime.getManifest();
 
-  const injectIntoTab = (tab) => {
+  const injectIntoTab = async (tab) => {
+    const { url, id: tabId, status } = tab;
+    console.log(`injecting scripts into tab ${url}`, tab);
+    if (!url.toLowerCase().startsWith("http")) {
+      console.debug(`Skipping ${tab.url}`);
+      return;
+    }
+
+    if (status === "unloaded") {
+      console.debug(`Skipping ${tab.url} because it's status is "unloaded".`);
+      return;
+    }
+
     const scripts = manifest.content_scripts[0].js;
     const s = scripts.length;
 
-    browser.scripting.executeScript({
-      target: { tabId: tab.id },
+    await browser.scripting.executeScript({
+      target: { tabId },
       files: [...scripts],
     });
 
-    browser.scripting.insertCSS({
-      target: { tabId: tab.id },
+    await browser.scripting.insertCSS({
+      target: { tabId },
       files: [...manifest.content_scripts[0].css],
     });
   };
@@ -672,23 +743,20 @@ browser.runtime.onInstalled.addListener(async (object) => {
   const windows = await browser.windows.getAll({
     populate: true,
   });
-  let currentWindow;
-  const w = windows.length;
 
-  for (let i = 0; i < w; i++) {
-    currentWindow = windows[i];
-
-    let currentTab;
-    const t = currentWindow.tabs.length;
-
-    for (let j = 0; j < t; j++) {
-      currentTab = currentWindow.tabs[j];
-      injectIntoTab(currentTab);
+  for (const currentWindow of windows) {
+    for (const currentTab of currentWindow.tabs) {
+      try {
+        await injectIntoTab(currentTab);
+      } catch (e) {
+        console.error(`Problem injecting into tab ${currentTab.url}`, e);
+      }
     }
   }
 
   if (object.reason === "install") {
-    browser.tabs.create({ url: "https://alyssax.com/omni/" });
+    // TODO: open a tab with instructions what to do next
+    // browser.tabs.create({ url: "omni-help.html" });
   }
 });
 
@@ -807,43 +875,7 @@ const pinTab = (pin) => {
     browser.tabs.update(response.id, { pinned: pin });
   });
 };
-const clearAllData = () => {
-  browser.browsingData.remove(
-    {
-      since: new Date().getTime(),
-    },
-    {
-      appcache: true,
-      cache: true,
-      cacheStorage: true,
-      cookies: true,
-      downloads: true,
-      fileSystems: true,
-      formData: true,
-      history: true,
-      indexedDB: true,
-      localStorage: true,
-      passwords: true,
-      serviceWorkers: true,
-      webSQL: true,
-    }
-  );
-};
-const clearBrowsingData = () => {
-  browser.browsingData.removeHistory({ since: 0 });
-};
-const clearCookies = () => {
-  browser.browsingData.removeCookies({ since: 0 });
-};
-const clearCache = () => {
-  browser.browsingData.removeCache({ since: 0 });
-};
-const clearLocalStorage = () => {
-  browser.browsingData.removeLocalStorage({ since: 0 });
-};
-const clearPasswords = () => {
-  browser.browsingData.removePasswords({ since: 0 });
-};
+
 const openChromeUrl = (url) => {
   browser.tabs.create({ url: "chrome://" + url + "/" });
 };
@@ -866,6 +898,7 @@ const removeBookmark = (bookmark) => {
 async function getActions() {
   return [
     ...(await getTabs()),
+    ...(await getCustomActions()),
     ...(await clearActions()),
     ...(await getBookmarks()),
   ];
@@ -873,6 +906,14 @@ async function getActions() {
 
 // Receive messages from any tab
 browser.runtime.onMessage.addListener(async (message, sender) => {
+  console.debug(`got message`, message);
+  const hasPermission = message.action?.hasPermission;
+
+  if (hasPermission === false) {
+    browser.runtime.openOptionsPage();
+    return;
+  }
+
   switch (message.request) {
     case "get-actions":
       return { actions: await getActions() };
@@ -906,23 +947,27 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     case "unpin":
       pinTab(false);
       break;
-    case "remove-all":
+    case ClearAllBrowsingData:
       clearAllData();
       break;
-    case "remove-history":
+    case ClearHistory:
       clearBrowsingData();
       break;
-    case "remove-cookies":
+    case ClearCookies:
       clearCookies();
       break;
-    case "remove-cache":
+    case ClearCache:
       clearCache();
       break;
-    case "remove-local-storage":
+    case ClearLocalStorage:
       clearLocalStorage();
       break;
-    case "remove-passwords":
+    case ClearPasswords:
       clearPasswords();
+      break;
+    case Options:
+      browser.runtime.openOptionsPage();
+      break;
     case "history": // Fallthrough
     case "downloads":
     case "extensions":
@@ -949,14 +994,15 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         maxResults: message.maxResults || 1000,
         startTime: 31536000000 * 5,
       });
-      for (const action of data) {
-        action.type = "history";
-        action.emoji = true;
-        action.emojiChar = "🏛";
-        action.action = "history";
-        action.keyCheck = false;
-      }
-      return { history: data };
+      const history = data.map(action => ({
+        ...action,
+        type: "history",
+        emoji: true,
+        emojiChar: "🏛",
+        action: "history",
+        keyCheck: false
+      }));
+      return { history };
     }
     case "search-bookmarks": {
       const data = await browser.bookmarks.search({ query: message.query });
@@ -992,10 +1038,106 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         closeTab(message.action);
       }
       break;
+    case "add-search-engine":
+      return await addSearchEngine(
+        message.title,
+        message.url,
+        message.favIconUrl
+      );
+      break;
     default:
+      console.warn(`Unable to handle message`, message);
       return false;
   }
 });
+
+async function addSearchEngine(title, url, favIconUrl) {
+  const existingAction = await getCustomActionForOpenXmlUrl(url);
+  if (existingAction) {
+    return;
+  }
+
+  console.debug(`Adding search engine ${title}`);
+  const response = await fetch(url);
+  const text = await response.text();
+  console.debug(`got response from ${url} for ${title}:`, text);
+  const parsed = txml.parse(text);
+  console.log(`parsed: `, parsed);
+  const el = parsed.find((el) => el.tagName === "OpenSearchDescription");
+
+  if (el && typeof el !== "string" && el.tagName === "OpenSearchDescription") {
+    /*
+  {
+      title: "Bookmark",
+      desc: "Create a bookmark",
+      type: "action",
+      action: "create-bookmark",
+      emoji: true,
+      emojiChar: "📕",
+      keycheck: true,
+      keys: ["⌘", "D"],
+    },
+  */
+    const props = { action: CustomSearch, openSearchXmlUrl: url };
+    for (const child of el.children) {
+      if (typeof child !== "string") {
+        const { tagName: name } = child;
+        const value = child.children[0];
+        switch (name) {
+          case "ShortName":
+            props.title = value;
+            break;
+          case "Description":
+            props.desc = value;
+            break;
+          case "Image":
+            props.favIconUrl = value;
+            break;
+          case "Url":
+            const { type, template } = child.attributes;
+            if (type === "application/opensearchdescription+xml") {
+              console.warn(`skipping type ${type} with url ${template}`);
+            } else {
+              props.url = template;
+            }
+        }
+      }
+    }
+
+    // checking image URL...
+    if (props.favIconUrl) {
+      try {
+        const r = await fetch(props.favIconUrl);
+        if (!r.ok) {
+          throw new Error(r.statusText);
+        }
+        console.debug(
+          `icon is valid for ${props.title} at ${props.favIconUrl}`,
+          r
+        );
+      } catch (e) {
+        console.warn(
+          `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
+          e
+        );
+        delete props.favIconUrl;
+      }
+    }
+
+    if (!props.favIconUrl && favIconUrl) {
+      props.favIconUrl = favIconUrl;
+    }
+
+    if (!props.shortcut && props.url) {
+      props.shortcut = new URL(props.url).host;
+    }
+
+    console.log(`determined action: `, props);
+    if (props.title && props.url) {
+      await upsertCustomAction(props);
+    }
+  }
+}
 
 // Get actions
 // clearActions();

@@ -1,6 +1,9 @@
 html {
   scroll-behavior: smooth;
 }
+:root {
+  --overlay-width: 700px;
+}
 /* Scrollbar size */
 ::-webkit-scrollbar {
   width: 10px;
@@ -45,6 +48,8 @@ html {
     --select: #17191e;
     --accent: #6068d2;
     --accent-hover: #484fac;
+    --accent: rgb(255, 100, 38);
+    --accent-hover: rgb(248, 149, 36);
     --shortcut: #383e4a;
     --placeholder: #63687b;
     --background-2: #292d36;
@@ -91,7 +96,7 @@ html {
   src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
 }
 .omni-extension * {
-  display: block;
+  /* display: block; */
 }
 .omni-extension .omni-item-details * {
   line-height: normal;
@@ -102,7 +107,7 @@ html {
 }
 .omni-extension #omni-wrap {
   position: fixed;
-  width: 700px;
+  width: var(--overlay-width);
   border: 1px solid transparent;
   border-radius: 5px;
   margin: auto;
@@ -185,7 +190,7 @@ html {
   padding-left: 3px;
   padding-right: 3px;
 }
-.omni-extension input {
+.omni-extension .omni-search input {
   background: transparent;
   border: 0px;
   outline: none;
@@ -230,6 +235,15 @@ html {
   display: flex;
   align-items: center;
   position: relative;
+  background-color: var(--background);
+}
+.omni-extension .omni-item:before {
+  height: 100%;
+  position: absolute;
+  display: block;
+  content: "";
+  width: 2px;
+  background-color: var(--background);
 }
 .omni-extension .omni-item:hover {
   cursor: pointer;
@@ -260,6 +274,10 @@ html {
   margin-top: 20px;
   margin-right: 5%;
 }
+.omni-extension .omni-select.needs-permission {
+  display: block;
+  color: red;
+}
 .omni-extension .omni-select span {
   margin-left: 3px;
 }
@@ -286,19 +304,36 @@ html {
   font-size: 18px;
 }
 .omni-extension .omni-item-details {
-  display: inline-block !important;
+  display: flex;
+  flex-direction: column;
   margin-left: 10px;
   vertical-align: middle;
   flex: 1 1 auto;
   overflow: hidden;
 }
 .omni-extension .omni-item-name {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
   color: var(--text-2);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.omni-extension .omni-item-name .shortcut {
+  font-family: monospace;
+  font-weight: bold;
+}
+.omni-extension img.incognito {
+  width: 16px;
+  height: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  .omni-extension img.incognito {
+    filter: invert(1);
+  }
 }
 .omni-extension .omni-item-active .omni-item-name,
 .omni-extension .omni-item:hover .omni-item-name {
@@ -311,6 +346,10 @@ html {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.omni-extension .omni-item-desc .url {
+  opacity: 0.7;
+  font-size: 90%;
 }
 .omni-extension #omni-footer {
   height: 45px;

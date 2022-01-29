@@ -13,6 +13,19 @@ import {
 import useDebounce from "./useDebounce.mjs";
 import useAsyncState from "./hooks/useAsyncState.mjs";
 import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
+import * as ActionNames from "./ActionNames.mjs";
+import filterActions from "./services/actionsFilter.mjs";
+
+const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
+const favIconEl = document.head.querySelector(`link[rel*="icon"]`);
+if (openSearchDescEl) {
+  browser.runtime.sendMessage({
+    request: "add-search-engine",
+    title: document.title,
+    url: openSearchDescEl.href,
+    favIconUrl: favIconEl?.href,
+  });
+}
 
 const CloseOmniAction = "close-omni";
 
@@ -185,15 +198,49 @@ function RemoveList({ searchTerm, actions, handleAction }) {
   />`;
 }
 
+function CustomSearch({ handleAction, searchTerm, customAction }) {
+  const tempvalue = searchTerm.replace(
+    new RegExp("^" + customAction.shortcut + "\\s*", "i"),
+    ""
+  );
+  console.log("custom action search!", customAction, tempvalue);
+  const urlTemplate = customAction.url;
+  return html`<${SearchResultsWrapper}
+    actions=${[
+      {
+        title: customAction.title,
+        desc: tempvalue
+          ? `Search ${customAction.title} for ${tempvalue}`
+          : `Search ${customAction.title}`,
+        type: "action",
+        url: urlTemplate.replace("{searchTerms}", tempvalue),
+        favIconUrl: customAction.favIconUrl,
+        action: "url",
+        // emoji: true,
+        // emojiChar: "🗄",
+        keycheck: false,
+      },
+    ]}
+    handleAction=${handleAction}
+  />`;
+}
+
 function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
-  // const [historySearchResults, setHistorySearchResults] = useState([]);
+  const lowerTerm = searchTerm.toLowerCase();
+
+  const customActions = allActions.filter(
+    (a) => a.action === ActionNames.CustomSearch
+  );
+  const customAction = customActions.find(
+    (a) => lowerTerm.split(" ")[0].toLowerCase() === a.shortcut
+  );
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
     async () => {
-      if (!searchTerm || searchTerm.startsWith("/")) {
+      if (!searchTerm || searchTerm.startsWith("/") || customAction) {
         return;
       }
 
@@ -222,10 +269,9 @@ function OmniList({ searchTerm, handleAction }) {
   }, []);
 
   useEffect(() => {
-    const lowerTerm = searchTerm.toLowerCase();
     if (
       lowerTerm.startsWith("/history") ||
-      lowerTerm.startsWith("/bookmarks")
+      lowerTerm.startsWith("/bookmarks" || customAction)
     ) {
       return;
     }
@@ -235,8 +281,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-            tempvalue
-          )}`;
+          tempvalue
+        )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -254,45 +300,22 @@ function OmniList({ searchTerm, handleAction }) {
       return;
     }
 
-    const filters = [];
-
-    if (lowerTerm.startsWith("/tabs")) {
-      const tempvalue = searchTerm.replace(/\/tabs\s*/, "").toLowerCase();
-      filters.push(
-        (a) =>
-          a.type === "tab" &&
-          (a.title.toLowerCase().includes(tempvalue) ||
-            a.url.toLowerCase().includes(tempvalue))
-      );
-    } else if (lowerTerm.startsWith("/actions")) {
-      const tempvalue = lowerTerm.replace(/\/actions\s*/, "");
-      filters.push(
-        (a) => a.type === "action" && a.title.toLowerCase().includes(tempvalue)
-      );
-    } else if (lowerTerm.startsWith("/remove")) {
-      // $(this).attr("data-type") == "bookmark" ||
-      //$(this).attr("data-type") == "tab"
-      const tempvalue = lowerTerm.replace(/\/remove\s*/, "");
-      filters.push(
-        (a) =>
-          (a.type === "action" || a.type === "tab") &&
-          (a.title.toLowerCase().includes(tempvalue) ||
-            a.url?.toLowerCase().includes(tempvalue))
-      );
-    } else {
-      filters.push(
-        (action) =>
-          action.title.toLowerCase().includes(lowerTerm) ||
-          action.url?.toLowerCase().includes(lowerTerm)
-      );
-    }
-
-    setFiltered(
-      allActions.filter((action) =>
-        filters.reduce((val, filter) => val && filter(action), true)
-      )
-    );
+    const filtered = filterActions(searchTerm, allActions);
+    console.log(`filtered down to `, filtered);
+    setFiltered(filtered);
   }, [allActions, searchTerm]);
+
+  // check custom action
+  // if (customAction) {
+  //   const query = searchTerm.split(" ").slice(1).join(" ");
+  //   if (query) {
+  //     return html`<${CustomSearch}
+  //       customAction=${customAction}
+  //       searchTerm=${searchTerm}
+  //       handleAction=${handleAction}
+  //     />`;
+  //   }
+  // }
 
   if (searchTerm.startsWith("/remove")) {
     return html`<${RemoveList}
@@ -343,6 +366,7 @@ function MainApp(props) {
   const debouncedSearchTerm = useDebounce(search, 250);
   const input = useRef(null);
   const onSearchChange = useCallback((e) => {
+    e.preventDefault();
     const newValue = e.target.value;
     const shortcut = Shortcuts[newValue];
     if (shortcut) {
@@ -388,8 +412,8 @@ function MainApp(props) {
     <div id="omni-overlay" onClick=${onOverlayClick}></div>
     <div id="omni-wrap">
       ${showing &&
-      html`<div id="omni">
-        <div id="omni-search">
+    html`<div id="omni">
+        <div id="omni-search" class="omni-search">
           <input
             ref=${input}
             placeholder="Type a command or search"
