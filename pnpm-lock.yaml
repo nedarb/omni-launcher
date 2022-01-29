@@ -2,6 +2,7 @@ lockfileVersion: 5.3
 
 specifiers:
   '@types/webextension-polyfill': ^0.8.2
+  fuse.js: ^6.5.3
   htm: ^3.1.0
   jshint: ^2.13.3
   preact: ^10.6.4
@@ -9,6 +10,7 @@ specifiers:
 
 devDependencies:
   '@types/webextension-polyfill': 0.8.2
+  fuse.js: 6.5.3
   htm: 3.1.0
   jshint: 2.13.3
   preact: 10.6.4
@@ -100,6 +102,11 @@ packages:
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
+    dev: true
+
+  /fuse.js/6.5.3:
+    resolution: {integrity: sha512-sA5etGE7yD/pOqivZRBvUBd/NaL2sjAu6QuSaFoe1H2BrJSkH/T/UXAJ8CdXdw7DvY3Hs8CXKYkDWX7RiP5KOg==}
+    engines: {node: '>=10'}
     dev: true
 
   /glob/7.2.0:

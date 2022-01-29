@@ -18,6 +18,7 @@
   "homepage": "https://github.com/alyssaxuu/omni#readme",
   "devDependencies": {
     "@types/webextension-polyfill": "^0.8.2",
+    "fuse.js": "^6.5.3",
     "htm": "^3.1.0",
     "jshint": "^2.13.3",
     "preact": "^10.6.4",
