@@ -95,17 +95,17 @@ html {
   font-weight: 700;
   src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
 }
-.omni-extension * {
+.flash-extension * {
   /* display: block; */
 }
-.omni-extension .omni-item-details * {
+.flash-extension .flash-item-details * {
   line-height: normal;
 }
-.omni-extension {
+.flash-extension {
   font-family: Inter !important;
   z-index: 99999999999;
 }
-.omni-extension #omni-wrap {
+.flash-extension #flash-wrap {
   position: fixed;
   width: var(--overlay-width);
   border: 1px solid transparent;
@@ -119,7 +119,7 @@ html {
   height: 540px;
   transition: all 0.2s cubic-bezier(0.05, 0.03, 0.35, 1);
 }
-.omni-extension #omni {
+.flash-extension #flash {
   position: absolute;
   width: 100%;
   background: var(--background);
@@ -132,15 +132,15 @@ html {
   transition: all 0.2s cubic-bezier(0.05, 0.03, 0.35, 1);
   display: block;
 }
-.omni-closing #omni {
+.flash-closing #flash {
   transform: scale(0.9);
   opacity: 0;
   display: none !important;
 }
-.omni-closing {
+.flash-closing {
   pointer-events: none;
 }
-.omni-extension #omni-overlay {
+.flash-extension #flash-overlay {
   height: 100%;
   width: 100%;
   position: fixed;
@@ -151,10 +151,10 @@ html {
   opacity: 0.6;
   transition: all 0.1s cubic-bezier(0.05, 0.03, 0.35, 1);
 }
-.omni-closing #omni-overlay {
+.flash-closing #flash-overlay {
   opacity: 0 !important;
 }
-.omni-extension #omni-head {
+.flash-extension #flash-head {
   height: 50px;
   line-height: 50px;
   width: 95%;
@@ -162,22 +162,22 @@ html {
   margin-right: auto;
   border-bottom: 1px solid var(--border);
 }
-.omni-extension #omni-name {
+.flash-extension #flash-name {
   color: var(--text);
   font-size: 12px;
   font-weight: 600;
   float: left;
 }
-.omni-extension #omni-close {
+.flash-extension #flash-close {
   color: var(--text-3);
   float: right;
   font-size: 12px;
   font-weight: 500;
 }
-.omni-extension #omni-close span {
+.flash-extension #flash-close span {
   margin-left: 3px;
 }
-.omni-extension .omni-shortcut {
+.flash-extension .flash-shortcut {
   display: inline-block !important;
   font-size: 13px;
   border-radius: 5px;
@@ -190,7 +190,7 @@ html {
   padding-left: 3px;
   padding-right: 3px;
 }
-.omni-extension .omni-search input {
+.flash-extension .flash-search input {
   background: transparent;
   border: 0px;
   outline: none;
@@ -211,17 +211,17 @@ html {
   border: 0px;
   box-shadow: none;
 }
-.omni-extension ::placeholder {
+.flash-extension ::placeholder {
   color: var(--placeholder);
   opacity: 1;
 }
-.omni-extension :-ms-input-placeholder {
+.flash-extension :-ms-input-placeholder {
   color: var(--placeholder);
 }
-.omni-extension ::-ms-input-placeholder {
+.flash-extension ::-ms-input-placeholder {
   color: var(--placeholder);
 }
-.omni-extension #omni-list {
+.flash-extension #flash-list {
   width: 100%;
   overflow: auto;
   height: 100%;
@@ -229,7 +229,7 @@ html {
   border-top: 1px solid var(--border);
   position: relative;
 }
-.omni-extension .omni-item {
+.flash-extension .flash-item {
   height: 60px;
   width: 100%;
   display: flex;
@@ -237,7 +237,7 @@ html {
   position: relative;
   background-color: var(--background);
 }
-.omni-extension .omni-item:before {
+.flash-extension .flash-item:before {
   height: 100%;
   position: absolute;
   display: block;
@@ -245,16 +245,16 @@ html {
   width: 2px;
   background-color: var(--background);
 }
-.omni-extension .omni-item:hover {
+.flash-extension .flash-item:hover {
   cursor: pointer;
   text-decoration: none;
 }
-.omni-extension .omni-item-active,
-.omni-extension .omni-item:hover {
+.flash-extension .flash-item-active,
+.flash-extension .flash-item:hover {
   background-color: var(--select);
 }
-.omni-extension .omni-item-active:before,
-.omni-extension .omni-item:hover:before {
+.flash-extension .flash-item-active:before,
+.flash-extension .flash-item:hover:before {
   height: 100%;
   position: absolute;
   display: block;
@@ -262,10 +262,10 @@ html {
   width: 2px;
   background-color: var(--accent);
 }
-.omni-extension .omni-item:hover:before {
+.flash-extension .flash-item:hover:before {
   background-color: var(--accent-hover);
 }
-.omni-extension .omni-select {
+.flash-extension .flash-select {
   vertical-align: middle;
   color: var(--text-3);
   font-size: 12px;
@@ -274,18 +274,18 @@ html {
   margin-top: 20px;
   margin-right: 5%;
 }
-.omni-extension .omni-select.needs-permission {
+.flash-extension .flash-select.needs-permission {
   display: block;
   color: red;
 }
-.omni-extension .omni-select span {
+.flash-extension .flash-select span {
   margin-left: 3px;
 }
-.omni-extension .omni-item-active .omni-select,
-.omni-extension .omni-item:hover .omni-select {
+.flash-extension .flash-item-active .flash-select,
+.flash-extension .flash-item:hover .flash-select {
   display: block !important;
 }
-.omni-extension .omni-icon {
+.flash-extension .flash-icon {
   width: 20px;
   height: 20px;
   margin-left: 5%;
@@ -293,7 +293,7 @@ html {
   vertical-align: middle;
   /* margin-top: -12px; */
 }
-.omni-extension .omni-emoji-action {
+.flash-extension .flash-emoji-action {
   display: inline-block;
   vertical-align: middle;
   margin-top: -12px;
@@ -303,7 +303,7 @@ html {
   margin-left: 5%;
   font-size: 18px;
 }
-.omni-extension .omni-item-details {
+.flash-extension .flash-item-details {
   display: flex;
   flex-direction: column;
   margin-left: 10px;
@@ -311,7 +311,7 @@ html {
   flex: 1 1 auto;
   overflow: hidden;
 }
-.omni-extension .omni-item-name {
+.flash-extension .flash-item-name {
   display: flex;
   gap: 10px;
   flex-direction: row;
@@ -322,24 +322,24 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.omni-extension .omni-item-name .shortcut {
+.flash-extension .flash-item-name .shortcut {
   font-family: monospace;
   font-weight: bold;
 }
-.omni-extension img.incognito {
+.flash-extension img.incognito {
   width: 16px;
   height: 16px;
 }
 @media (prefers-color-scheme: dark) {
-  .omni-extension img.incognito {
+  .flash-extension img.incognito {
     filter: invert(1);
   }
 }
-.omni-extension .omni-item-active .omni-item-name,
-.omni-extension .omni-item:hover .omni-item-name {
+.flash-extension .flash-item-active .flash-item-name,
+.flash-extension .flash-item:hover .flash-item-name {
   color: var(--text) !important;
 }
-.omni-extension .omni-item-desc {
+.flash-extension .flash-item-desc {
   color: var(--text-3);
   margin-top: 5px;
   font-size: 14px;
@@ -347,11 +347,11 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.omni-extension .omni-item-desc .url {
+.flash-extension .flash-item-desc .url {
   opacity: 0.7;
   font-size: 90%;
 }
-.omni-extension #omni-footer {
+.flash-extension #flash-footer {
   height: 45px;
   line-height: 45px;
   border-top: 1px solid var(--border);
@@ -359,34 +359,34 @@ html {
   margin-left: auto;
   margin-right: auto;
 }
-.omni-extension #omni-results {
+.flash-extension #flash-results {
   color: var(--text-3);
   font-size: 12px;
   font-weight: 500;
   float: left;
 }
-.omni-extension #omni-arrows {
+.flash-extension #flash-arrows {
   color: var(--text-3);
   font-size: 12px;
   font-weight: 500;
   float: right;
 }
-.omni-extension #omni-arrows span {
+.flash-extension #flash-arrows span {
   margin-left: 3px;
   margin-right: 3px;
 }
-.omni-extension .omni-keys {
+.flash-extension .flash-keys {
   float: right;
   vertical-align: middle;
   font-weight: 500;
   margin-top: 20px;
   margin-right: 5%;
 }
-.omni-extension .omni-item-active .omni-keys,
-.omni-extension .omni-item:hover .omni-keys {
+.flash-extension .flash-item-active .flash-keys,
+.flash-extension .flash-item:hover .flash-keys {
   display: none !important;
 }
-.omni-extension .omni-keys span {
+.flash-extension .flash-keys span {
   margin-left: 3px;
 }
 #body-wrap {

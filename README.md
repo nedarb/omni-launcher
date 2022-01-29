@@ -1,13 +1,13 @@
-# Omni
+# Flash
 
 ![Preview](preview.gif)
 <br>
 <br>
 The most powerful interface for Chrome 🔥
 
-With Omni you can use Chrome like a pro. Manage tabs, bookmarks, your browser history, perform all sorts of actions and more with a simple command interface.
+With Flash you can use Chrome like a pro. Manage tabs, bookmarks, your browser history, perform all sorts of actions and more with a simple command interface.
 
-[👉 Get it now](https://chrome.google.com/webstore/detail/omni/mapjgeachilmcbbokkgcbgpbakaaeehi?hl=en&authuser=0)
+[👉 Get it now](https://chrome.google.com/webstore/detail/...tbd...)
 
 _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome extension by [Alyssa X](https://alyssax.com).** It started to greatly deviate so a separate extension was created with permission._ 
 
@@ -15,11 +15,11 @@ _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome exte
 
 - [Features](#features)
 - [Controlling the interface](#controlling-the-interface)
-  - [Opening Omni](#opening-omni)
-  - [Closing Omni](#closing-omni)
+  - [Opening Flash](#opening-flash)
+  - [Closing Flash](#closing-flash)
   - [Switching between dark and light mode](#switching-between-dark-and-light-mode)
 - [List of commands](#list-of-commands)
-- [Self-hosting Omni](#self-hosting-omni)
+- [Self-hosting Flash](#self-hosting-flash)
 - [Libraries used](#libraries-used)
 
 ## Features
@@ -28,19 +28,19 @@ _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome exte
 
 ## Controlling the interface
 
-### Opening Omni
+### Opening Flash
 
-To open Omni, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can configure a custom shortcut by going to chrome://extensions/shortcuts.
+To open Flash, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can configure a custom shortcut by going to chrome://extensions/shortcuts.
 
 You can also click on the extension icon in the toolbar to toggle it.
 
-### Closing Omni
+### Closing Flash
 
-To close Omni you can press `Esc`, click on the background, or press the extension icon.
+To close Flash you can press `Esc`, click on the background, or press the extension icon.
 
 ### Switching between dark and light mode
 
-The dark and light theme in Omni is tied to your system's theme.
+The dark and light theme in Flash is tied to your system's theme.
 
 On Mac you can change the theme by clicking on the Apple menu (on the top left), opening the System preferences, going into the General section, and then choosing between dark, light, or auto.
 
@@ -50,7 +50,7 @@ After switching the theme you might need to restart Chrome.
 
 ## List of commands
 
-You can use a variety of commands with Omni to perform actions or filter your results.
+You can use a variety of commands with Flash to perform actions or filter your results.
 
 - **/tabs**: Search your tabs
 - **/bookmarks**: Search your bookmarks
@@ -58,7 +58,7 @@ You can use a variety of commands with Omni to perform actions or filter your re
 - **/actions**: Search all available actions
 - **/remove**: Remove a bookmark or close a tab
 
-## Self-hosting Omni
+## Self-hosting Flash
 
 You can run this Chrome extension locally by:
 

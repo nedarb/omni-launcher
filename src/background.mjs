@@ -128,10 +128,10 @@ const clearActions = async () => {
     },
     // {
     //   title: "Help",
-    //   desc: "Get help with Omni on GitHub",
+    //   desc: "Get help with Flash on GitHub",
     //   type: "action",
     //   action: "url",
-    //   url: "omni-help.html",
+    //   url: "flash-help.html",
     //   emoji: true,
     //   emojiChar: "🤔",
     //   keycheck: false,
@@ -644,7 +644,7 @@ const clearActions = async () => {
     },
     {
       title: "Options",
-      desc: "Omni options",
+      desc: "Flash options",
       type: "action",
       action: Options,
       favIconUrl: browser.runtime.getURL("assets/logo-small-rounded.svg"),
@@ -709,7 +709,7 @@ const clearActions = async () => {
 
 // Open on install
 browser.runtime.onInstalled.addListener(async (object) => {
-  // Inject Omni on install
+  // Inject Flash on install
   const manifest = browser.runtime.getManifest();
 
   const injectIntoTab = async (tab) => {
@@ -756,37 +756,26 @@ browser.runtime.onInstalled.addListener(async (object) => {
 
   if (object.reason === "install") {
     // TODO: open a tab with instructions what to do next
-    // browser.tabs.create({ url: "omni-help.html" });
+    // browser.tabs.create({ url: "flash-help.html" });
   }
 });
 
 // Check when the extension button is clicked
 browser.action.onClicked.addListener((tab) => {
-  browser.tabs.sendMessage(tab.id, { request: "open-omni" });
+  browser.tabs.sendMessage(tab.id, { request: "open-flash" });
 });
 
-// Listen for the open omni shortcut
+// Listen for the open Flash shortcut
 browser.commands.onCommand.addListener(async (command) => {
-  if (command === "open-omni") {
+  if (command === "open-flash") {
     const tabs = await browser.tabs.query({
       active: true,
       currentWindow: true,
     });
     if (tabs.length > 0)
-      browser.tabs.sendMessage(tabs[0].id, { request: "open-omni" });
+      browser.tabs.sendMessage(tabs[0].id, { request: "open-flash" });
   }
 });
-
-// const resetOmni = async () => {
-//   await clearActions();
-//   await getTabs();
-//   await getBookmarks();
-// };
-
-// // Check if tabs have changed and actions need to be fetched again
-// browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => resetOmni());
-// browser.tabs.onCreated.addListener((tab) => resetOmni());
-// browser.tabs.onRemoved.addListener((tabId, changeInfo) => resetOmni());
 
 // Get the current tab
 const getCurrentTab = async () => {

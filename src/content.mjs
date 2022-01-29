@@ -15,6 +15,7 @@ import useAsyncState from "./hooks/useAsyncState.mjs";
 import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
 import * as ActionNames from "./ActionNames.mjs";
 import filterActions from "./services/actionsFilter.mjs";
+import classNames from "./utils/classNames.mjs";
 
 const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
 const favIconEl = document.head.querySelector(`link[rel*="icon"]`);
@@ -27,7 +28,7 @@ if (openSearchDescEl) {
   });
 }
 
-const CloseOmniAction = "close-omni";
+const CloseFlashAction = "close-flash";
 
 const Commands = [
   {
@@ -99,8 +100,8 @@ function handleAction(action, eventOptions) {
     case "email":
       window.open("mailto:");
       break;
-    case CloseOmniAction:
-      console.debug(`Closing Omni`);
+    case CloseFlashAction:
+      console.debug(`Closing Flash`);
       break;
     default:
       console.error(`NO HANDLER FOR ${action.action}`);
@@ -225,7 +226,7 @@ function CustomSearch({ handleAction, searchTerm, customAction }) {
   />`;
 }
 
-function OmniList({ searchTerm, handleAction }) {
+function FlashList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
   const lowerTerm = searchTerm.toLowerCase();
@@ -281,8 +282,8 @@ function OmniList({ searchTerm, handleAction }) {
       const url = tempvalue.startsWith("#")
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-          tempvalue
-        )}`;
+            tempvalue
+          )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
@@ -402,18 +403,18 @@ function MainApp(props) {
   );
 
   const onOverlayClick = useCallback(() => {
-    handleAction({ action: CloseOmniAction });
+    handleAction({ action: CloseFlashAction });
   }, [handleAction]);
 
   return html`<div
-    id="omni-extension"
-    class="omni-extension ${!showing ? "omni-closing" : ""}"
+    id="flash-extension"
+    class="${classNames("flash-extension", !showing && "flash-closing")}"
   >
-    <div id="omni-overlay" onClick=${onOverlayClick}></div>
-    <div id="omni-wrap">
+    <div id="flash-overlay" onClick=${onOverlayClick}></div>
+    <div id="flash-wrap">
       ${showing &&
-    html`<div id="omni">
-        <div id="omni-search" class="omni-search">
+      html`<div id="flash">
+        <div id="flash-search" class="flash-search">
           <input
             ref=${input}
             placeholder="Type a command or search"
@@ -421,8 +422,8 @@ function MainApp(props) {
             onInput=${onSearchChange}
           />
         </div>
-        <!-- OMNI LIST -->
-        <${OmniList}
+        <!-- FLASH LIST -->
+        <${FlashList}
           searchTerm=${debouncedSearchTerm}
           handleAction=${doHandle}
         />
@@ -436,7 +437,7 @@ function App() {
   useEffect(() => {
     // Recieve messages from background
     browser.runtime.onMessage.addListener((message) => {
-      if (message.request == "open-omni") {
+      if (message.request == "open-flash") {
         setIsOpen((isOpen) => !isOpen);
       }
     });
@@ -485,4 +486,4 @@ function App() {
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-render(html`<${App} />`, document.getElementById("omni-extension-wrapper"));
+render(html`<${App} />`, document.getElementById("flash-extension-wrapper"));

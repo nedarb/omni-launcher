@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from "../standalone.mjs";
-import OmniItem from "./OmniItem.mjs";
+import FlashItem from "./FlashItem.mjs";
 
 function SearchResults({
   actions,
@@ -21,7 +21,7 @@ function SearchResults({
   const list =
     Array.isArray(actions) &&
     sliced.map(function (action, index) {
-      return html`<${OmniItem}
+      return html`<${FlashItem}
         key=${action.id || action.url || action.action}
         index=${index}
         action=${action}
@@ -33,14 +33,14 @@ function SearchResults({
     });
 
   return html`<div class="search-results">
-    <div id="omni-list">${list}</div>
-    <div id="omni-footer">
-      <div id="omni-results">
+    <div id="flash-list">${list}</div>
+    <div id="flash-footer">
+      <div id="flash-results">
         ${list.length}${list.length < total ? "+" : ""} results
       </div>
-      <div id="omni-arrows">
-        Use arrow keys <span class="omni-shortcut">↑</span
-        ><span class="omni-shortcut">↓</span> to navigate
+      <div id="flash-arrows">
+        Use arrow keys <span class="flash-shortcut">↑</span
+        ><span class="flash-shortcut">↓</span> to navigate
       </div>
     </div>
   </div>`;
@@ -80,9 +80,6 @@ export default function SearchResultsWrapper({
           const action = actions[selectedIndex];
           handleAction && handleAction(action, { metaKey: e.metaKey });
           break;
-        // case "Escape":
-        //   handleAction && handleAction({ action: CloseOmniAction });
-        //   break;
       }
     }
     window.addEventListener("keydown", handler);

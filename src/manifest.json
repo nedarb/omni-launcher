@@ -1,5 +1,5 @@
 {
-  "name": "Omni-Preact",
+  "name": "Flash",
   "description": "Quick launcher for Chrome - navigate between open tabs, history, bookmarks, etc.",
   "offline_enabled": true,
   "version": "1.0.0",
@@ -17,7 +17,7 @@
     "128": "assets/logo-small-rounded-128.png"
   },
   "commands": {
-    "open-omni": {
+    "open-flash": {
       "suggested_key": {
         "default": "Ctrl+K",
         "mac": "Command+K"
@@ -41,7 +41,6 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "content.html",
         "assets/*",
         "*.css",
         "*.*js"
