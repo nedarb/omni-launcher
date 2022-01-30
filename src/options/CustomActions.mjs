@@ -136,6 +136,5 @@ export default function CustomActions() {
           onDelete=${onDelete}
         />`
   )}
-    <pre>${JSON.stringify(actions, null, 2)}</pre>
   </div>`;
 }

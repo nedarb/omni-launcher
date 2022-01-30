@@ -30,7 +30,11 @@ function OptionalPermission({ name, isEnabled, onToggle }) {
   return html`<tr key=${name}>
     <td>${getPermissionLabel(name)}</td>
     <td>${isEnabled ? "Yes" : "No"}</td>
-    <td><button onClick=${handleToggle}>${isEnabled ? "Disable" : "Enable"}</button></td>
+    <td>
+      <button onClick=${handleToggle}>
+        ${isEnabled ? "Disable" : "Enable"}
+      </button>
+    </td>
   </tr>`;
 }
 
@@ -66,23 +70,26 @@ function MyCmp() {
       }
     }
   });
-  return html`<table>
-    <tr>
-      <th>Permission</th>
-      <th>Is Enabled?</th>
-      <th></th>
-    </tr>
-    ${hasPermission &&
-    hasPermission.map(
-      ({ name, isEnabled }) =>
-        html`<${OptionalPermission}
-          key=${name}
-          name=${name}
-          isEnabled=${isEnabled}
-          onToggle=${handleToggle}
-        />`
-    )}
-  </table>`;
+  return html`<div>
+    <h2>Optional permissions:</h2>
+    <table>
+      <tr>
+        <th>Permission</th>
+        <th>Is Enabled?</th>
+        <th></th>
+      </tr>
+      ${hasPermission &&
+      hasPermission.map(
+        ({ name, isEnabled }) =>
+          html`<${OptionalPermission}
+            key=${name}
+            name=${name}
+            isEnabled=${isEnabled}
+            onToggle=${handleToggle}
+          />`
+      )}
+    </table>
+  </div>`;
 }
 
 render(
