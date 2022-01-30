@@ -1,4 +1,4 @@
-import { html, useCallback, useState } from "../standalone.mjs";
+import { html, useCallback, useState } from "../lib/htm-preact-standalone.mjs";
 
 /**
  * @type {Array<{name: string;

@@ -1,5 +1,5 @@
 /// <reference path="../global.d.ts" />
-import "../webextension-polyfill.js";
+import "../lib/webextension-polyfill.js";
 
 import {
   html,
@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "../standalone.mjs";
+} from "../lib/htm-preact-standalone.mjs";
 import CustomActions from "./CustomActions.mjs";
 
 const manifest = browser.runtime.getManifest();

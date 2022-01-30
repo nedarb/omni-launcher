@@ -1,4 +1,4 @@
-import { html, useCallback, useEffect, useRef } from "../standalone.mjs";
+import { html, useCallback, useEffect, useRef } from "../lib/htm-preact-standalone.mjs";
 import classNames from "../utils/classNames.mjs";
 
 export default function FlashItem({

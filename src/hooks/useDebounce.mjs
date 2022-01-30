@@ -1,4 +1,4 @@
-import { useState, useEffect } from "./standalone.mjs";
+import { useState, useEffect } from "../lib/htm-preact-standalone.mjs";
 
 export default function useDebounce(value, delay) {
   // State and setters for debounced value

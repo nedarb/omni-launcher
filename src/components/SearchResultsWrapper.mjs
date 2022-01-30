@@ -5,7 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
-} from "../standalone.mjs";
+} from "../lib/htm-preact-standalone.mjs";
 import FlashItem from "./FlashItem.mjs";
 
 function SearchResults({

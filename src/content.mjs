@@ -1,5 +1,5 @@
 /// <reference path="./global.d.ts" />
-import "./webextension-polyfill.js";
+import "./lib/webextension-polyfill.js";
 
 import {
   html,
@@ -9,8 +9,8 @@ import {
   useCallback,
   useRef,
   useMemo,
-} from "./standalone.mjs";
-import useDebounce from "./useDebounce.mjs";
+} from "./lib/htm-preact-standalone.mjs";
+import useDebounce from "./hooks/useDebounce.mjs";
 import useAsyncState from "./hooks/useAsyncState.mjs";
 import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
 import * as ActionNames from "./ActionNames.mjs";

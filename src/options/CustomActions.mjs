@@ -4,7 +4,7 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "../standalone.mjs";
+} from "../lib/htm-preact-standalone.mjs";
 import {
   getCustomActions,
   addCustomAction,

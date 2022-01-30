@@ -1,5 +1,6 @@
 import Browser from "webextension-polyfill";
 declare global {
+  const chrome: any;
   const browser: typeof Browser;
 }
 

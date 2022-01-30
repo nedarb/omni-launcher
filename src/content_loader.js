@@ -1,3 +1,5 @@
+/// <reference path="./global.d.ts" />
+
 /**
  * This bootstraps the first ES6 module as we can't natively instruct Chrome to load a module in the manifest
  */

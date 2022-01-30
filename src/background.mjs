@@ -4,9 +4,9 @@ import {
   getCustomActions,
   upsertCustomAction,
 } from "./services/customActions.mjs";
-import "./webextension-polyfill.js";
+import "./lib/webextension-polyfill.js";
 
-import * as txml from "./txml.mjs";
+import * as txml from "./lib/txml.mjs";
 import {
   ClearAllBrowsingData,
   ClearCache,

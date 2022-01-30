@@ -6,6 +6,7 @@ specifiers:
   jshint: ^2.13.3
   preact: ^10.6.4
   txml: ^5.1.1
+  typescript: ^4.5.5
   webextension-polyfill: ^0.8.0
 
 devDependencies:
@@ -14,6 +15,7 @@ devDependencies:
   jshint: 2.13.3
   preact: 10.6.4
   txml: 5.1.1
+  typescript: 4.5.5
   webextension-polyfill: 0.8.0
 
 packages:
@@ -238,6 +240,12 @@ packages:
     resolution: {integrity: sha512-TwMDLnXQ09enNaxybLVvKZU7rqog8LgnuAs4ZYXM0nV0eu10iLsSFwlX3AEknAXXtH1wT3CYfoiXAjyBexcmuw==}
     dependencies:
       through2: 3.0.2
+    dev: true
+
+  /typescript/4.5.5:
+    resolution: {integrity: sha512-TCTIul70LyWe6IJWT8QSYeA54WQe8EjQFU4wY52Fasj5UKx88LNYKCgBEHcOMOrFF1rKGbD8v/xcNWVUq9SymA==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
     dev: true
 
   /util-deprecate/1.0.2:

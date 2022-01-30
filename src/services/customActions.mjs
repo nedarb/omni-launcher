@@ -1,5 +1,5 @@
 /// <reference path="../global.d.ts" />
-import "../webextension-polyfill.js";
+import "../lib/webextension-polyfill.js";
 
 const StorageName = "customActions";
 
