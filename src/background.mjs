@@ -647,7 +647,7 @@ const clearActions = async () => {
       desc: "Flash options",
       type: "action",
       action: Options,
-      favIconUrl: browser.runtime.getURL("assets/logo-small-rounded.svg"),
+      favIconUrl: browser.runtime.getURL("assets/flash-logo-orange.svg"),
     },
   ];
 
