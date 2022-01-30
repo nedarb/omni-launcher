@@ -51,7 +51,7 @@ function areObjsEqual(obj1, obj2) {
 }
 
 /**
- * @param { { action: Action } } props
+ * @param { { action: Action; onDraftAction: (action: Action)=>any; onSave: (action: Action)=>any; onDelete: (action: Action)=>any } } props
  * @returns
  */
 export default function ActionForm({

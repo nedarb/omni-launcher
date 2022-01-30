@@ -3,8 +3,9 @@
     "esModuleInterop": true,
     "checkJs": true,
     "allowJs": true,
-    "lib": ["ES2020", "DOM"]
+    "lib": ["ES2020", "DOM"],
+    "types": ["src/global.d.ts"]
   },
-  "include": ["src/**/*.js"],
-  "exclude": ["node_modules", "**/*.spec.ts", "src/lib"]
+  "include": ["src/**/*.mjs"],
+  "exclude": ["node_modules", "**/*.spec.ts", "src/lib/*.*js"]
 }

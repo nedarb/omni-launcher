@@ -1,4 +1,3 @@
-/// <reference path="../global.d.ts" />
 import "../lib/webextension-polyfill.js";
 
 import {

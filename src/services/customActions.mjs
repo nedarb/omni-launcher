@@ -1,12 +1,11 @@
 /**
  * @typedef { import("../global").Action } Action
  */
-
-/// <reference path="../global.d.ts" />
 import "../lib/webextension-polyfill.js";
 
 const StorageName = "customActions";
 
+// @ts-ignore
 const uuid = () => crypto.randomUUID();
 
 /**

@@ -5,6 +5,7 @@ declare global {
 }
 
 interface Action {
+  id?: string;
   title: string;
   desc: string;
   type: string;

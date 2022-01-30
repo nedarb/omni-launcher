@@ -32,7 +32,7 @@ import { byStringSelector } from "../utils/sorters.mjs";
 
 /**
  *
- * @param { { action: Action }} props
+ * @param { { action: Action; onSave: (action: Action)=>any; onDelete: (action: Action)=>any }} props
  * @returns
  */
 function CustomSearch({ action, onSave, onDelete }) {

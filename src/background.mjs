@@ -1,8 +1,3 @@
-/**
- * @typedef { import("./global").Action } Action
- */
-
-/// <reference path="./global.d.ts" />
 import {
   getCustomActionForOpenXmlUrl,
   getCustomActions,

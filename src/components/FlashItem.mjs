@@ -1,5 +1,3 @@
-/// <reference path="../global.d.ts" />
-
 import {
   html,
   useCallback,
@@ -10,7 +8,7 @@ import classNames from "../utils/classNames.mjs";
 
 /**
  *
- * @param {{action: import("../global").Action}} props
+ * @param {{action: import("../global.js").Action}} props
  * @returns
  */
 export default function FlashItem({

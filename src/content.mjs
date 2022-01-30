@@ -1,8 +1,3 @@
-/// <reference path="./global.d.ts" />
-/**
- * @typedef { import("./global").Action } Action
- */
-
 import "./lib/webextension-polyfill.js";
 
 import {
