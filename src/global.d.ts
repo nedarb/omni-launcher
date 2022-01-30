@@ -12,6 +12,7 @@ interface Action {
   requiresPermission?: string;
   hasPermission?: boolean;
   url?: string;
+  shortcut?: string;
   emoji?: boolean;
   emojiChar?: string;
   favIconUrl?: string;

@@ -1,3 +1,7 @@
+/**
+ * @typedef { import("../global").Action } Action
+ */
+
 import {
   html,
   render,
@@ -26,6 +30,11 @@ import { byStringSelector } from "../utils/sorters.mjs";
       keys: ["⌘", "T"],
 */
 
+/**
+ *
+ * @param { { action: Action }} props
+ * @returns
+ */
 function CustomSearch({ action, onSave, onDelete }) {
   const [draft, setDraft] = useState(action);
   const onDraftAction = useCallback(
@@ -97,44 +106,40 @@ export default function CustomActions() {
   );
 
   const addForm = html`<form onSubmit=${handleSubmit}>
-  <div>Name: <input name="name" type="text" value="MDN" /></div>
-  <div>
-    Emoji icon:
-    <input
-      name="emoji"
-      type="text"
-      value="✨"
-      minlength="0"
-      maxlength="3"
-    />
-  </div>
-  <div>
-    Fav icon URL:
-    <input
-      name="favIconUrl"
-      type="text"
-      value="https://developer.mozilla.org/favicon-48x48.97046865.png"
-      minlength="0"
-      maxlength="3"
-    />
-  </div>
-  <div>
-    URL:
-    <input name="url" type="text" value="https://developer.mozilla.org/" />
-  </div>
-  <input type="submit" value="Add" />
-</form>`;
+    <div>Name: <input name="name" type="text" value="MDN" /></div>
+    <div>
+      Emoji icon:
+      <input name="emoji" type="text" value="✨" minlength="0" maxlength="3" />
+    </div>
+    <div>
+      Fav icon URL:
+      <input
+        name="favIconUrl"
+        type="text"
+        value="https://developer.mozilla.org/favicon-48x48.97046865.png"
+        minlength="0"
+        maxlength="3"
+      />
+    </div>
+    <div>
+      URL:
+      <input name="url" type="text" value="https://developer.mozilla.org/" />
+    </div>
+    <input type="submit" value="Add" />
+  </form>`;
 
   return html`<div>
     <h2>Custom actions:</h2>
-    ${actions.sort(byStringSelector(action => action.title)).map(
-    (a) =>
-      html`<${CustomSearch}
-          key=${a.url}
-          action=${a}
-          onSave=${onSave}
-          onDelete=${onDelete}
-        />`
-  )}
+    ${actions
+      .sort(byStringSelector((action) => action.title))
+      .map(
+        (a) =>
+          html`<${CustomSearch}
+            key=${a.url}
+            action=${a}
+            onSave=${onSave}
+            onDelete=${onDelete}
+          />`
+      )}
   </div>`;
 }

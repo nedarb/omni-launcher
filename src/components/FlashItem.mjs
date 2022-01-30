@@ -1,6 +1,18 @@
-import { html, useCallback, useEffect, useRef } from "../lib/htm-preact-standalone.mjs";
+/// <reference path="../global.d.ts" />
+
+import {
+  html,
+  useCallback,
+  useEffect,
+  useRef,
+} from "../lib/htm-preact-standalone.mjs";
 import classNames from "../utils/classNames.mjs";
 
+/**
+ *
+ * @param {{action: import("../global").Action}} props
+ * @returns
+ */
 export default function FlashItem({
   action,
   index,

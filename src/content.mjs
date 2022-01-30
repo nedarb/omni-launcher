@@ -1,4 +1,8 @@
 /// <reference path="./global.d.ts" />
+/**
+ * @typedef { import("./global").Action } Action
+ */
+
 import "./lib/webextension-polyfill.js";
 
 import {
@@ -30,6 +34,9 @@ if (openSearchDescEl) {
 
 const CloseFlashAction = "close-flash";
 
+/**
+ * @type { Array<Action> }
+ */
 const Commands = [
   {
     title: "History",
@@ -74,6 +81,11 @@ const Commands = [
   },
 ];
 
+/**
+ * @param {Action} action 
+ * @param {*} eventOptions 
+ * @returns 
+ */
 function handleAction(action, eventOptions) {
   const openUrl = (url = action.url) =>
     eventOptions?.metaKey ? window.open(url) : window.open(url, "_self");

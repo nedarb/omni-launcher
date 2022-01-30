@@ -1,3 +1,7 @@
+/**
+ * @typedef { import("../global").Action } Action
+ */
+
 import { html, useCallback, useState } from "../lib/htm-preact-standalone.mjs";
 
 /**
@@ -46,6 +50,10 @@ function areObjsEqual(obj1, obj2) {
   return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
 
+/**
+ * @param { { action: Action } } props
+ * @returns
+ */
 export default function ActionForm({
   action,
   onDraftAction,
@@ -125,12 +133,12 @@ export default function ActionForm({
     />
     <span class="buttons">
       ${hasUnsavedChanges &&
-    html`<input type="submit" value="Save" /><input
+      html`<input type="submit" value="Save" /><input
           type="reset"
           value="Revert"
           onClick=${handleReset}
         />`}
-        <button onClick=${handleDelete}>Delete</button>
+      <button onClick=${handleDelete}>Delete</button>
     </span>
   </form>`;
 }

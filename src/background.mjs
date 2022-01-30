@@ -1,3 +1,7 @@
+/**
+ * @typedef { import("./global").Action } Action
+ */
+
 /// <reference path="./global.d.ts" />
 import {
   getCustomActionForOpenXmlUrl,
@@ -81,7 +85,7 @@ const clearActions = async () => {
     };
   }
   /**
-   * @type {Array<import("./global.js").Action>}
+   * @type {Array<Action>}
    */
   const actions = [
     {
@@ -798,6 +802,9 @@ const getTabs = async () => {
 
 // Get bookmarks to populate in the actions
 const getBookmarks = async () => {
+  /**
+   * @type { Array<Action> }
+   */
   const result = [];
   const process_bookmark = (bookmarks) => {
     for (const bookmark of bookmarks) {
@@ -983,13 +990,13 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         maxResults: message.maxResults || 1000,
         startTime: 31536000000 * 5,
       });
-      const history = data.map(action => ({
+      const history = data.map((action) => ({
         ...action,
         type: "history",
         emoji: true,
         emojiChar: "🏛",
         action: "history",
-        keyCheck: false
+        keyCheck: false,
       }));
       return { history };
     }

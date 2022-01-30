@@ -1,3 +1,7 @@
+/**
+ * @typedef { import("../global").Action } Action
+ */
+
 /// <reference path="../global.d.ts" />
 import "../lib/webextension-polyfill.js";
 
@@ -5,17 +9,22 @@ const StorageName = "customActions";
 
 const uuid = () => crypto.randomUUID();
 
+/**
+ * @template T
+ * @param {()=>T} implFn
+ * @returns {()=>T}
+ */
 function manageConcurrent(implFn) {
   let current;
   return function (...args) {
     if (current) {
-      console.log('pre-existing call ongoing');
+      console.log("pre-existing call ongoing");
       return current;
     }
 
     current = implFn.call(this, ...args);
     if (current instanceof Promise) {
-      current.finally(() => current = null);
+      current.finally(() => (current = null));
     }
     return current;
   };
@@ -35,7 +44,7 @@ export async function getCustomActionForOpenXmlUrl(openSearchXmlUrl) {
 
 /**
  * Get all custom actions
- * @returns {Promise<Array<{ id: string; openSearchXmlUrl?: string; }>>}
+ * @returns {Promise<Array<Action & { id: string; openSearchXmlUrl?: string; }>>}
  */
 export async function getCustomActionsImpl() {
   const result = await browser.storage.sync.get(StorageName);
@@ -92,7 +101,9 @@ export async function upsertCustomAction(action) {
   }
 
   const existingActions = await getCustomActions();
-  const existingIndex = existingActions.findIndex((a) => a.id === action.id || a.url === action.url);
+  const existingIndex = existingActions.findIndex(
+    (a) => a.id === action.id || a.url === action.url
+  );
   if (existingIndex >= 0) {
     const existing = existingActions[existingIndex];
     // update an existing one
