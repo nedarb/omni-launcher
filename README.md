@@ -3,9 +3,8 @@
 ![Preview](preview.gif)
 <br>
 <br>
-The most powerful interface for Chrome 🔥
 
-With Flash you can use Chrome like a pro. Manage tabs, bookmarks, your browser history, perform all sorts of actions and more with a simple command interface.
+Flash is the super fast and smart way to manage all of your open tabs and bookmarks and quickly search your history.
 
 [👉 Get it now](https://chrome.google.com/webstore/detail/...tbd...)
 

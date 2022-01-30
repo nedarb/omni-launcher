@@ -1,20 +1,20 @@
 {
   "name": "Flash",
-  "description": "Quick launcher for Chrome - navigate between open tabs, history, bookmarks, etc.",
+  "description": "Quick launcher for Chrome - manage tabs, bookmarks, your browser history",
   "offline_enabled": true,
   "version": "1.0.0",
   "manifest_version": 3,
   "action": {
     "icons": {
-      "16": "assets/logo-small-rounded-16.png",
-      "48": "assets/logo-small-rounded-48.png",
-      "128": "assets/logo-small-rounded-128.png"
+      "16": "assets/flash-logo-orange-16.png",
+      "48": "assets/flash-logo-orange-48.png",
+      "128": "assets/flash-logo-orange-128.png"
     }
   },
   "icons": {
-    "16": "assets/logo-small-rounded-16.png",
-    "48": "assets/logo-small-rounded-48.png",
-    "128": "assets/logo-small-rounded-128.png"
+    "16": "assets/flash-logo-orange-16.png",
+    "48": "assets/flash-logo-orange-48.png",
+    "128": "assets/flash-logo-orange-128.png"
   },
   "commands": {
     "open-flash": {

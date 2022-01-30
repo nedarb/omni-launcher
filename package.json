@@ -4,7 +4,7 @@
   "description": "![Preview](preview.gif) <br> <br> The most powerful interface for Chrome 🔥",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "zip -r dist.zip src"
   },
   "repository": {
     "type": "git",
