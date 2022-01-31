@@ -6,13 +6,15 @@ declare global {
 
 interface Action {
   id?: string;
+  incognito?: boolean;
   title: string;
   desc: string;
-  type: string;
+  type: "action" | "command" | "tab" | "history" | "bookmark";
   action: string;
   requiresPermission?: string;
   hasPermission?: boolean;
   url?: string;
+  searchPrefix?: string;
   shortcut?: string;
   emoji?: boolean;
   emojiChar?: string;

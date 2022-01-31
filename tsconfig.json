@@ -4,6 +4,7 @@
     "checkJs": true,
     "allowJs": true,
     "lib": ["ES2020", "DOM"],
+    "target": "ES2020",
     "types": ["src/global.d.ts"]
   },
   "include": ["src/**/*.mjs"],

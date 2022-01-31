@@ -8,16 +8,16 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "../lib/htm-preact-standalone.mjs";
+} from '../lib/htm-preact-standalone.mjs';
 import {
   getCustomActions,
   addCustomAction,
   upsertCustomAction,
   deleteAction,
-} from "../services/customActions.mjs";
-import FlashItem from "../components/FlashItem.mjs";
-import ActionForm from "./ActionForm.mjs";
-import { byStringSelector } from "../utils/sorters.mjs";
+} from '../services/customActions.mjs';
+import FlashItem from '../components/FlashItem.mjs';
+import ActionForm from './ActionForm.mjs';
+import { byStringSelector } from '../utils/sorters.mjs';
 
 /*
       title: "New tab",
@@ -65,13 +65,13 @@ export default function CustomActions() {
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
-      const formValues = Array.from(e.target.querySelectorAll("input[name]"))
+      const formValues = Array.from(e.target.querySelectorAll('input[name]'))
         .map((el) => ({ name: el.name, value: el.value }))
         .reduce(
           (map, { name, value }) => {
-            if (name === "name") {
+            if (name === 'name') {
               map.title = map.desc = value;
-            } else if (name === "emoji" && value) {
+            } else if (name === 'emoji' && value) {
               map.emojiChar = value;
               map.emoji = true;
             } else {
@@ -79,7 +79,7 @@ export default function CustomActions() {
             }
             return map;
           },
-          { type: "action" }
+          { type: 'action' }
         );
       if (formValues) {
         setActions(await addCustomAction(formValues));
@@ -90,7 +90,7 @@ export default function CustomActions() {
 
   const onSave = useCallback(
     async (draftAction) => {
-      console.info(`saving action`, draftAction);
+      console.info('saving action', draftAction);
       const actionsAfterUpsert = await upsertCustomAction(draftAction);
       setActions(actionsAfterUpsert);
     },
@@ -131,15 +131,15 @@ export default function CustomActions() {
   return html`<div>
     <h2>Custom actions:</h2>
     ${actions
-      .sort(byStringSelector((action) => action.title))
-      .map(
-        (a) =>
-          html`<${CustomSearch}
+    .sort(byStringSelector((action) => action.title))
+    .map(
+      (a) =>
+        html`<${CustomSearch}
             key=${a.url}
             action=${a}
             onSave=${onSave}
             onDelete=${onDelete}
           />`
-      )}
+    )}
   </div>`;
 }

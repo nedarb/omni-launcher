@@ -1,14 +1,24 @@
+/**
+ * @typedef { import("../global").Action } Action
+ */
 import {
   html,
   useCallback,
   useEffect,
   useRef,
-} from "../lib/htm-preact-standalone.mjs";
-import classNames from "../utils/classNames.mjs";
+} from '../lib/htm-preact-standalone.mjs';
+import classNames from '../utils/classNames.mjs';
 
 /**
- *
- * @param {{action: import("../global.js").Action}} props
+ * @typedef {(action: Action) => any} ActionCallback
+ * @param {{
+ *  action: Action;
+ *  index: number;
+ *  isSelected: boolean;
+ *  selectVerb: string;
+ *  handleAction: ActionCallback;
+ *  onOverItem: (index: number) => any
+ * }} props
  * @returns
  */
 export default function FlashItem({
@@ -17,7 +27,7 @@ export default function FlashItem({
   handleAction,
   onOverItem,
   isSelected,
-  selectVerb = "Select",
+  selectVerb = 'Select',
 }) {
   const ref = useRef(null);
   const handleClick = useCallback(
@@ -33,21 +43,21 @@ export default function FlashItem({
   );
   useEffect(() => {
     if (isSelected) {
-      ref?.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      ref?.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }, [ref, isSelected]);
-  var keys = "";
+  var keys = '';
   if (action.keycheck) {
     keys = html`<div class="flash-keys">
       ${action.keys.map(function (key) {
-        return html`<span key=${key} key=${key} class="flash-shortcut"
+    return html`<span key=${key} key=${key} class="flash-shortcut"
           >${key}</span
         >`;
-      })}
+  })}
     </div>`;
   }
   const imgUrl =
-    action.favIconUrl || browser.runtime.getURL("/assets/globe.svg");
+    action.favIconUrl || browser.runtime.getURL('/assets/globe.svg');
   const img = html`<img
     src="${imgUrl}"
     class="flash-icon"
@@ -61,7 +71,7 @@ export default function FlashItem({
   const incognitoIcon =
     action.incognito === true
       ? html`<img
-          src="${browser.runtime.getURL("/assets/incognito.svg")}"
+          src="${browser.runtime.getURL('/assets/incognito.svg')}"
           class="incognito"
         />`
       : null;
@@ -70,10 +80,10 @@ export default function FlashItem({
     ref=${ref}
     key=${action.id || action.url || action.action}
     class=${classNames(
-      "flash-item",
-      isSelected && "flash-item-active",
-      action.incognito && "incognito"
-    )}
+    'flash-item',
+    isSelected && 'flash-item-active',
+    action.incognito && 'incognito'
+  )}
     data-type="${action.type}"
     data-icon="${action.favIconUrl}"
     data-url="${action.url}"
@@ -93,10 +103,10 @@ export default function FlashItem({
       </div>
     </div>
     ${keys}
-    <div class="flash-select ${missingPermissions && "needs-permission"}">
+    <div class="flash-select ${missingPermissions && 'needs-permission'}">
       ${missingPermissions
-        ? html`Allow this action ➤`
-        : html`${selectVerb} <span class="flash-shortcut">⏎</span>`}
+    ? html`Allow this action ➤`
+    : html`${selectVerb} <span class="flash-shortcut">⏎</span>`}
     </div>
   </a>`;
 }

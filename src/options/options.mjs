@@ -1,4 +1,4 @@
-import "../lib/webextension-polyfill.js";
+import '../lib/webextension-polyfill.js';
 
 import {
   html,
@@ -6,18 +6,18 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "../lib/htm-preact-standalone.mjs";
-import CustomActions from "./CustomActions.mjs";
+} from '../lib/htm-preact-standalone.mjs';
+import CustomActions from './CustomActions.mjs';
 
 const manifest = browser.runtime.getManifest();
 const optionalPermissions = manifest.optional_permissions || [];
 
 function getPermissionLabel(name) {
   switch (name) {
-    case "browsingData":
-      return "Browsing data";
-    default:
-      return name;
+  case 'browsingData':
+    return 'Browsing data';
+  default:
+    return name;
   }
 }
 
@@ -28,10 +28,10 @@ function OptionalPermission({ name, isEnabled, onToggle }) {
   );
   return html`<tr key=${name}>
     <td>${getPermissionLabel(name)}</td>
-    <td>${isEnabled ? "Yes" : "No"}</td>
+    <td>${isEnabled ? 'Yes' : 'No'}</td>
     <td>
       <button onClick=${handleToggle}>
-        ${isEnabled ? "Disable" : "Enable"}
+        ${isEnabled ? 'Disable' : 'Enable'}
       </button>
     </td>
   </tr>`;
@@ -96,5 +96,5 @@ render(
     <${MyCmp} />
     <${CustomActions} />
   </div>`,
-  document.getElementById("app")
+  document.getElementById('app')
 );

@@ -1,9 +1,9 @@
 /**
  * @typedef { import("../global").Action } Action
  */
-import "../lib/webextension-polyfill.js";
+import '../lib/webextension-polyfill.js';
 
-const StorageName = "customActions";
+const StorageName = 'customActions';
 
 // @ts-ignore
 const uuid = () => crypto.randomUUID();
@@ -17,7 +17,7 @@ function manageConcurrent(implFn) {
   let current;
   return function (...args) {
     if (current) {
-      console.log("pre-existing call ongoing");
+      console.log('pre-existing call ongoing');
       return current;
     }
 
@@ -74,7 +74,7 @@ export async function getCustomActionsImpl() {
     urls.add(entry.url);
   }
   if (migrated) {
-    console.info(`migrated some custom actions.`);
+    console.info('migrated some custom actions.');
     return await saveActions(entries.filter(Boolean));
   }
   return entries;

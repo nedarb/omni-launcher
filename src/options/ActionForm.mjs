@@ -2,7 +2,7 @@
  * @typedef { import("../global").Action } Action
  */
 
-import { html, useCallback, useState } from "../lib/htm-preact-standalone.mjs";
+import { html, useCallback, useState } from '../lib/htm-preact-standalone.mjs';
 
 /**
  * @type {Array<{name: string;
@@ -11,18 +11,18 @@ import { html, useCallback, useState } from "../lib/htm-preact-standalone.mjs";
  * derived?:(action:import("../global.js").Action) => boolean}>}
  */
 const ActionFields = [
-  { name: "title", label: "Title", required: true },
-  { name: "desc", label: "Description", required: true },
-  { name: "type", label: "Type" },
-  { name: "action", label: "Action", required: true },
+  { name: 'title', label: 'Title', required: true },
+  { name: 'desc', label: 'Description', required: true },
+  { name: 'type', label: 'Type' },
+  { name: 'action', label: 'Action', required: true },
   {
-    name: "emoji",
-    label: "Has emoji?",
+    name: 'emoji',
+    label: 'Has emoji?',
     derived: ({ emojiChar }) => !!emojiChar,
   },
-  { name: "emojiChar", label: "Emoji character" },
-  { name: "url", label: "Has keys?", required: true },
-  { name: "favIconUrl", label: "Icon URL" },
+  { name: 'emojiChar', label: 'Emoji character' },
+  { name: 'url', label: 'Has keys?', required: true },
+  { name: 'favIconUrl', label: 'Icon URL' },
 ];
 
 function Input({ label, name, value, pattern, onChange }) {
@@ -39,7 +39,7 @@ function Input({ label, name, value, pattern, onChange }) {
 }
 
 function areObjsEqual(obj1, obj2) {
-  if (typeof obj1 === "object" && !Array.isArray(obj1)) {
+  if (typeof obj1 === 'object' && !Array.isArray(obj1)) {
     const toArray = (o) =>
       Object.keys(o)
         .sort()

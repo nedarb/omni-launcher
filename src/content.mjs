@@ -1,4 +1,7 @@
-import "./lib/webextension-polyfill.js";
+/**
+ * @typedef { import("./global").Action } Action
+ */
+import './lib/webextension-polyfill.js';
 
 import {
   html,
@@ -8,71 +11,71 @@ import {
   useCallback,
   useRef,
   useMemo,
-} from "./lib/htm-preact-standalone.mjs";
-import useDebounce from "./hooks/useDebounce.mjs";
-import useAsyncState from "./hooks/useAsyncState.mjs";
-import SearchResultsWrapper from "./components/SearchResultsWrapper.mjs";
-import * as ActionNames from "./ActionNames.mjs";
-import filterActions from "./services/actionsFilter.mjs";
-import classNames from "./utils/classNames.mjs";
+} from './lib/htm-preact-standalone.mjs';
+import useDebounce from './hooks/useDebounce.mjs';
+import useAsyncState from './hooks/useAsyncState.mjs';
+import SearchResultsWrapper from './components/SearchResultsWrapper.mjs';
+import * as ActionNames from './ActionNames.mjs';
+import filterActions from './services/actionsFilter.mjs';
+import classNames from './utils/classNames.mjs';
 
-const openSearchDescEl = document.head.querySelector(`link[rel="search"]`);
-const favIconEl = document.head.querySelector(`link[rel*="icon"]`);
+const openSearchDescEl = document.head.querySelector('link[rel="search"]');
+const favIconEl = document.head.querySelector('link[rel*="icon"]');
 if (openSearchDescEl) {
   browser.runtime.sendMessage({
-    request: "add-search-engine",
+    request: 'add-search-engine',
     title: document.title,
     url: openSearchDescEl.href,
     favIconUrl: favIconEl?.href,
   });
 }
 
-const CloseFlashAction = "close-flash";
+const CloseFlashAction = 'close-flash';
 
 /**
  * @type { Array<Action> }
  */
 const Commands = [
   {
-    title: "History",
-    desc: "Search browsing history",
-    type: "command",
-    shortcut: "/h",
-    searchPrefix: "/history",
+    title: 'History',
+    desc: 'Search browsing history',
+    type: 'command',
+    shortcut: '/h',
+    searchPrefix: '/history',
     emoji: true,
-    emojiChar: "🏛",
+    emojiChar: '🏛',
   },
   {
-    title: "Tabs",
-    desc: "Search your open tabs",
-    type: "command",
-    shortcut: "/t",
-    searchPrefix: "/tabs",
+    title: 'Tabs',
+    desc: 'Search your open tabs',
+    type: 'command',
+    shortcut: '/t',
+    searchPrefix: '/tabs',
   },
   {
-    title: "Bookmarks",
-    desc: "Search bookmarks",
-    type: "command",
-    shortcut: "/b",
-    searchPrefix: "/bookmarks",
+    title: 'Bookmarks',
+    desc: 'Search bookmarks',
+    type: 'command',
+    shortcut: '/b',
+    searchPrefix: '/bookmarks',
     emoji: true,
-    emojiChar: "📕",
+    emojiChar: '📕',
   },
   {
-    title: "Actions",
-    desc: "Search actions",
-    type: "command",
-    shortcut: "/a",
-    searchPrefix: "/actions",
+    title: 'Actions',
+    desc: 'Search actions',
+    type: 'command',
+    shortcut: '/a',
+    searchPrefix: '/actions',
   },
   {
-    title: "Remove",
-    desc: "Remove a tab or a bookmark",
-    type: "command",
-    shortcut: "/r",
-    searchPrefix: "/remove",
+    title: 'Remove',
+    desc: 'Remove a tab or a bookmark',
+    type: 'command',
+    shortcut: '/r',
+    searchPrefix: '/remove',
     emoji: true,
-    emojiChar: "🧹",
+    emojiChar: '🧹',
   },
 ];
 
@@ -83,39 +86,39 @@ const Commands = [
  */
 function handleAction(action, eventOptions) {
   const openUrl = (url = action.url) =>
-    eventOptions?.metaKey ? window.open(url) : window.open(url, "_self");
+    eventOptions?.metaKey ? window.open(url) : window.open(url, '_self');
   switch (action.action) {
-    case "scroll-bottom":
-      window.scrollTo(0, document.body.scrollHeight);
-      break;
-    case "scroll-top":
-      window.scrollTo(0, 0);
-      break;
-    case "url":
-    case "bookmark":
-    case "navigation":
-    case "history":
+  case 'scroll-bottom':
+    window.scrollTo(0, document.body.scrollHeight);
+    break;
+  case 'scroll-top':
+    window.scrollTo(0, 0);
+    break;
+  case 'url':
+  case 'bookmark':
+  case 'navigation':
+  case 'history':
+    openUrl();
+    break;
+  case 'fullscreen':
+    var elem = document.documentElement;
+    elem.requestFullscreen();
+    break;
+  case 'new-tab':
+    window.open('');
+    break;
+  case 'email':
+    window.open('mailto:');
+    break;
+  case CloseFlashAction:
+    console.debug('Closing Flash');
+    break;
+  default:
+    console.error(`NO HANDLER FOR ${action.action}`);
+    if (action.url) {
       openUrl();
-      break;
-    case "fullscreen":
-      var elem = document.documentElement;
-      elem.requestFullscreen();
-      break;
-    case "new-tab":
-      window.open("");
-      break;
-    case "email":
-      window.open("mailto:");
-      break;
-    case CloseFlashAction:
-      console.debug(`Closing Flash`);
-      break;
-    default:
-      console.error(`NO HANDLER FOR ${action.action}`);
-      if (action.url) {
-        openUrl();
-        return;
-      }
+      return;
+    }
   }
 }
 
@@ -123,12 +126,12 @@ function HistorySearch({ searchTerm, handleAction }) {
   // const [searched, setSearched] = useState([]);
   const searched = useAsyncState(
     async () => {
-      console.log("searching history");
-      const query = searchTerm.replace(/\/history\s*/, "");
+      console.log('searching history');
+      const query = searchTerm.replace(/\/history\s*/, '');
 
-      console.log("searching history", query);
+      console.log('searching history', query);
       const response = await browser.runtime.sendMessage({
-        request: "search-history",
+        request: 'search-history',
         query,
         maxResults: !query ? 30 : 300,
       });
@@ -139,7 +142,7 @@ function HistorySearch({ searchTerm, handleAction }) {
   );
 
   if (!searched) {
-    console.log(`!searched!`, searched);
+    console.log('!searched!', searched);
     return null;
   }
   return html`<${SearchResultsWrapper}
@@ -151,17 +154,17 @@ function HistorySearch({ searchTerm, handleAction }) {
 function BookmarksSearch({ searchTerm, allActions, handleAction }) {
   const searchedActions = useAsyncState(
     async () => {
-      const tempvalue = searchTerm.replace("/bookmarks ", "");
-      if (tempvalue != "/bookmarks" && tempvalue != "") {
-        const query = searchTerm.replace("/bookmarks ", "");
+      const tempvalue = searchTerm.replace('/bookmarks ', '');
+      if (tempvalue != '/bookmarks' && tempvalue != '') {
+        const query = searchTerm.replace('/bookmarks ', '');
         const response = await browser.runtime.sendMessage({
-          request: "search-bookmarks",
+          request: 'search-bookmarks',
           query,
         });
-        console.log("got bookmarks", response);
+        console.log('got bookmarks', response);
         return response.bookmarks;
       } else {
-        return allActions.filter((x) => x.type == "bookmark");
+        return allActions.filter((x) => x.type == 'bookmark');
       }
     },
     [],
@@ -186,7 +189,7 @@ function RemoveList({ searchTerm, actions, handleAction }) {
     const lower = searchTerm.toLowerCase();
     return actions.filter(
       (a) =>
-        (a.type === "bookmark" || a.type === "tab") &&
+        (a.type === 'bookmark' || a.type === 'tab') &&
         (a.title.toLowerCase().includes(lower) ||
           a.url?.toLowerCase().includes(lower))
     );
@@ -194,7 +197,7 @@ function RemoveList({ searchTerm, actions, handleAction }) {
   const doHandle = useCallback(
     (action, options, ...args) => {
       console.log(`Removing ${action.title}`, action);
-      handleAction(action, { ...options, request: "remove" }, ...args);
+      handleAction(action, { ...options, request: 'remove' }, ...args);
     },
     [actions, handleAction]
   );
@@ -203,33 +206,6 @@ function RemoveList({ searchTerm, actions, handleAction }) {
     actions=${filtered}
     handleAction=${doHandle}
     selectVerb="Remove"
-  />`;
-}
-
-function CustomSearch({ handleAction, searchTerm, customAction }) {
-  const tempvalue = searchTerm.replace(
-    new RegExp("^" + customAction.shortcut + "\\s*", "i"),
-    ""
-  );
-  console.log("custom action search!", customAction, tempvalue);
-  const urlTemplate = customAction.url;
-  return html`<${SearchResultsWrapper}
-    actions=${[
-      {
-        title: customAction.title,
-        desc: tempvalue
-          ? `Search ${customAction.title} for ${tempvalue}`
-          : `Search ${customAction.title}`,
-        type: "action",
-        url: urlTemplate.replace("{searchTerms}", tempvalue),
-        favIconUrl: customAction.favIconUrl,
-        action: "url",
-        // emoji: true,
-        // emojiChar: "🗄",
-        keycheck: false,
-      },
-    ]}
-    handleAction=${handleAction}
   />`;
 }
 
@@ -242,19 +218,19 @@ function FlashList({ searchTerm, handleAction }) {
     (a) => a.action === ActionNames.CustomSearch
   );
   const customAction = customActions.find(
-    (a) => lowerTerm.split(" ")[0].toLowerCase() === a.shortcut
+    (a) => lowerTerm.split(' ')[0].toLowerCase() === a.shortcut
   );
 
   // console.log("foobar");
   const historySearchResults = useAsyncState(
     async () => {
-      if (!searchTerm || searchTerm.startsWith("/") || customAction) {
+      if (!searchTerm || searchTerm.startsWith('/') || customAction) {
         return;
       }
 
-      console.log("searching history", searchTerm);
+      console.log('searching history', searchTerm);
       const response = await browser.runtime.sendMessage({
-        request: "search-history",
+        request: 'search-history',
         query: searchTerm,
         maxResults: 30,
       });
@@ -267,7 +243,7 @@ function FlashList({ searchTerm, handleAction }) {
 
   useEffect(async () => {
     const response = await browser.runtime.sendMessage({
-      request: "get-actions",
+      request: 'get-actions',
     });
     // console.log(`get-actions`, response.actions.reduce((map, item) => {
     //   map[item.type] = (map[item.type] || 0) + 1;
@@ -278,28 +254,28 @@ function FlashList({ searchTerm, handleAction }) {
 
   useEffect(() => {
     if (
-      lowerTerm.startsWith("/history") ||
-      lowerTerm.startsWith("/bookmarks" || customAction)
+      lowerTerm.startsWith('/history') ||
+      lowerTerm.startsWith('/bookmarks' || customAction)
     ) {
       return;
     }
 
-    if (lowerTerm.startsWith("instagram ")) {
-      const tempvalue = searchTerm.replace(/instagram\s*/, "").toLowerCase();
-      const url = tempvalue.startsWith("#")
+    if (lowerTerm.startsWith('instagram ')) {
+      const tempvalue = searchTerm.replace(/instagram\s*/, '').toLowerCase();
+      const url = tempvalue.startsWith('#')
         ? `https://www.instagram.com/explore/tags/${tempvalue}/`
         : `https://www.instagram.com/explore/search/keyword/?q=${encodeURIComponent(
-            tempvalue
-          )}`;
+          tempvalue
+        )}`;
       setFiltered([
         {
           title: `Search instagram for ${tempvalue}`,
           desc: `Search instagram for ${tempvalue}`,
-          type: "action",
+          type: 'action',
           url,
           favIconUrl:
-            "https://www.instagram.com/static/images/ico/favicon.ico/36b3ee2d91ed.ico",
-          action: "url",
+            'https://www.instagram.com/static/images/ico/favicon.ico/36b3ee2d91ed.ico',
+          action: 'url',
           // emoji: true,
           // emojiChar: "🗄",
           keycheck: false,
@@ -309,7 +285,7 @@ function FlashList({ searchTerm, handleAction }) {
     }
 
     const filtered = filterActions(searchTerm, allActions);
-    console.log(`filtered down to `, filtered);
+    console.log('filtered down to ', filtered);
     setFiltered(filtered);
   }, [allActions, searchTerm]);
 
@@ -325,21 +301,21 @@ function FlashList({ searchTerm, handleAction }) {
   //   }
   // }
 
-  if (searchTerm.startsWith("/remove")) {
+  if (searchTerm.startsWith('/remove')) {
     return html`<${RemoveList}
       actions=${allActions}
-      searchTerm=${searchTerm.replace(/^\/remove\s*/, "")}
+      searchTerm=${searchTerm.replace(/^\/remove\s*/, '')}
       handleAction=${handleAction}
     />`;
   }
 
-  if (searchTerm.startsWith("/history")) {
+  if (searchTerm.startsWith('/history')) {
     return html`<${HistorySearch}
       searchTerm=${searchTerm}
       handleAction=${handleAction}
     />`;
   }
-  if (searchTerm.startsWith("/bookmarks")) {
+  if (searchTerm.startsWith('/bookmarks')) {
     return html`<${BookmarksSearch}
       searchTerm=${searchTerm}
       allActions=${allActions}
@@ -348,7 +324,7 @@ function FlashList({ searchTerm, handleAction }) {
   }
 
   if (
-    searchTerm.startsWith("/") &&
+    searchTerm.startsWith('/') &&
     !Commands.some((a) => searchTerm.startsWith(a.searchPrefix))
   ) {
     return html`<${RenderCommands} handleAction=${handleAction} />`;
@@ -361,16 +337,16 @@ function FlashList({ searchTerm, handleAction }) {
 }
 
 const Shortcuts = {
-  "/h": "/history",
-  "/t": "/tabs",
-  "/b": "/bookmarks",
-  "/a": "/actions",
-  "/r": "/remove",
+  '/h': '/history',
+  '/t': '/tabs',
+  '/b': '/bookmarks',
+  '/a': '/actions',
+  '/r': '/remove',
 };
 
 function MainApp(props) {
   const { showing, handleAction } = props;
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearchTerm = useDebounce(search, 250);
   const input = useRef(null);
   const onSearchChange = useCallback((e) => {
@@ -378,7 +354,7 @@ function MainApp(props) {
     const newValue = e.target.value;
     const shortcut = Shortcuts[newValue];
     if (shortcut) {
-      setSearch(shortcut + " ");
+      setSearch(shortcut + ' ');
       return;
     }
     setSearch(Shortcuts[newValue] || newValue);
@@ -392,7 +368,7 @@ function MainApp(props) {
       );
       return () => clearTimeout(timeout);
     } else {
-      setSearch("");
+      setSearch('');
     }
   }, [showing]);
 
@@ -403,7 +379,7 @@ function MainApp(props) {
         return;
       }
 
-      setSearch("");
+      setSearch('');
       handleAction(action, ...args);
     },
     [handleAction]
@@ -415,7 +391,7 @@ function MainApp(props) {
 
   return html`<div
     id="flash-extension"
-    class="${classNames("flash-extension", !showing && "flash-closing")}"
+    class="${classNames('flash-extension', !showing && 'flash-closing')}"
   >
     <div id="flash-overlay" onClick=${onOverlayClick}></div>
     <div id="flash-wrap">
@@ -444,7 +420,7 @@ function App() {
   useEffect(() => {
     // Recieve messages from background
     browser.runtime.onMessage.addListener((message) => {
-      if (message.request == "open-flash") {
+      if (message.request == 'open-flash') {
         setIsOpen((isOpen) => !isOpen);
       }
     });
@@ -454,18 +430,18 @@ function App() {
     if (isOpen) {
       const onKeyDown = (e) => {
         switch (e.key) {
-          case "Escape":
-            if (isOpen) {
-              setIsOpen(false);
-              e.preventDefault();
-            }
-            break;
+        case 'Escape':
+          if (isOpen) {
+            setIsOpen(false);
+            e.preventDefault();
+          }
+          break;
         }
       };
-      window.addEventListener("keydown", onKeyDown);
+      window.addEventListener('keydown', onKeyDown);
       return () => {
-        console.debug("unsub - escape");
-        window.removeEventListener("keydown", onKeyDown);
+        console.debug('unsub - escape');
+        window.removeEventListener('keydown', onKeyDown);
       };
     }
   }, [isOpen]);
@@ -473,8 +449,8 @@ function App() {
   const actionHandler = useCallback(async (action, eventOptions) => {
     setIsOpen(false);
 
-    console.log(`HANDLING ACTION!`, action, eventOptions);
-    if (action.action === "history" && action.url) {
+    console.log('HANDLING ACTION!', action, eventOptions);
+    if (action.action === 'history' && action.url) {
       handleAction(action, eventOptions);
       return;
     }
@@ -493,4 +469,4 @@ function App() {
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-render(html`<${App} />`, document.getElementById("flash-extension-wrapper"));
+render(html`<${App} />`, document.getElementById('flash-extension-wrapper'));

@@ -3,17 +3,16 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
-} from "../lib/htm-preact-standalone.mjs";
-import FlashItem from "./FlashItem.mjs";
+} from '../lib/htm-preact-standalone.mjs';
+import FlashItem from './FlashItem.mjs';
 
 function SearchResults({
   actions,
   handleAction,
   onOverItem,
   selectedIndex,
-  selectVerb = "Select",
+  selectVerb = 'Select',
 }) {
   const sliced = useMemo(() => actions.slice(0, 250), [actions]);
   const total = actions.length;
@@ -36,7 +35,7 @@ function SearchResults({
     <div id="flash-list">${list}</div>
     <div id="flash-footer">
       <div id="flash-results">
-        ${list.length}${list.length < total ? "+" : ""} results
+        ${list.length}${list.length < total ? '+' : ''} results
       </div>
       <div id="flash-arrows">
         Use arrow keys <span class="flash-shortcut">↑</span
@@ -49,7 +48,7 @@ function SearchResults({
 export default function SearchResultsWrapper({
   actions,
   handleAction,
-  selectVerb = "Select",
+  selectVerb = 'Select',
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
@@ -67,25 +66,26 @@ export default function SearchResultsWrapper({
     function handler(e) {
       const len = actions.length;
       switch (e.key) {
-        case "ArrowUp":
-          e.preventDefault();
-          setSelectedIndex((i) => Math.max(0, i - 1));
-          break;
-        case "ArrowDown":
-          e.preventDefault();
-          setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
-          break;
-        case "Enter":
-          e.preventDefault();
-          const action = actions[selectedIndex];
-          handleAction && handleAction(action, { metaKey: e.metaKey });
-          break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(0, i - 1));
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
+        break;
+      case 'Enter':{
+        e.preventDefault();
+        const action = actions[selectedIndex];
+        handleAction && handleAction(action, { metaKey: e.metaKey });
+        break;
+      }
       }
     }
-    window.addEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
     return () => {
       // console.debug("unsub");
-      window.removeEventListener("keydown", handler);
+      window.removeEventListener('keydown', handler);
     };
   }, [selectedIndex, actions, handleAction]);
 
