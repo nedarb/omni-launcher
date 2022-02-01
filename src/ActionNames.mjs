@@ -6,3 +6,4 @@ export const ClearCache = 'remove-cache';
 export const ClearLocalStorage = 'remove-local-storage';
 export const ClearPasswords = 'remove-passwords';
 export const ClearHistory = 'remove-history';
+export const RemoveDuplicateTabs = 'remove-duplicate-tabs';

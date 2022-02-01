@@ -18,6 +18,7 @@ import {
   ClearPasswords,
   CustomSearch,
   Options,
+  RemoveDuplicateTabs,
 } from './ActionNames.mjs';
 import {
   clearAllData,
@@ -788,13 +789,34 @@ const getCurrentTab = async () => {
 // Get tabs to populate in the actions
 const getTabs = async () => {
   const tabs = await browser.tabs.query({});
-  return tabs.map((tab) => ({
+  /** @type {Array<Action>} */
+  const result = tabs.map((tab) => ({
     ...tab,
+    id: tab.id?.toString(),
+    title: tab.title,
     desc: 'Chrome tab',
     keycheck: false,
     action: 'switch-tab',
     type: 'tab',
   }));
+
+  // check for duplicates
+  const urlToTabsMap = result.reduce((map, tab)=> {
+    const existing = map.get(tab.url) || [];
+    map.set(tab.url, [...existing, tab]);
+    return map;
+  }, new Map());
+  const duplicates = Array.from(urlToTabsMap.entries()).filter(([,tabs])=>tabs.length>1);
+  if (duplicates.length>0) {
+    const tabCountToRemove = duplicates.map(([,tabs])=>tabs.length - 1).reduce((a,b)=>a+b);
+    result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`});
+  }
+  const duplicatedTabs = duplicates.map(([,tabs])=> tabs).flat();
+  for(const tab of duplicatedTabs) {
+    tab.isDuplicate = true;
+  }
+
+  return result;
 };
 
 // Get bookmarks to populate in the actions
@@ -1037,11 +1059,18 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       message.url,
       message.favIconUrl
     );
+  case RemoveDuplicateTabs: 
+    return await removeDuplicateTabs();
   default:
     console.warn('Unable to handle message', message);
     return false;
   }
 });
+
+async function removeDuplicateTabs() {
+  const tabs = await browser.tabs.query({});
+  // TODO
+}
 
 async function addSearchEngine(title, url, favIconUrl) {
   const existingAction = await getCustomActionForOpenXmlUrl(url);

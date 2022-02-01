@@ -13,6 +13,7 @@ interface Action {
   action: string;
   requiresPermission?: string;
   hasPermission?: boolean;
+  isDuplicate?: boolean;
   url?: string;
   searchPrefix?: string;
   shortcut?: string;
@@ -21,4 +22,5 @@ interface Action {
   favIconUrl?: string;
   keycheck?: boolean;
   keys?: Array<string>;
+  payload?: any;
 }
