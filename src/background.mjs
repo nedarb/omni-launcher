@@ -28,6 +28,7 @@ import {
   clearLocalStorage,
   clearPasswords,
 } from './actions/browsingDataActions.mjs';
+import { bySelector, chain, inverse } from './utils/sorters.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -792,7 +793,6 @@ const getTabs = async () => {
   /** @type {Array<Action>} */
   const result = tabs.map((tab) => ({
     ...tab,
-    id: tab.id?.toString(),
     title: tab.title,
     desc: 'Chrome tab',
     keycheck: false,
@@ -808,8 +808,16 @@ const getTabs = async () => {
   }, new Map());
   const duplicates = Array.from(urlToTabsMap.entries()).filter(([,tabs])=>tabs.length>1);
   if (duplicates.length>0) {
-    const tabCountToRemove = duplicates.map(([,tabs])=>tabs.length - 1).reduce((a,b)=>a+b);
-    result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`});
+    const tabsToRemove = duplicates.map(([,tabs])=>tabs.sort(chain(
+      inverse(bySelector(t=>t.active)),
+      bySelector(t=>t.highlighted),
+      bySelector(t=>t.selected),
+      bySelector(t=>t.id)
+    )))
+    .map(tabs=>tabs.slice(1))
+    .flat();
+    const tabCountToRemove = tabsToRemove.length;
+    result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`, payload: tabsToRemove.map(t=>t.id)});
   }
   const duplicatedTabs = duplicates.map(([,tabs])=> tabs).flat();
   for(const tab of duplicatedTabs) {
@@ -1060,16 +1068,16 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       message.favIconUrl
     );
   case RemoveDuplicateTabs: 
-    return await removeDuplicateTabs();
+    return await removeDuplicateTabs(message.payload);
   default:
     console.warn('Unable to handle message', message);
     return false;
   }
 });
 
-async function removeDuplicateTabs() {
-  const tabs = await browser.tabs.query({});
-  // TODO
+async function removeDuplicateTabs(arrayOfTabIds) {
+  console.warn(`Removing ${arrayOfTabIds}`);
+  await browser.tabs.remove(arrayOfTabIds);
 }
 
 async function addSearchEngine(title, url, favIconUrl) {

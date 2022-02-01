@@ -5,7 +5,7 @@ declare global {
 }
 
 interface Action {
-  id?: string;
+  id?: string | number;
   incognito?: boolean;
   title: string;
   desc: string;

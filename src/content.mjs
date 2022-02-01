@@ -457,6 +457,7 @@ function App() {
 
     const response = await browser.runtime.sendMessage({
       request: eventOptions?.request || action.action,
+      payload: action.payload,
       tab: action,
       action,
     });
