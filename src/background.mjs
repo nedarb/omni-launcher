@@ -1083,6 +1083,7 @@ async function removeDuplicateTabs(arrayOfTabIds) {
 async function addSearchEngine(title, url, favIconUrl) {
   const existingAction = await getCustomActionForOpenXmlUrl(url);
   if (existingAction) {
+    console.warn(`Custom action for ${url} already exists.`);
     return;
   }
 
@@ -1136,6 +1137,9 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     // checking image URL...
     if (props.favIconUrl) {
+      if (props.favIconUrl.startsWith("data:")) {
+        delete props.favIconUrl;
+      } else {
       try {
         const r = await fetch(props.favIconUrl);
         if (!r.ok) {
@@ -1153,6 +1157,7 @@ async function addSearchEngine(title, url, favIconUrl) {
         delete props.favIconUrl;
       }
     }
+    }
 
     if (!props.favIconUrl && favIconUrl) {
       props.favIconUrl = favIconUrl;
@@ -1164,7 +1169,12 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     console.log('determined action: ', props);
     if (props.title && props.url) {
+      try {
       await upsertCustomAction(props);
+      } catch (e) {
+        console.error(`Problem upserting custom search engine`, props, e);
+        throw e;
+      }
     }
   }
 }
