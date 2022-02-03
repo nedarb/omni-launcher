@@ -9,7 +9,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.json"]
   },
-  "globals": { "browser": true },
+  "globals": { "browser": true, "chrome": true },
   "rules": {
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],

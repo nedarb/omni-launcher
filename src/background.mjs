@@ -18,6 +18,7 @@ import {
   ClearPasswords,
   CustomSearch,
   Options,
+  RemoveDuplicateTabs,
 } from './ActionNames.mjs';
 import {
   clearAllData,
@@ -27,6 +28,7 @@ import {
   clearLocalStorage,
   clearPasswords,
 } from './actions/browsingDataActions.mjs';
+import { bySelector, chain, inverse } from './utils/sorters.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -788,13 +790,41 @@ const getCurrentTab = async () => {
 // Get tabs to populate in the actions
 const getTabs = async () => {
   const tabs = await browser.tabs.query({});
-  return tabs.map((tab) => ({
+  /** @type {Array<Action>} */
+  const result = tabs.map((tab) => ({
     ...tab,
+    title: tab.title,
     desc: 'Chrome tab',
     keycheck: false,
     action: 'switch-tab',
     type: 'tab',
   }));
+
+  // check for duplicates
+  const urlToTabsMap = result.reduce((map, tab)=> {
+    const existing = map.get(tab.url) || [];
+    map.set(tab.url, [...existing, tab]);
+    return map;
+  }, new Map());
+  const duplicates = Array.from(urlToTabsMap.entries()).filter(([,tabs])=>tabs.length>1);
+  if (duplicates.length>0) {
+    const tabsToRemove = duplicates.map(([,tabs])=>tabs.sort(chain(
+      inverse(bySelector(t=>t.active)),
+      bySelector(t=>t.highlighted),
+      bySelector(t=>t.selected),
+      bySelector(t=>t.id)
+    )))
+      .map(tabs=>tabs.slice(1))
+      .flat();
+    const tabCountToRemove = tabsToRemove.length;
+    result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`, payload: tabsToRemove.map(t=>t.id)});
+  }
+  const duplicatedTabs = duplicates.map(([,tabs])=> tabs).flat();
+  for(const tab of duplicatedTabs) {
+    tab.isDuplicate = true;
+  }
+
+  return result;
 };
 
 // Get bookmarks to populate in the actions
@@ -1037,15 +1067,23 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       message.url,
       message.favIconUrl
     );
+  case RemoveDuplicateTabs: 
+    return await removeDuplicateTabs(message.payload);
   default:
     console.warn('Unable to handle message', message);
     return false;
   }
 });
 
+async function removeDuplicateTabs(arrayOfTabIds) {
+  console.warn(`Removing ${arrayOfTabIds}`);
+  await browser.tabs.remove(arrayOfTabIds);
+}
+
 async function addSearchEngine(title, url, favIconUrl) {
   const existingAction = await getCustomActionForOpenXmlUrl(url);
   if (existingAction) {
+    console.warn(`Custom action for ${url} already exists.`);
     return;
   }
 
@@ -1099,21 +1137,25 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     // checking image URL...
     if (props.favIconUrl) {
-      try {
-        const r = await fetch(props.favIconUrl);
-        if (!r.ok) {
-          throw new Error(r.statusText);
-        }
-        console.debug(
-          `icon is valid for ${props.title} at ${props.favIconUrl}`,
-          r
-        );
-      } catch (e) {
-        console.warn(
-          `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
-          e
-        );
+      if (props.favIconUrl.startsWith('data:')) {
         delete props.favIconUrl;
+      } else {
+        try {
+          const r = await fetch(props.favIconUrl);
+          if (!r.ok) {
+            throw new Error(r.statusText);
+          }
+          console.debug(
+            `icon is valid for ${props.title} at ${props.favIconUrl}`,
+            r
+          );
+        } catch (e) {
+          console.warn(
+            `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
+            e
+          );
+          delete props.favIconUrl;
+        }
       }
     }
 
@@ -1127,7 +1169,12 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     console.log('determined action: ', props);
     if (props.title && props.url) {
-      await upsertCustomAction(props);
+      try {
+        await upsertCustomAction(props);
+      } catch (e) {
+        console.error('Problem upserting custom search engine', props, e);
+        throw e;
+      }
     }
   }
 }

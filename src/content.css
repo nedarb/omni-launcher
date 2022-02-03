@@ -1,7 +1,7 @@
 html {
   scroll-behavior: smooth;
 }
-:root {
+.flash-extension {
   --overlay-width: 700px;
 }
 /* Scrollbar size */
@@ -39,7 +39,7 @@ html {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  .flash-extension {
     --background: #1e2128;
     --border: #35373e;
     --text: #f1f1f1;
@@ -56,7 +56,7 @@ html {
   }
 }
 @media (prefers-color-scheme: light) {
-  :root {
+  .flash-extension {
     --background: #fafcff;
     --border: #f2f3fb;
     --text: #2b2d41;
@@ -94,9 +94,6 @@ html {
   font-style: normal;
   font-weight: 700;
   src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
-}
-.flash-extension * {
-  /* display: block; */
 }
 .flash-extension .flash-item-details * {
   line-height: normal;

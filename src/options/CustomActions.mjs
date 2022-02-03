@@ -4,14 +4,12 @@
 
 import {
   html,
-  render,
   useState,
   useEffect,
   useCallback,
 } from '../lib/htm-preact-standalone.mjs';
 import {
   getCustomActions,
-  addCustomAction,
   upsertCustomAction,
   deleteAction,
 } from '../services/customActions.mjs';
@@ -62,31 +60,6 @@ export default function CustomActions() {
   useEffect(() => {
     getCustomActions().then((r) => setActions(r));
   }, []);
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault();
-      const formValues = Array.from(e.target.querySelectorAll('input[name]'))
-        .map((el) => ({ name: el.name, value: el.value }))
-        .reduce(
-          (map, { name, value }) => {
-            if (name === 'name') {
-              map.title = map.desc = value;
-            } else if (name === 'emoji' && value) {
-              map.emojiChar = value;
-              map.emoji = true;
-            } else {
-              map[name] = value;
-            }
-            return map;
-          },
-          { type: 'action' }
-        );
-      if (formValues) {
-        setActions(await addCustomAction(formValues));
-      }
-    },
-    [actions]
-  );
 
   const onSave = useCallback(
     async (draftAction) => {
@@ -104,29 +77,6 @@ export default function CustomActions() {
     },
     [actions]
   );
-
-  const addForm = html`<form onSubmit=${handleSubmit}>
-    <div>Name: <input name="name" type="text" value="MDN" /></div>
-    <div>
-      Emoji icon:
-      <input name="emoji" type="text" value="✨" minlength="0" maxlength="3" />
-    </div>
-    <div>
-      Fav icon URL:
-      <input
-        name="favIconUrl"
-        type="text"
-        value="https://developer.mozilla.org/favicon-48x48.97046865.png"
-        minlength="0"
-        maxlength="3"
-      />
-    </div>
-    <div>
-      URL:
-      <input name="url" type="text" value="https://developer.mozilla.org/" />
-    </div>
-    <input type="submit" value="Add" />
-  </form>`;
 
   return html`<div>
     <h2>Custom actions:</h2>

@@ -4,30 +4,76 @@
 import '../lib/webextension-polyfill.js';
 
 const StorageName = 'customActions';
+const CustomActionPrefix = 'custom-action:';
 
 // @ts-ignore
 const uuid = () => crypto.randomUUID();
 
-/**
- * @template T
- * @param {()=>T} implFn
- * @returns {()=>T}
- */
-function manageConcurrent(implFn) {
-  let current;
-  return function (...args) {
-    if (current) {
-      console.log('pre-existing call ongoing');
-      return current;
+const GetStorageKeyForId = id => `${CustomActionPrefix}${id}`;
+
+const LegacyActionsMigration = async (items, removeFn, setFn)=>{
+  const {customActions} = items;
+  if (customActions) {
+    const result = {...items};
+    delete result.customActions;
+    await removeFn('customActions');
+
+    // split up custom actions
+    console.log('customActions=', Object.entries(customActions));
+    for(const action of customActions) {
+      const {id} = action;
+      const key = GetStorageKeyForId(id);
+      result[key] = action;
+      await setFn({[key]: action});
+    }
+    return result;
+  }
+  return items;
+};
+
+class StorageCache {
+  #cache = {};
+  #initPromise;
+  constructor() {
+    this.#initPromise = browser.storage.sync.get(null)
+      .then(items=>LegacyActionsMigration(items, browser.storage.sync.remove, browser.storage.sync.set))
+      .then(items => {
+        for (const [key, value] of Object.entries(items)) {
+          this.#cache[key] = value;
+        }
+        console.log('final items', this.#cache);
+      });
+  }
+
+  async get(key) {
+    await this.#initPromise;
+    return this.#cache[key];
+  }
+  async set(key, value) {
+    await this.#initPromise;
+    await browser.storage.sync.set({[key]: value});
+    this.#cache[key] = value;
+  }
+  async remove(key) {
+    await this.#initPromise;
+    delete this.#cache[key];
+    await browser.storage.sync.remove(key);
+  }
+
+  async getAll(keyPrefix = '') {
+    const result = {};
+    await this.#initPromise;
+    for (const [key, value] of Object.entries(this.#cache)) {
+      if (key.startsWith(keyPrefix)) {
+        result[key] = value;
+      }
     }
 
-    current = implFn.call(this, ...args);
-    if (current instanceof Promise) {
-      current.finally(() => (current = null));
-    }
-    return current;
-  };
+    return result;
+  }
 }
+
+const storageCache = new StorageCache();
 
 async function saveActions(actions) {
   await browser.storage.sync.set({ [StorageName]: actions });
@@ -41,46 +87,10 @@ export async function getCustomActionForOpenXmlUrl(openSearchXmlUrl) {
   );
 }
 
-/**
- * Get all custom actions
- * @returns {Promise<Array<Action & { id: string; openSearchXmlUrl?: string; }>>}
- */
-export async function getCustomActionsImpl() {
-  const result = await browser.storage.sync.get(StorageName);
-  const entries = result[StorageName] || [];
-  let migrated = false;
-  const urls = new Set();
-  for (let i = 0; i < entries.length; i++) {
-    const entry = entries[i];
-    if (urls.has(entry.url)) {
-      console.warn(`Removing duplicate ${entry.url}`, entry);
-      entries[i] = null;
-      migrated = true;
-      continue;
-    }
-
-    if (!entry.id) {
-      entry.id = uuid();
-      migrated = true;
-    }
-    if (!entry.shortcut) {
-      entry.shortcut = new URL(entry.url).host;
-      migrated = true;
-    }
-    if (!entry.desc) {
-      entry.desc = entry.title;
-      migrated = true;
-    }
-    urls.add(entry.url);
-  }
-  if (migrated) {
-    console.info('migrated some custom actions.');
-    return await saveActions(entries.filter(Boolean));
-  }
-  return entries;
+export async function getCustomActions() {
+  const map = await storageCache.getAll(CustomActionPrefix);
+  return Object.values(map);
 }
-
-export const getCustomActions = manageConcurrent(getCustomActionsImpl);
 
 export async function addCustomAction(action) {
   const existing = await getCustomActions();
@@ -99,27 +109,14 @@ export async function upsertCustomAction(action) {
     action.desc = action.title;
   }
 
-  const existingActions = await getCustomActions();
-  const existingIndex = existingActions.findIndex(
-    (a) => a.id === action.id || a.url === action.url
-  );
-  if (existingIndex >= 0) {
-    const existing = existingActions[existingIndex];
-    // update an existing one
-    existingActions[existingIndex] = { ...existing, ...action };
-    return saveActions(existingActions);
-  }
+  const storageKey = GetStorageKeyForId(action.id);
 
-  return await addCustomAction(action);
+  await storageCache.set(storageKey, action);
+
+  return await getCustomActions();
 }
 
 export async function deleteAction(action) {
-  const existingActions = await getCustomActions();
-  const existingIndex = existingActions.findIndex((a) => a.id === action.id);
-  if (existingIndex >= 0) {
-    const newActions = existingActions.filter(
-      (_, index) => index !== existingIndex
-    );
-    return saveActions(newActions);
-  }
+  const storageKey = GetStorageKeyForId(action.id);
+  await storageCache.remove(storageKey);
 }

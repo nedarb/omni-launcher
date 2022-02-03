@@ -94,6 +94,7 @@ export default function FlashItem({
     <div class="flash-item-details">
       <div class="flash-item-name">
         ${action.title}
+        ${action.isDuplicate && html`<span class="duplicate">(duplicate)</span>`}
         ${action.shortcut &&
         html`<span class="shortcut">${action.shortcut}</span>`}
       </div>
