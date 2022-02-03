@@ -31,12 +31,30 @@ const LegacyActionsMigration = async (items, removeFn, setFn)=>{
   return items;
 };
 
+const RemoveDuplicates = async (map, removeFn) =>{
+  const result = {...map};
+  const existingSearchEnginesSet = new Set();
+  for (const [key, value] of Object.entries(map)) {
+    if (key.startsWith(CustomActionPrefix)) {
+      const {url} = value;
+      if (existingSearchEnginesSet.has(url)) {
+        console.warn(`Found duplicate search engine for ${url}`);
+        await removeFn(key);
+        delete result[key];
+      }
+      existingSearchEnginesSet.add(url);
+    }
+  }
+  return result;
+};
+
 class StorageCache {
   #cache = {};
   #initPromise;
   constructor() {
     this.#initPromise = browser.storage.sync.get(null)
       .then(items=>LegacyActionsMigration(items, browser.storage.sync.remove, browser.storage.sync.set))
+      .then(items=>RemoveDuplicates(items, browser.storage.sync.remove, browser.storage.sync.set))
       .then(items => {
         for (const [key, value] of Object.entries(items)) {
           this.#cache[key] = value;
