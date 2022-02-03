@@ -110,7 +110,6 @@ export async function upsertCustomAction(action) {
   }
 
   const storageKey = GetStorageKeyForId(action.id);
-  const existing = storageCache.get(storageKey);
 
   await storageCache.set(storageKey, action);
 

@@ -39,7 +39,6 @@ function OptionalPermission({ name, isEnabled, onToggle }) {
 
 function MyCmp() {
   const [hasPermission, setHasPermission] = useState([]);
-  const [customActions, setCustomActions] = useState(null);
   useEffect(async () => {
     const permissionValues = await Promise.all(
       optionalPermissions.map((perm) =>

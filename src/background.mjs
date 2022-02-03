@@ -814,8 +814,8 @@ const getTabs = async () => {
       bySelector(t=>t.selected),
       bySelector(t=>t.id)
     )))
-    .map(tabs=>tabs.slice(1))
-    .flat();
+      .map(tabs=>tabs.slice(1))
+      .flat();
     const tabCountToRemove = tabsToRemove.length;
     result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`, payload: tabsToRemove.map(t=>t.id)});
   }
@@ -1137,26 +1137,26 @@ async function addSearchEngine(title, url, favIconUrl) {
 
     // checking image URL...
     if (props.favIconUrl) {
-      if (props.favIconUrl.startsWith("data:")) {
+      if (props.favIconUrl.startsWith('data:')) {
         delete props.favIconUrl;
       } else {
-      try {
-        const r = await fetch(props.favIconUrl);
-        if (!r.ok) {
-          throw new Error(r.statusText);
+        try {
+          const r = await fetch(props.favIconUrl);
+          if (!r.ok) {
+            throw new Error(r.statusText);
+          }
+          console.debug(
+            `icon is valid for ${props.title} at ${props.favIconUrl}`,
+            r
+          );
+        } catch (e) {
+          console.warn(
+            `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
+            e
+          );
+          delete props.favIconUrl;
         }
-        console.debug(
-          `icon is valid for ${props.title} at ${props.favIconUrl}`,
-          r
-        );
-      } catch (e) {
-        console.warn(
-          `icon is invalid valid for ${props.title} at ${props.favIconUrl}`,
-          e
-        );
-        delete props.favIconUrl;
       }
-    }
     }
 
     if (!props.favIconUrl && favIconUrl) {
@@ -1170,9 +1170,9 @@ async function addSearchEngine(title, url, favIconUrl) {
     console.log('determined action: ', props);
     if (props.title && props.url) {
       try {
-      await upsertCustomAction(props);
+        await upsertCustomAction(props);
       } catch (e) {
-        console.error(`Problem upserting custom search engine`, props, e);
+        console.error('Problem upserting custom search engine', props, e);
         throw e;
       }
     }

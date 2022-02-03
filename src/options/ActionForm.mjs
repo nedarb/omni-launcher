@@ -4,27 +4,6 @@
 
 import { html, useCallback, useState } from '../lib/htm-preact-standalone.mjs';
 
-/**
- * @type {Array<{name: string;
- * required?: boolean;
- * label: string;
- * derived?:(action:import("../global.js").Action) => boolean}>}
- */
-const ActionFields = [
-  { name: 'title', label: 'Title', required: true },
-  { name: 'desc', label: 'Description', required: true },
-  { name: 'type', label: 'Type' },
-  { name: 'action', label: 'Action', required: true },
-  {
-    name: 'emoji',
-    label: 'Has emoji?',
-    derived: ({ emojiChar }) => !!emojiChar,
-  },
-  { name: 'emojiChar', label: 'Emoji character' },
-  { name: 'url', label: 'Has keys?', required: true },
-  { name: 'favIconUrl', label: 'Icon URL' },
-];
-
 function Input({ label, name, value, pattern, onChange }) {
   return html`<label
     ><span>${label}:</span>
