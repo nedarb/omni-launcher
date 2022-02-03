@@ -6,7 +6,7 @@
 
 Flash is the super fast and smart way to manage all of your open tabs and bookmarks and quickly search your history.
 
-[👉 Get it now](https://chrome.google.com/webstore/detail/...tbd...)
+[👉 Get it now](https://chrome.google.com/webstore/detail/flash/fbjoongeclchimbjngcgdkoaoeoponmj)
 
 _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome extension by [Alyssa X](https://alyssax.com).** It started to greatly deviate so a separate extension was created with permission._ 
 
