@@ -1,4 +1,4 @@
-import Fuse from '../fuse.esm.js';
+import Fuse from '../lib/fuse.esm.js';
 import * as ActionNames from '../ActionNames.mjs';
 
 const fuseOptions = {
@@ -51,6 +51,9 @@ export default function filterActions(searchTerm, allActions) {
   const firstWord = splitSearchTerm[0];
   const customActions = allActions.filter((a) => a.action === ActionNames.CustomSearch);
   const customAction = customActions.find((a) => firstWord === a.shortcut);
+
+  const fuse = new Fuse(allActions, fuseOptions);
+  console.log(`fuse results for ${searchTerm}`, fuse.search(searchTerm));
 
   return allActions.filter(
     (action) =>
