@@ -5,7 +5,7 @@
   const src = chrome.runtime.getURL('content.mjs');
 
   const div = document.createElement('div');
-  div.id = 'flash-extension-wrapper';
+  div.id = 'omni-launcher-extension-wrapper';
   document.body.appendChild(div);
 
   await import(src);

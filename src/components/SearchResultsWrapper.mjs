@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from '../lib/htm-preact-standalone.mjs';
-import FlashItem from './FlashItem.mjs';
+import OmniItem from './OmniItem.mjs';
 
 function SearchResults({
   actions,
@@ -20,7 +20,7 @@ function SearchResults({
   const list =
     Array.isArray(actions) &&
     sliced.map(function (action, index) {
-      return html`<${FlashItem}
+      return html`<${OmniItem}
         key=${action.id || action.url || action.action}
         index=${index}
         action=${action}
@@ -32,14 +32,14 @@ function SearchResults({
     });
 
   return html`<div class="search-results">
-    <div id="flash-list">${list}</div>
-    <div id="flash-footer">
-      <div id="flash-results">
+    <div id="omni-list">${list}</div>
+    <div id="omni-footer">
+      <div id="omni-results">
         ${list.length}${list.length < total ? '+' : ''} results
       </div>
-      <div id="flash-arrows">
-        Use arrow keys <span class="flash-shortcut">↑</span
-        ><span class="flash-shortcut">↓</span> to navigate
+      <div id="omni-arrows">
+        Use arrow keys <span class="omni-shortcut">↑</span
+        ><span class="omni-shortcut">↓</span> to navigate
       </div>
     </div>
   </div>`;

@@ -30,7 +30,7 @@ if (openSearchDescEl) {
   });
 }
 
-const CloseFlashAction = 'close-flash';
+const CloseOmniAction = 'close-omni';
 
 /**
  * @type { Array<Action> }
@@ -110,8 +110,8 @@ function handleAction(action, eventOptions) {
   case 'email':
     window.open('mailto:');
     break;
-  case CloseFlashAction:
-    console.debug('Closing Flash');
+  case CloseOmniAction:
+    console.debug('Closing Omni');
     break;
   default:
     console.error(`NO HANDLER FOR ${action.action}`);
@@ -209,7 +209,7 @@ function RemoveList({ searchTerm, actions, handleAction }) {
   />`;
 }
 
-function FlashList({ searchTerm, handleAction }) {
+function OmniList({ searchTerm, handleAction }) {
   const [allActions, setAllActions] = useState([]);
   const [filteredActions, setFiltered] = useState([]);
   const lowerTerm = searchTerm.toLowerCase();
@@ -386,18 +386,18 @@ function MainApp(props) {
   );
 
   const onOverlayClick = useCallback(() => {
-    handleAction({ action: CloseFlashAction });
+    handleAction({ action: CloseOmniAction });
   }, [handleAction]);
 
   return html`<div
-    id="flash-extension"
-    class="${classNames('flash-extension', !showing && 'flash-closing')}"
+    id="omni-launcher-extension"
+    class="${classNames('omni-launcher-extension', !showing && 'omni-closing')}"
   >
-    <div id="flash-overlay" onClick=${onOverlayClick}></div>
-    <div id="flash-wrap">
+    <div id="omni-overlay" onClick=${onOverlayClick}></div>
+    <div id="omni-wrap">
       ${showing &&
-      html`<div id="flash">
-        <div id="flash-search" class="flash-search">
+      html`<div id="omni">
+        <div id="omni-search" class="omni-search">
           <input
             ref=${input}
             placeholder="Type a command or search"
@@ -405,8 +405,8 @@ function MainApp(props) {
             onInput=${onSearchChange}
           />
         </div>
-        <!-- FLASH LIST -->
-        <${FlashList}
+        <!-- OMNI LIST -->
+        <${OmniList}
           searchTerm=${debouncedSearchTerm}
           handleAction=${doHandle}
         />
@@ -420,7 +420,7 @@ function App() {
   useEffect(() => {
     // Recieve messages from background
     browser.runtime.onMessage.addListener((message) => {
-      if (message.request == 'open-flash') {
+      if (message.request == 'open-omni') {
         setIsOpen((isOpen) => !isOpen);
       }
     });
@@ -470,4 +470,4 @@ function App() {
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-render(html`<${App} />`, document.getElementById('flash-extension-wrapper'));
+render(html`<${App} />`, document.getElementById('omni-launcher-extension-wrapper'));
