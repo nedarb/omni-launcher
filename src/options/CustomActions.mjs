@@ -13,7 +13,7 @@ import {
   upsertCustomAction,
   deleteAction,
 } from '../services/customActions.mjs';
-import FlashItem from '../components/FlashItem.mjs';
+import OmniItem from '../components/OmniItem.mjs';
 import ActionForm from './ActionForm.mjs';
 import { byStringSelector } from '../utils/sorters.mjs';
 
@@ -50,7 +50,7 @@ function CustomSearch({ action, onSave, onDelete }) {
     />
     <div class="preview">
       Preview:
-      <${FlashItem} action=${draft} />
+      <${OmniItem} action=${draft} />
     </div>
   </div>`;
 }

@@ -1,23 +1,23 @@
 {
-  "name": "Flash",
+  "name": "Omni Launcher",
   "description": "Quick launcher for Chrome - manage tabs, bookmarks, your browser history",
   "offline_enabled": true,
   "version": "1.0.1",
   "manifest_version": 3,
   "action": {
     "icons": {
-      "16": "assets/flash-logo-orange-16.png",
-      "48": "assets/flash-logo-orange-48.png",
-      "128": "assets/flash-logo-orange-128.png"
+      "16": "assets/omni-logo-orange-16.png",
+      "48": "assets/omni-logo-orange-48.png",
+      "128": "assets/omni-logo-orange-128.png"
     }
   },
   "icons": {
-    "16": "assets/flash-logo-orange-16.png",
-    "48": "assets/flash-logo-orange-48.png",
-    "128": "assets/flash-logo-orange-128.png"
+    "16": "assets/omni-logo-orange-16.png",
+    "48": "assets/omni-logo-orange-48.png",
+    "128": "assets/omni-logo-orange-128.png"
   },
   "commands": {
-    "open-flash": {
+    "open-omni": {
       "suggested_key": {
         "default": "Ctrl+K",
         "mac": "Command+K"
@@ -40,11 +40,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "assets/*",
-        "*.css",
-        "*.*js"
-      ],
+      "resources": ["assets/*", "*.css", "*.*js"],
       "matches": ["<all_urls>"]
     }
   ],

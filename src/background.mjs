@@ -132,10 +132,10 @@ const clearActions = async () => {
     },
     // {
     //   title: "Help",
-    //   desc: "Get help with Flash on GitHub",
+    //   desc: "Get help with Omni Launcher on GitHub",
     //   type: "action",
     //   action: "url",
-    //   url: "flash-help.html",
+    //   url: "omni-help.html",
     //   emoji: true,
     //   emojiChar: "🤔",
     //   keycheck: false,
@@ -648,10 +648,10 @@ const clearActions = async () => {
     },
     {
       title: 'Options',
-      desc: 'Flash options',
+      desc: 'Omni Launcher options',
       type: 'action',
       action: Options,
-      favIconUrl: browser.runtime.getURL('assets/flash-logo-orange.svg'),
+      favIconUrl: browser.runtime.getURL('assets/omni-logo-orange.svg'),
     },
   ];
 
@@ -713,7 +713,7 @@ const clearActions = async () => {
 
 // Open on install
 browser.runtime.onInstalled.addListener(async (object) => {
-  // Inject Flash on install
+  // Inject Omni Launcher on install
   const manifest = browser.runtime.getManifest();
 
   const injectIntoTab = async (tab) => {
@@ -759,24 +759,24 @@ browser.runtime.onInstalled.addListener(async (object) => {
 
   if (object.reason === 'install') {
     // TODO: open a tab with instructions what to do next
-    // browser.tabs.create({ url: "flash-help.html" });
+    // browser.tabs.create({ url: "omni-help.html" });
   }
 });
 
 // Check when the extension button is clicked
 browser.action.onClicked.addListener((tab) => {
-  browser.tabs.sendMessage(tab.id, { request: 'open-flash' });
+  browser.tabs.sendMessage(tab.id, { request: 'open-omni' });
 });
 
-// Listen for the open Flash shortcut
+// Listen for the open Omni Launcher shortcut
 browser.commands.onCommand.addListener(async (command) => {
-  if (command === 'open-flash') {
+  if (command === 'open-omni') {
     const tabs = await browser.tabs.query({
       active: true,
       currentWindow: true,
     });
     if (tabs.length > 0)
-      browser.tabs.sendMessage(tabs[0].id, { request: 'open-flash' });
+      browser.tabs.sendMessage(tabs[0].id, { request: 'open-omni' });
   }
 });
 

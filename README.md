@@ -1,10 +1,10 @@
-# Flash
+# Omni Launcher
 
 ![Preview](preview.gif)
 <br>
 <br>
 
-Flash is the super fast and smart way to manage all of your open tabs and bookmarks and quickly search your history.
+Omni Launcher is the super fast and smart way to manage all of your open tabs and bookmarks and quickly search your history.
 
 [👉 Get it now](https://chrome.google.com/webstore/detail/flash/fbjoongeclchimbjngcgdkoaoeoponmj)
 
@@ -14,11 +14,11 @@ _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome exte
 
 - [Features](#features)
 - [Controlling the interface](#controlling-the-interface)
-  - [Opening Flash](#opening-flash)
-  - [Closing Flash](#closing-flash)
+  - [Opening Omni Launcher](#opening-omni-launcher)
+  - [Closing Omni Launcher](#closing-omni-launcher)
   - [Switching between dark and light mode](#switching-between-dark-and-light-mode)
 - [List of commands](#list-of-commands)
-- [Self-hosting Flash](#self-hosting-flash)
+- [Self-hosting Omni Launcher](#self-hosting-omni-launcher)
 - [Libraries used](#libraries-used)
 
 ## Features
@@ -27,19 +27,19 @@ _NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome exte
 
 ## Controlling the interface
 
-### Opening Flash
+### Opening Omni Launcher
 
-To open Flash, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can configure a custom shortcut by going to chrome://extensions/shortcuts.
+To open Omni Launcher, simply press `⌘+K` on Mac or `Ctrl+K` on Windows. You can configure a custom shortcut by going to chrome://extensions/shortcuts.
 
 You can also click on the extension icon in the toolbar to toggle it.
 
-### Closing Flash
+### Closing Omni Launcher
 
-To close Flash you can press `Esc`, click on the background, or press the extension icon.
+To close Omni Launcher you can press `Esc`, click on the background, or press the extension icon.
 
 ### Switching between dark and light mode
 
-The dark and light theme in Flash is tied to your system's theme.
+The dark and light theme in Omni Launcher is tied to your system's theme.
 
 On Mac you can change the theme by clicking on the Apple menu (on the top left), opening the System preferences, going into the General section, and then choosing between dark, light, or auto.
 
@@ -49,7 +49,7 @@ After switching the theme you might need to restart Chrome.
 
 ## List of commands
 
-You can use a variety of commands with Flash to perform actions or filter your results.
+You can use a variety of commands with Omni Launcher to perform actions or filter your results.
 
 - **/tabs**: Search your tabs
 - **/bookmarks**: Search your bookmarks
@@ -57,7 +57,7 @@ You can use a variety of commands with Flash to perform actions or filter your r
 - **/actions**: Search all available actions
 - **/remove**: Remove a bookmark or close a tab
 
-## Self-hosting Flash
+## Self-hosting Omni Launcher
 
 You can run this Chrome extension locally by:
 
