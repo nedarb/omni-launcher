@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient id="gradient-2" bx:pinned="true">
+      <stop offset="0" style="stop-color: rgb(255, 68, 68);"/>
+      <stop offset="0.778" style="stop-color: rgb(255, 191, 0);"/>
+    </linearGradient>
+    <linearGradient id="gradient-2-0" gradientUnits="userSpaceOnUse" x1="246.768" y1="124.632" x2="246.768" y2="352.568" gradientTransform="matrix(2.193594, 0, 0, 2.193594, -291.309113, -273.392188)" xlink:href="#gradient-2"/>
+  </defs>
+  <rect width="500" height="500" style="fill: url(#gradient-2-0);"/>
+  <g transform="matrix(35.966675, 0, 0, 35.966675, -21.799664, -13.931934)" style="">
+    <title>Rocket</title>
+    <path d="m12.555 1c-2.1441 0-5.0211 1.471-6.9531 4h-1.6016c-1.1573 0-1.8206 0.8638-2.2773 1.7773l-0.6114 1.2227h2.8887l1.5 1.5 1.5 1.5v2.8887l1.2227-0.6113c0.9135-0.4568 1.7773-1.1201 1.7773-2.2774v-1.6016c2.529-1.932 4-4.809 4-6.9531v-1.4453h-1.4453zm-2.5547 3c0.5523 0 1 0.4477 1 1s-0.4477 1-1 1-1-0.4477-1-1 0.4477-1 1-1zm-6.5 6l-0.5 0.5c-0.7222 0.7222-1 2.5-1 2.5s1.698-0.198 2.5-1l0.5-0.5-1.5-1.5z"/>
+  </g>
+</svg>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "../standalone.mjs";
+import { useEffect, useState } from '../lib/htm-preact-standalone.mjs';
 
 export default function useAsyncState(
   generator,

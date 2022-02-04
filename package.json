@@ -1,27 +1,38 @@
 {
-  "name": "omni",
+  "name": "flash",
   "version": "1.0.0",
   "description": "![Preview](preview.gif) <br> <br> The most powerful interface for Chrome 🔥",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "package": "zip -r dist.zip src",
+    "tsc": "tsc --project tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alyssaxuu/omni.git"
+    "url": "git@github.com:nedarb/flash.git"
   },
+  "type": "module",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alyssaxuu/omni/issues"
+    "url": "https://github.com/nedarb/flash/issues"
   },
-  "homepage": "https://github.com/alyssaxuu/omni#readme",
+  "homepage": "https://github.com/nedarb/flash#readme",
   "devDependencies": {
+    "@types/jest": "^27.4.0",
     "@types/webextension-polyfill": "^0.8.2",
     "fuse.js": "^6.5.3",
+    "eslint": "^8.8.0",
+    "eslint-plugin-jest": "^26.0.0",
     "htm": "^3.1.0",
+    "jest": "^27.4.7",
     "jshint": "^2.13.3",
     "preact": "^10.6.4",
+    "txml": "^5.1.1",
+    "typescript": "^4.5.5",
     "webextension-polyfill": "^0.8.0"
   }
 }

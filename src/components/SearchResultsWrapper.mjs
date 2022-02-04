@@ -3,84 +3,16 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
-} from "../standalone.mjs";
-
-function OmniItem({
-  action,
-  index,
-  handleAction,
-  onOverItem,
-  isSelected,
-  selectVerb = "Select",
-}) {
-  const ref = useRef(null);
-  const handleClick = useCallback(
-    (e) => {
-      e.preventDefault(true);
-      handleAction && handleAction(action, e);
-    },
-    [action, handleAction]
-  );
-  const onMouseEnter = useCallback(
-    () => onOverItem && onOverItem(index),
-    [index]
-  );
-  useEffect(() => {
-    if (isSelected) {
-      ref?.current?.scrollIntoView({ block: "nearest", inline: "nearest" });
-    }
-  }, [ref, isSelected]);
-  var keys = "";
-  if (action.keycheck) {
-    keys = html`<div class="omni-keys">
-      ${action.keys.map(function (key) {
-        return html`<span key=${key} key=${key} class="omni-shortcut"
-          >${key}</span
-        >`;
-      })}
-    </div>`;
-  }
-  const imgUrl =
-    action.favIconUrl || browser.runtime.getURL("/assets/globe.svg");
-  const img = html`<img
-    src="${imgUrl}"
-    class="omni-icon"
-    alt="${action.title}"
-  />`;
-  const emoji = action.emoji
-    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
-    : null;
-
-  return html`<a
-    ref=${ref}
-    key=${action.id || action.url || action.action}
-    class="omni-item ${isSelected ? "omni-item-active" : ""}"
-    data-type="${action.type}"
-    data-icon="${action.favIconUrl}"
-    data-url="${action.url}"
-    onClick=${handleClick}
-    onMouseenter=${onMouseEnter}
-  >
-    ${emoji || img}
-    <div class="omni-item-details">
-      <div class="omni-item-name">${action.title}</div>
-      <div class="omni-item-desc">${action.url || action.searchPrefix}</div>
-    </div>
-    ${keys}
-    <div class="omni-select">
-      ${selectVerb} <span class="omni-shortcut">⏎</span>
-    </div>
-  </a>`;
-}
+} from '../lib/htm-preact-standalone.mjs';
+import FlashItem from './FlashItem.mjs';
 
 function SearchResults({
   actions,
   handleAction,
   onOverItem,
   selectedIndex,
-  selectVerb = "Select",
+  selectVerb = 'Select',
 }) {
   const sliced = useMemo(() => actions.slice(0, 250), [actions]);
   const total = actions.length;
@@ -88,7 +20,7 @@ function SearchResults({
   const list =
     Array.isArray(actions) &&
     sliced.map(function (action, index) {
-      return html`<${OmniItem}
+      return html`<${FlashItem}
         key=${action.id || action.url || action.action}
         index=${index}
         action=${action}
@@ -100,14 +32,14 @@ function SearchResults({
     });
 
   return html`<div class="search-results">
-    <div id="omni-list">${list}</div>
-    <div id="omni-footer">
-      <div id="omni-results">
-        ${list.length}${list.length < total ? "+" : ""} results
+    <div id="flash-list">${list}</div>
+    <div id="flash-footer">
+      <div id="flash-results">
+        ${list.length}${list.length < total ? '+' : ''} results
       </div>
-      <div id="omni-arrows">
-        Use arrow keys <span class="omni-shortcut">↑</span
-        ><span class="omni-shortcut">↓</span> to navigate
+      <div id="flash-arrows">
+        Use arrow keys <span class="flash-shortcut">↑</span
+        ><span class="flash-shortcut">↓</span> to navigate
       </div>
     </div>
   </div>`;
@@ -116,7 +48,7 @@ function SearchResults({
 export default function SearchResultsWrapper({
   actions,
   handleAction,
-  selectVerb = "Select",
+  selectVerb = 'Select',
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
@@ -134,25 +66,26 @@ export default function SearchResultsWrapper({
     function handler(e) {
       const len = actions.length;
       switch (e.key) {
-        case "ArrowUp":
-          setSelectedIndex((i) => Math.max(0, i - 1));
-          break;
-        case "ArrowDown":
-          setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
-          break;
-        case "Enter":
-          const action = actions[selectedIndex];
-          handleAction && handleAction(action, { metaKey: e.metaKey });
-          break;
-        // case "Escape":
-        //   handleAction && handleAction({ action: CloseOmniAction });
-        //   break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex((i) => Math.max(0, i - 1));
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex((i) => Math.min(len > 0 ? len - 1 : 0, i + 1));
+        break;
+      case 'Enter':{
+        e.preventDefault();
+        const action = actions[selectedIndex];
+        handleAction && handleAction(action, { metaKey: e.metaKey });
+        break;
+      }
       }
     }
-    window.addEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
     return () => {
       // console.debug("unsub");
-      window.removeEventListener("keydown", handler);
+      window.removeEventListener('keydown', handler);
     };
   }, [selectedIndex, actions, handleAction]);
 
