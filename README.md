@@ -6,9 +6,9 @@
 
 Omni Launcher is the super fast and smart way to manage all of your open tabs and bookmarks and quickly search your history.
 
-[👉 Get it now](https://chrome.google.com/webstore/detail/flash/fbjoongeclchimbjngcgdkoaoeoponmj)
+[👉 Get it now](https://chrome.google.com/webstore/detail/omni-launcher/fbjoongeclchimbjngcgdkoaoeoponmj)
 
-_NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome extension by [Alyssa X](https://alyssax.com).** It started to greatly deviate so a separate extension was created with permission._ 
+_NOTE: **This is a fork of [Omni](https://github.com/alyssaxuu/omni) Chrome extension by [Alyssa X](https://alyssax.com).** It started to greatly deviate so a separate extension was created with permission._
 
 ## Table of contents
 
@@ -62,7 +62,7 @@ You can use a variety of commands with Omni Launcher to perform actions or filte
 You can run this Chrome extension locally by:
 
 1. Clone this repo
-2. Install NPM dependencies (install [pnpm here](https://pnpm.io/installation)): `npm i` or `pnpm i` 
+2. Install NPM dependencies (install [pnpm here](https://pnpm.io/installation)): `npm i` or `pnpm i`
 3. Go to chrome://extensions/ in your browser, and [enable developer mode](https://developer.chrome.com/docs/extensions/mv2/faq/#:~:text=You%20can%20start%20by%20turning,a%20packaged%20extension%2C%20and%20more.).
 4. Hit "Load unpacked" to load an unpacked extension
 5. Select the `./src` folder

@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:nedarb/flash.git"
+    "url": "git@github.com:nedarb/omni-launcher.git"
   },
   "type": "module",
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nedarb/flash/issues"
+    "url": "https://github.com/nedarb/omni-launcher/issues"
   },
-  "homepage": "https://github.com/nedarb/flash#readme",
+  "homepage": "https://github.com/nedarb/omni-launcher#readme",
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/webextension-polyfill": "^0.8.2",
