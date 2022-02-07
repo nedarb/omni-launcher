@@ -713,53 +713,53 @@ const clearActions = async () => {
 
 // Open on install
 browser.runtime.onInstalled.addListener(async (object) => {
-  // Inject Omni Launcher on install
-  const manifest = browser.runtime.getManifest();
+  // // Inject Omni Launcher on install
+  // const manifest = browser.runtime.getManifest();
 
-  const injectIntoTab = async (tab) => {
-    const { url, id: tabId, status } = tab;
-    console.log(`injecting scripts into tab ${url}`, tab);
-    if (!url.toLowerCase().startsWith('http')) {
-      console.debug(`Skipping ${tab.url}`);
-      return;
-    }
+  // const injectIntoTab = async (tab) => {
+  //   const { url, id: tabId, status } = tab;
+  //   console.log(`injecting scripts into tab ${url}`, tab);
+  //   if (!url.toLowerCase().startsWith('http')) {
+  //     console.debug(`Skipping ${tab.url}`);
+  //     return;
+  //   }
 
-    if (status === 'unloaded') {
-      console.debug(`Skipping ${tab.url} because it's status is "unloaded".`);
-      return;
-    }
+  //   if (status === 'unloaded') {
+  //     console.debug(`Skipping ${tab.url} because it's status is "unloaded".`);
+  //     return;
+  //   }
 
-    const scripts = manifest.content_scripts[0].js;
+  //   const scripts = manifest.content_scripts[0].js;
 
-    await browser.scripting.executeScript({
-      target: { tabId },
-      files: [...scripts],
-    });
+  //   await browser.scripting.executeScript({
+  //     target: { tabId },
+  //     files: [...scripts],
+  //   });
 
-    await browser.scripting.insertCSS({
-      target: { tabId },
-      files: [...manifest.content_scripts[0].css],
-    });
-  };
+  //   await browser.scripting.insertCSS({
+  //     target: { tabId },
+  //     files: [...manifest.content_scripts[0].css],
+  //   });
+  // };
 
-  // Get all windows
-  const windows = await browser.windows.getAll({
-    populate: true,
-  });
+  // // Get all windows
+  // const windows = await browser.windows.getAll({
+  //   populate: true,
+  // });
 
-  for (const currentWindow of windows) {
-    for (const currentTab of currentWindow.tabs) {
-      try {
-        await injectIntoTab(currentTab);
-      } catch (e) {
-        console.error(`Problem injecting into tab ${currentTab.url}`, e);
-      }
-    }
-  }
+  // for (const currentWindow of windows) {
+  //   for (const currentTab of currentWindow.tabs) {
+  //     try {
+  //       await injectIntoTab(currentTab);
+  //     } catch (e) {
+  //       console.error(`Problem injecting into tab ${currentTab.url}`, e);
+  //     }
+  //   }
+  // }
 
   if (object.reason === 'install') {
     // TODO: open a tab with instructions what to do next
-    // browser.tabs.create({ url: "omni-help.html" });
+    browser.tabs.create({ url: browser.runtime.getURL('./post_install/index.html') });
   }
 });
 

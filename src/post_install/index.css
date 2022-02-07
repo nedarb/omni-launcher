@@ -1,0 +1,86 @@
+@import "../common/page.css";
+
+#omni-wrap {
+  display: grid;
+}
+div#omni-wrap > * {
+  align-self: center;
+  text-align: center;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+}
+button:hover {
+  cursor: pointer;
+  background-color: transparent;
+}
+button img {
+  width: 150px;
+  transition: all 500ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover img {
+  transform: scale(1.2);
+}
+button.running {
+  animation: rotation 1s infinite linear;
+}
+button.done {
+  animation-duration: 3s;
+  animation-name: scale-easeOutBounce;
+  animation: 1000ms linear 0s 1 normal both running scale-easeOutBounce;
+}
+
+@keyframes scale-easeOutBounce {
+  0% {
+    transform: scale(1);
+  }
+
+  12% {
+    transform: scale(0.89);
+  }
+
+  24% {
+    transform: scale(0.56);
+  }
+
+  36% {
+    transform: scale(0.02);
+  }
+
+  54% {
+    transform: scale(0.25);
+  }
+
+  74% {
+    transform: scale(0.02);
+  }
+
+  82% {
+    transform: scale(0.06);
+  }
+
+  92% {
+    transform: scale(0.01);
+  }
+
+  96% {
+    transform: scale(0.02);
+  }
+
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
