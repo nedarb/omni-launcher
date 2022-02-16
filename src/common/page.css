@@ -1,0 +1,21 @@
+@import "../content.css";
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+input,
+button {
+  display: inline-block;
+  background-color: var(--background-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  padding: 0.5em;
+  margin: 0 0.5em;
+}
+input:hover,
+button:hover {
+  background-color: var(--placeholder);
+  color: var(--text);
+}

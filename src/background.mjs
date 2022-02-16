@@ -651,7 +651,7 @@ const clearActions = async () => {
       desc: 'Omni Launcher options',
       type: 'action',
       action: Options,
-      favIconUrl: browser.runtime.getURL('assets/omni-logo-orange.svg'),
+      favIconUrl: browser.runtime.getURL('assets/omni-logo-orange-dynamic.svg'),
     },
   ];
 

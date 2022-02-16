@@ -1,11 +1,11 @@
-@import "../content.css";
+@import "../common/page.css";
 
-body {
-  background-color: var(--background);
-  color: var(--text);
-}
 .preview {
   width: var(--overlay-width);
+}
+
+img.logo {
+  width: 100px;
 }
 
 form {
@@ -22,17 +22,7 @@ form label {
 form label > span {
   align-self: center;
 }
-input,
-button {
-  display: inline-block;
-  background-color: var(--background-2);
-  color: var(--text-2);
-  border: 1px solid var(--border);
-}
-input:hover,
-button:hover {
-  background-color: var(--placeholder);
-}
+
 form label input {
   flex: 1 0 auto;
 }
