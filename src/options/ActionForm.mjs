@@ -4,7 +4,12 @@
 
 import { html, useCallback, useState } from '../lib/htm-preact-standalone.mjs';
 
-function Input({ label, name, value, pattern, onChange }) {
+function Input({ label, name, value, pattern, onChange, onRevert }) {
+  const onKeyPress = ({target, key})=>{
+    if (key === 'Escape') {
+      onRevert({ target });
+    }
+  };
   return html`<label
     ><span>${label}:</span>
     <input
@@ -12,6 +17,7 @@ function Input({ label, name, value, pattern, onChange }) {
       type="text"
       value="${value}"
       onInput=${onChange}
+      onKeyUp=${onKeyPress}
       pattern="${pattern}"
       required="required"
   /></label>`;
@@ -54,6 +60,15 @@ export default function ActionForm({
     },
     [action, draftAction, onDraftAction]
   );
+  const handleFieldReset = useCallback(
+    (e) => {
+      const {name} = e.target;
+      const newDraftAction = { ...draftAction, [name]: action[name] };
+      onDraftAction && onDraftAction(newDraftAction);
+      setDraftAction(newDraftAction);
+    },
+    [action, draftAction, onDraftAction]
+  );
   const handleReset = (e) => {
     e.preventDefault();
     onDraftAction && onDraftAction(action);
@@ -76,12 +91,12 @@ export default function ActionForm({
     }
   };
   return html`<form onSubmit=${handleSubmit}>
-    Action: ${action.action}
     <${Input}
       label="Title"
       name="title"
       value=${draftAction.title}
       onChange=${handleFieldChange}
+      onRevert=${handleFieldReset}
       required="required"
     />
     <${Input}
@@ -89,6 +104,7 @@ export default function ActionForm({
       name="shortcut"
       value=${draftAction.shortcut}
       onChange=${handleFieldChange}
+      onRevert=${handleFieldReset}
       pattern="[\\w\\d\\.-]+"
       required="required"
     />
@@ -97,18 +113,21 @@ export default function ActionForm({
       name="desc"
       value=${draftAction.desc}
       onChange=${handleFieldChange}
+      onRevert=${handleFieldReset}
     />
     <${Input}
       label="Url"
       name="url"
       value=${draftAction.url}
       onChange=${handleFieldChange}
+      onRevert=${handleFieldReset}
     />
     <${Input}
       label="Fav. icon URL"
       name="favIconUrl"
       value=${draftAction.favIconUrl}
       onChange=${handleFieldChange}
+      onRevert=${handleFieldReset}
     />
     <span class="buttons">
       ${hasUnsavedChanges &&
