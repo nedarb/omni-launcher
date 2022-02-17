@@ -93,10 +93,10 @@ export default function OmniItem({
     ${emoji || img}
     <div class="omni-item-details">
       <div class="omni-item-name">
+      ${action.shortcut &&
+        html`<span class="shortcut">${action.shortcut}</span>`}
         ${action.title}
         ${action.isDuplicate && html`<span class="duplicate">(duplicate)</span>`}
-        ${action.shortcut &&
-        html`<span class="shortcut">${action.shortcut}</span>`}
       </div>
       <div class="omni-item-desc">
         ${action.desc || action.searchPrefix} ${incognitoIcon}
