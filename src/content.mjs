@@ -470,4 +470,8 @@ function App() {
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-render(html`<${App} />`, document.getElementById('omni-launcher-extension-wrapper'));
+const div = document.createElement('div');
+div.id = 'omni-launcher-extension-wrapper';
+document.body.appendChild(div);
+  
+render(html`<${App} />`, div);
