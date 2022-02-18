@@ -344,7 +344,7 @@ const Shortcuts = {
   '/r': '/remove',
 };
 
-function MainApp(props) {
+export default function MainApp(props) {
   const { showing, handleAction } = props;
   const [search, setSearch] = useState('');
   const debouncedSearchTerm = useDebounce(search, 250);
@@ -415,8 +415,8 @@ function MainApp(props) {
   </div>`;
 }
 
-function App() {
-  const [isOpen, setIsOpen] = useState(false);
+export function App({ isOpen: isOpenByDefault } = { isOpen: false}) {
+  const [isOpen, setIsOpen] = useState(isOpenByDefault);
   useEffect(() => {
     // Recieve messages from background
     browser.runtime.onMessage.addListener((message) => {

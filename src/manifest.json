@@ -25,6 +25,7 @@
       "description": "Open command menu"
     }
   },
+  "chrome_url_overrides": { "newtab": "./new_tab/index.html" },
   "background": {
     "service_worker": "background.mjs",
     "type": "module"
@@ -44,7 +45,7 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "optional_permissions": ["browsingData"],
+  "optional_permissions": ["browsingData", "topSites"],
   "permissions": [
     "tabs",
     "storage",
