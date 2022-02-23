@@ -8,7 +8,7 @@ import {
   render,
 } from '../lib/htm-preact-standalone.mjs';
 
-import MainApp from '../content.mjs';
+import MainApp, { CloseOmniAction } from '../content.mjs';
 
 /**
  * @param {Action} action 
@@ -50,7 +50,10 @@ function handleAction(action) {
 
 const actionHandler = async (action, eventOptions) => {
   console.log('HANDLING ACTION!', action, eventOptions);
-  debugger;
+  if (action.action === CloseOmniAction) {
+    return;
+  }
+  
   if (action.action === 'history' && action.url) {
     handleAction(action, eventOptions);
     return;

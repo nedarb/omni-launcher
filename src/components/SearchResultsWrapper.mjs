@@ -31,7 +31,7 @@ function SearchResults({
       />`;
     });
 
-  return html`<div class="search-results">
+  return html`<div class="search-results body">
     <div id="omni-list">${list}</div>
     <div id="omni-footer">
       <div id="omni-results">
@@ -94,13 +94,11 @@ export default function SearchResultsWrapper({
     [actions]
   );
 
-  return html`<div class="search-results-wrapper">
-    <${SearchResults}
+  return html`<${SearchResults}
       actions=${actions}
       handleAction=${handleAction}
       selectedIndex=${selectedIndex}
       selectVerb=${selectVerb}
       onOverItem=${onOverItem}
-    />
-  </div>`;
+    />`;
 }

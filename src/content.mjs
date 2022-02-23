@@ -30,7 +30,7 @@ if (openSearchDescEl) {
   });
 }
 
-const CloseOmniAction = 'close-omni';
+export const CloseOmniAction = 'close-omni';
 
 /**
  * @type { Array<Action> }
@@ -393,25 +393,22 @@ export default function MainApp(props) {
     id="omni-launcher-extension"
     class="${classNames('omni-launcher-extension', !showing && 'omni-closing')}"
   >
-    <div id="omni-overlay" onClick=${onOverlayClick}></div>
-    <div id="omni-wrap">
-      ${showing &&
-      html`<div id="omni">
-        <div id="omni-search" class="omni-search">
-          <input
-            ref=${input}
-            placeholder="Type a command or search"
-            value=${search}
-            onInput=${onSearchChange}
-          />
-        </div>
-        <!-- OMNI LIST -->
-        <${OmniList}
-          searchTerm=${debouncedSearchTerm}
-          handleAction=${doHandle}
-        />
-      </div>`}
-    </div>
+    <div id="omni-overlay" class="overlay" onClick=${onOverlayClick}></div>
+    ${showing && html`<div class="omni">
+      <div class="header"><div id="omni-search" class="omni-search">
+      <input
+        ref=${input}
+        placeholder="Type a command or search"
+        value=${search}
+        onInput=${onSearchChange}
+      />
+    </div></div>
+      <!-- OMNI LIST -->
+      <${OmniList}
+        searchTerm=${debouncedSearchTerm}
+        handleAction=${doHandle}
+      />
+    </div>`}
   </div>`;
 }
 
@@ -470,8 +467,13 @@ export function App({ isOpen: isOpenByDefault } = { isOpen: false}) {
   return html`<${MainApp} showing=${isOpen} handleAction=${actionHandler} />`;
 }
 
-const div = document.createElement('div');
-div.id = 'omni-launcher-extension-wrapper';
-document.body.appendChild(div);
+export function renderElement() {
+  const div = document.createElement('div');
+  div.id = 'omni-launcher-extension-wrapper';
+  // document.body.appendChild(div);
+  // document.appendChild(div);
+  document.head.after(div);
+  // document.insertBefore(div, document.body);
   
-render(html`<${App} />`, div);
+  render(html`<${App} />`, div);
+}
