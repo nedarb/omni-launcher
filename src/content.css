@@ -138,6 +138,8 @@ html {
   grid-area: body;
   overflow: auto;
   margin: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
 }
 .omni-launcher-extension .footer {
   grid-area: footer;
@@ -265,6 +267,7 @@ html {
   height: 100%;
   max-height: 400px;
   border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   position: relative;
 }
 .omni-launcher-extension .omni-item {
@@ -391,8 +394,8 @@ html {
 }
 .omni-launcher-extension #omni-footer {
   height: 45px;
+  width: 100%;
   line-height: 45px;
-  border-top: 1px solid var(--border);
   margin-left: auto;
   margin-right: auto;
   display: flex;

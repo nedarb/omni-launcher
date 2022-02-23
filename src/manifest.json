@@ -25,7 +25,6 @@
       "description": "Open command menu"
     }
   },
-  "chrome_url_overrides": { "newtab": "./new_tab/index.html" },
   "background": {
     "service_worker": "background.mjs",
     "type": "module"
