@@ -1164,7 +1164,8 @@ async function addSearchEngine(title, url, favIconUrl) {
     }
 
     if (!props.shortcut && props.url) {
-      props.shortcut = new URL(props.url).host;
+      const parts = new URL(props.url).host.split('.').filter(p=>p!=='www');
+      props.shortcut = parts.join('.');
     }
 
     console.log('determined action: ', props);
