@@ -58,11 +58,11 @@ export default function OmniItem({
   }
   const imgUrl =
     action.favIconUrl || browser.runtime.getURL('/assets/globe.svg');
-  const img = html`<img
+  const img = html`<div class="icon"><img
     src="${imgUrl}"
     class="omni-icon"
     alt="${action.title}"
-  />`;
+  /></div>`;
   const emoji = action.emoji
     ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
     : null;
