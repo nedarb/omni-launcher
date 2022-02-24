@@ -64,7 +64,7 @@ export default function OmniItem({
     alt="${action.title}"
   /></div>`;
   const emoji = action.emoji
-    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
+    ? html`<div class="icon"><span class="omni-emoji-action">${action.emojiChar}</span></div>`
     : null;
   const missingPermissions = action.hasPermission === false;
 

@@ -275,7 +275,7 @@ html {
   grid-template-columns: 35px 1fr auto;
   grid-template-rows: 1fr;
   grid-auto-rows: 1fr;
-  gap: 0px 0.5em;
+  gap: 0px 10px;
   grid-auto-flow: row;
   grid-template-areas: "icon content keys";
   min-height: 60px;
@@ -334,22 +334,19 @@ html {
   /* margin-top: -12px; */
 }
 .omni-launcher-extension .omni-emoji-action {
-  display: inline-block;
-  vertical-align: middle;
-  margin-top: -12px;
+  display: block;
   width: 20px;
   height: 20px;
-  text-align: center;
-  margin-left: 5%;
   font-size: 18px;
+  line-height: 18px;
 }
 .omni-launcher-extension .omni-item-details {
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
   vertical-align: middle;
   flex: 1 1 auto;
   overflow: hidden;
+  padding-top: 0.5em;
 }
 .omni-launcher-extension .omni-item-name {
   display: flex;
