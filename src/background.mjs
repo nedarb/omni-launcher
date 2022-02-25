@@ -5,6 +5,7 @@ import {
   getCustomActionForOpenXmlUrl,
   getCustomActions,
   upsertCustomAction,
+  refresh
 } from './services/customActions.mjs';
 import './lib/webextension-polyfill.js';
 
@@ -18,6 +19,7 @@ import {
   ClearPasswords,
   CustomSearch,
   Options,
+  RefreshActions,
   RemoveDuplicateTabs,
 } from './ActionNames.mjs';
 import {
@@ -990,6 +992,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     break;
   case Options:
     browser.runtime.openOptionsPage();
+    break;
+  case RefreshActions:
+    refresh();
     break;
   case 'history': // Fallthrough
   case 'downloads':

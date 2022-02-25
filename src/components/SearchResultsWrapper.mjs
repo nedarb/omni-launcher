@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
 } from '../lib/htm-preact-standalone.mjs';
+import classNames from '../utils/classNames.mjs';
 import OmniItem from './OmniItem.mjs';
 
 function SearchResults({
@@ -31,8 +32,10 @@ function SearchResults({
       />`;
     });
 
+  const listCmp = list.length >0 ?list : html`<span>No results</span>`;
+
   return html`<div class="search-results body">
-    <div id="omni-list">${list}</div>
+    <div id="omni-list" class="${classNames('omni-list', list.length === 0 && 'empty')}">${listCmp}</div>
     <div id="omni-footer">
       <div id="omni-results">
         ${list.length}${list.length < total ? '+' : ''} results

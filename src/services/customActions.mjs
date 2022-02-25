@@ -1,10 +1,15 @@
 /**
  * @typedef { import("../global").Action } Action
  */
+import { RefreshActions } from '../ActionNames.mjs';
 import '../lib/webextension-polyfill.js';
 
-const StorageName = 'customActions';
 const CustomActionPrefix = 'custom-action:';
+
+const isInServiceWorker = 'serviceWorker' in globalThis;
+const broadcastToBackground = !isInServiceWorker ? 
+  ()=> browser.runtime.sendMessage({ request: RefreshActions}) :
+  ()=>{};
 
 // @ts-ignore
 const uuid = () => crypto.randomUUID();
@@ -70,12 +75,14 @@ class StorageCache {
   async set(key, value) {
     await this.#initPromise;
     await browser.storage.sync.set({[key]: value});
+    broadcastToBackground();
     this.#cache[key] = value;
   }
   async remove(key) {
     await this.#initPromise;
     delete this.#cache[key];
     await browser.storage.sync.remove(key);
+    broadcastToBackground();
   }
 
   async getAll(keyPrefix = '') {
@@ -91,11 +98,10 @@ class StorageCache {
   }
 }
 
-const storageCache = new StorageCache();
+let storageCache = new StorageCache();
 
-async function saveActions(actions) {
-  await browser.storage.sync.set({ [StorageName]: actions });
-  return actions;
+export function refresh() {
+  storageCache = new StorageCache();
 }
 
 export async function getCustomActionForOpenXmlUrl(openSearchXmlUrl) {
@@ -108,15 +114,6 @@ export async function getCustomActionForOpenXmlUrl(openSearchXmlUrl) {
 export async function getCustomActions() {
   const map = await storageCache.getAll(CustomActionPrefix);
   return Object.values(map);
-}
-
-export async function addCustomAction(action) {
-  const existing = await getCustomActions();
-  if (!action.id) {
-    action.id = uuid();
-  }
-  existing.push(action);
-  return saveActions(existing);
 }
 
 export async function upsertCustomAction(action) {

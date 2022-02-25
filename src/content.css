@@ -92,13 +92,16 @@ html {
   font-weight: 700;
   src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
 }
+.omni-launcher-extension {
+  color: var(--text);
+  font-family: Inter !important;
+}
 .omni-launcher-extension:not(.omni-page) {
   --overlay-width: 700px;
 
   --width: min(100vw, var(--overlay-width));
   --height: min(100vh, 540px);
 
-  font-family: Inter !important;
   z-index: 99999999999;
 
   position: fixed;
@@ -269,6 +272,13 @@ html {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   position: relative;
+}
+.omni-launcher-extension .omni-list.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-3);
+  font-size: 14px;
 }
 .omni-launcher-extension .omni-item {
   display: grid;
