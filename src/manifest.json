@@ -44,7 +44,7 @@
       "matches": ["<all_urls>"]
     }
   ],
-  "optional_permissions": ["browsingData", "topSites"],
+  "optional_permissions": ["browsingData"],
   "permissions": [
     "tabs",
     "storage",
