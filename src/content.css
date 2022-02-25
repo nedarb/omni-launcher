@@ -322,7 +322,8 @@ html {
 }
 .omni-launcher-extension .omni-item-active .omni-select,
 .omni-launcher-extension .omni-item:hover .omni-select {
-  display: block !important;
+  display: flex;
+  flex-direction: row;
 }
 .omni-launcher-extension .icon {
   grid-area: icon;
