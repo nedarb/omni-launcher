@@ -317,6 +317,7 @@ html {
 .omni-launcher-extension .icon {
   grid-area: icon;
   display: flex;
+  flex-direction: row;
   align-items: baseline;
   justify-content: end;
   padding-top: 0.5em;
