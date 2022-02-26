@@ -136,6 +136,7 @@ html {
 }
 .omni-launcher-extension .header {
   grid-area: header;
+  padding: 0;
 }
 .omni-launcher-extension .body {
   grid-area: body;
