@@ -1,0 +1,13 @@
+@import "../common/page.css";
+@import "../content.css";
+
+body {
+  min-width: var(--width);
+  min-height: var(--height);
+  margin: 0;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}

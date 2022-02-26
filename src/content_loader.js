@@ -4,5 +4,6 @@
 (async () => {
   const src = chrome.runtime.getURL('content.mjs');
 
-  await import(src);
+  const {renderElement} = await import(src);
+  renderElement();
 })();

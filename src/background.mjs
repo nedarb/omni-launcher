@@ -5,6 +5,7 @@ import {
   getCustomActionForOpenXmlUrl,
   getCustomActions,
   upsertCustomAction,
+  refresh
 } from './services/customActions.mjs';
 import './lib/webextension-polyfill.js';
 
@@ -18,6 +19,7 @@ import {
   ClearPasswords,
   CustomSearch,
   Options,
+  RefreshActions,
   RemoveDuplicateTabs,
 } from './ActionNames.mjs';
 import {
@@ -991,6 +993,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   case Options:
     browser.runtime.openOptionsPage();
     break;
+  case RefreshActions:
+    refresh();
+    break;
   case 'history': // Fallthrough
   case 'downloads':
   case 'extensions':
@@ -1164,7 +1169,8 @@ async function addSearchEngine(title, url, favIconUrl) {
     }
 
     if (!props.shortcut && props.url) {
-      props.shortcut = new URL(props.url).host;
+      const parts = new URL(props.url).host.split('.').filter(p=>p!=='www');
+      props.shortcut = parts.join('.');
     }
 
     console.log('determined action: ', props);
