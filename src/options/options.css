@@ -29,18 +29,3 @@ form label input {
 form input:invalid {
   border-color: red;
 }
-
-.custom-action {
-  display: flex;
-  flex-wrap: wrap;
-  border: solid 1px var(--border);
-  border-radius: 10px;
-  box-shadow: 2px 2px 8px #6666;
-  padding: 1em;
-  margin-bottom: 1rem;
-}
-
-.custom-action > * {
-  flex: 1 1 auto;
-  flex-basis: 50%;
-}
