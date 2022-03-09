@@ -5,6 +5,11 @@ body {
   color: var(--text);
 }
 
+a {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 input,
 button {
   display: inline-block;

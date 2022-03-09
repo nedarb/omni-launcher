@@ -32,6 +32,7 @@ import {
 } from './actions/browsingDataActions.mjs';
 import { bySelector, chain, inverse } from './utils/sorters.mjs';
 import getDupes from './services/duplicateTabs.mjs';
+import switchTab from './actions/switchTab.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -673,33 +674,33 @@ const clearActions = async () => {
   if (!isMac) {
     for (let action of actions) {
       switch (action.action) {
-      case 'reload':
-        action.keys = ['F5'];
-        break;
-      case 'fullscreen':
-        action.keys = ['F11'];
-        break;
-      case 'downloads':
-        action.keys = ['Ctrl', 'J'];
-        break;
-      case 'settings':
-        action.keycheck = false;
-        break;
-      case 'history':
-        action.keys = ['Ctrl', 'H'];
-        break;
-      case 'go-back':
-        action.keys = ['Alt', '←'];
-        break;
-      case 'go-forward':
-        action.keys = ['Alt', '→'];
-        break;
-      case 'scroll-top':
-        action.keys = ['Home'];
-        break;
-      case 'scroll-bottom':
-        action.keys = ['End'];
-        break;
+        case 'reload':
+          action.keys = ['F5'];
+          break;
+        case 'fullscreen':
+          action.keys = ['F11'];
+          break;
+        case 'downloads':
+          action.keys = ['Ctrl', 'J'];
+          break;
+        case 'settings':
+          action.keycheck = false;
+          break;
+        case 'history':
+          action.keys = ['Ctrl', 'H'];
+          break;
+        case 'go-back':
+          action.keys = ['Alt', '←'];
+          break;
+        case 'go-forward':
+          action.keys = ['Alt', '→'];
+          break;
+        case 'scroll-top':
+          action.keys = ['Home'];
+          break;
+        case 'scroll-bottom':
+          action.keys = ['End'];
+          break;
       }
       for (const key in action.keys) {
         if (action.keys[key] === '⌘') {
@@ -805,15 +806,16 @@ const getTabs = async () => {
 
   // check for duplicates
   const duplicates = await getDupes(result);
-  if (duplicates.size>0) {
-    const tabCountToRemove = Array.from(duplicates.entries()).map(([,tabs])=>tabs.length - 1).reduce((a,b)=>a+b);
-    result.push({type: 'action', action: RemoveDuplicateTabs, 
-      title: `Remove ${tabCountToRemove} duplicate tabs`, 
+  if (duplicates.size > 0) {
+    const tabCountToRemove = Array.from(duplicates.entries()).map(([, tabs]) => tabs.length - 1).reduce((a, b) => a + b);
+    result.push({
+      type: 'action', action: RemoveDuplicateTabs,
+      title: `Remove ${tabCountToRemove} duplicate tabs`,
       desc: `Remove ${tabCountToRemove} duplicate tabs`
     });
   }
   const duplicatedTabs = Array.from(duplicates.values()).flat();
-  for(const tab of duplicatedTabs) {
+  for (const tab of duplicatedTabs) {
     tab.isDuplicate = true;
   }
 
@@ -852,13 +854,6 @@ const getBookmarks = async () => {
 };
 
 // Lots of different actions
-const switchTab = (tab) => {
-  browser.tabs.highlight({
-    tabs: tab.index,
-    windowId: tab.windowId,
-  });
-  browser.windows.update(tab.windowId, { focused: true });
-};
 const goBack = (tab) => {
   browser.tabs.goBack(tab.id);
 };
@@ -931,104 +926,114 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   }
 
   switch (message.request) {
-  case 'get-actions':
-    return { actions: await getActions() };
-  case 'switch-tab':
-    switchTab(message.tab);
-    break;
-  case 'go-back':
-    goBack(message.tab);
-    break;
-  case 'go-forward':
-    goForward(message.tab);
-    break;
-  case 'duplicate-tab':
-    duplicateTab();
-    break;
-  case 'create-bookmark':
-    createBookmark();
-    break;
-  case 'mute':
-    muteTab(true);
-    break;
-  case 'unmute':
-    muteTab(false);
-    break;
-  case 'reload':
-    reloadTab();
-    break;
-  case 'pin':
-    pinTab(true);
-    break;
-  case 'unpin':
-    pinTab(false);
-    break;
-  case ClearAllBrowsingData:
-    clearAllData();
-    break;
-  case ClearHistory:
-    clearBrowsingData();
-    break;
-  case ClearCookies:
-    clearCookies();
-    break;
-  case ClearCache:
-    clearCache();
-    break;
-  case ClearLocalStorage:
-    clearLocalStorage();
-    break;
-  case ClearPasswords:
-    clearPasswords();
-    break;
-  case Options:
-    browser.runtime.openOptionsPage();
-    break;
-  case RefreshActions:
-    refresh();
-    break;
-  case 'history': // Fallthrough
-  case 'downloads':
-  case 'extensions':
-  case 'settings':
-  case 'extensions/shortcuts':
-    openChromeUrl(message.request);
-    break;
-  case 'manage-data':
-    openChromeUrl('settings/clearBrowserData');
-    break;
-  case 'incognito':
-    openIncognito();
-    break;
-  case 'close-window':
-    closeWindow(sender.tab.windowId);
-    break;
-  case 'close-tab':
-    closeCurrentTab();
-    break;
-  case 'search-history': {
-    console.debug(`searching history for "${message.query}"`, message);
-    const data = await browser.history.search({
-      text: message.query,
-      maxResults: message.maxResults || 1000,
-      startTime: 31536000000 * 5,
-    });
-    const history = data.map((action) => ({
-      ...action,
-      type: 'history',
-      emoji: true,
-      emojiChar: '🏛',
-      action: 'history',
-      keyCheck: false,
-    }));
-    return { history };
-  }
-  case 'search-bookmarks': {
-    const data = await browser.bookmarks.search({ query: message.query });
-    // The index property of the bookmark appears to be causing issues, iterating separately...
-    data
-      .filter((x) => x.index == 0)
-      .forEach((action, index) => {
+    case 'get-actions':
+      return { actions: await getActions() };
+    case 'switch-tab':
+      switchTab(message.tab);
+      break;
+    case 'go-back':
+      goBack(message.tab);
+      break;
+    case 'go-forward':
+      goForward(message.tab);
+      break;
+    case 'duplicate-tab':
+      duplicateTab();
+      break;
+    case 'create-bookmark':
+      createBookmark();
+      break;
+    case 'mute':
+      muteTab(true);
+      break;
+    case 'unmute':
+      muteTab(false);
+      break;
+    case 'reload':
+      reloadTab();
+      break;
+    case 'pin':
+      pinTab(true);
+      break;
+    case 'unpin':
+      pinTab(false);
+      break;
+    case ClearAllBrowsingData:
+      clearAllData();
+      break;
+    case ClearHistory:
+      clearBrowsingData();
+      break;
+    case ClearCookies:
+      clearCookies();
+      break;
+    case ClearCache:
+      clearCache();
+      break;
+    case ClearLocalStorage:
+      clearLocalStorage();
+      break;
+    case ClearPasswords:
+      clearPasswords();
+      break;
+    case Options:
+      browser.runtime.openOptionsPage();
+      break;
+    case RefreshActions:
+      refresh();
+      break;
+    case 'history': // Fallthrough
+    case 'downloads':
+    case 'extensions':
+    case 'settings':
+    case 'extensions/shortcuts':
+      openChromeUrl(message.request);
+      break;
+    case 'manage-data':
+      openChromeUrl('settings/clearBrowserData');
+      break;
+    case 'incognito':
+      openIncognito();
+      break;
+    case 'close-window':
+      closeWindow(sender.tab.windowId);
+      break;
+    case 'close-tab':
+      closeCurrentTab();
+      break;
+    case 'search-history': {
+      console.debug(`searching history for "${message.query}"`, message);
+      const data = await browser.history.search({
+        text: message.query,
+        maxResults: message.maxResults || 1000,
+        startTime: 31536000000 * 5,
+      });
+      const history = data.map((action) => ({
+        ...action,
+        type: 'history',
+        emoji: true,
+        emojiChar: '🏛',
+        action: 'history',
+        keyCheck: false,
+      }));
+      return { history };
+    }
+    case 'search-bookmarks': {
+      const data = await browser.bookmarks.search({ query: message.query });
+      // The index property of the bookmark appears to be causing issues, iterating separately...
+      data
+        .filter((x) => x.index == 0)
+        .forEach((action, index) => {
+          if (!action.url) {
+            data.splice(index, 1);
+          }
+          action.type = 'bookmark';
+          action.emoji = true;
+          action.emojiChar = '⭐️';
+          action.action = 'bookmark';
+          action.keyCheck = false;
+        });
+      data.forEach((action, index) => {
         if (!action.url) {
           data.splice(index, 1);
         }
@@ -1038,36 +1043,26 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
         action.action = 'bookmark';
         action.keyCheck = false;
       });
-    data.forEach((action, index) => {
-      if (!action.url) {
-        data.splice(index, 1);
-      }
-      action.type = 'bookmark';
-      action.emoji = true;
-      action.emojiChar = '⭐️';
-      action.action = 'bookmark';
-      action.keyCheck = false;
-    });
-    return { bookmarks: data };
-  }
-  case 'remove':
-    if (message.type == 'bookmark') {
-      removeBookmark(message.action);
-    } else {
-      closeTab(message.action);
+      return { bookmarks: data };
     }
-    break;
-  case 'add-search-engine':
-    return await addSearchEngine(
-      message.title,
-      message.url,
-      message.favIconUrl
-    );
-  case RemoveDuplicateTabs: 
-    return await browser.tabs.create({ url: browser.runtime.getURL('/ui/duplicate-tabs.html') });
-  default:
-    console.warn('Unable to handle message', message);
-    return false;
+    case 'remove':
+      if (message.type == 'bookmark') {
+        removeBookmark(message.action);
+      } else {
+        closeTab(message.action);
+      }
+      break;
+    case 'add-search-engine':
+      return await addSearchEngine(
+        message.title,
+        message.url,
+        message.favIconUrl
+      );
+    case RemoveDuplicateTabs:
+      return await browser.tabs.create({ url: browser.runtime.getURL('/ui/duplicate-tabs.html') });
+    default:
+      console.warn('Unable to handle message', message);
+      return false;
   }
 });
 
@@ -1110,23 +1105,23 @@ async function addSearchEngine(title, url, favIconUrl) {
         const { tagName: name } = child;
         const value = child.children[0];
         switch (name) {
-        case 'ShortName':
-          props.title = value;
-          break;
-        case 'Description':
-          props.desc = value;
-          break;
-        case 'Image':
-          props.favIconUrl = value;
-          break;
-        case 'Url': {
-          const { type, template } = child.attributes;
-          if (type === 'application/opensearchdescription+xml') {
-            console.warn(`skipping type ${type} with url ${template}`);
-          } else {
-            props.url = template;
+          case 'ShortName':
+            props.title = value;
+            break;
+          case 'Description':
+            props.desc = value;
+            break;
+          case 'Image':
+            props.favIconUrl = value;
+            break;
+          case 'Url': {
+            const { type, template } = child.attributes;
+            if (type === 'application/opensearchdescription+xml') {
+              console.warn(`skipping type ${type} with url ${template}`);
+            } else {
+              props.url = template;
+            }
           }
-        }
         }
       }
     }
@@ -1160,7 +1155,7 @@ async function addSearchEngine(title, url, favIconUrl) {
     }
 
     if (!props.shortcut && props.url) {
-      const parts = new URL(props.url).host.split('.').filter(p=>p!=='www');
+      const parts = new URL(props.url).host.split('.').filter(p => p !== 'www');
       props.shortcut = parts.join('.');
     }
 
