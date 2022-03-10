@@ -47,9 +47,9 @@ body {
   grid-area: body;
 }
 
-.card.tab > .count:hover > button {
+.card.tab:hover > .count > button {
   display: block;
 }
-.card.tab > .count:hover > .text {
+.card.tab:hover > .count > .text {
   visibility: hidden;
 }

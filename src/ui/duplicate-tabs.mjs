@@ -41,7 +41,6 @@ function WindowDetails({ windowId, tabs }) {
   useEffect(() => {
     const id = typeof windowId === 'string' ? parseInt(windowId) : windowId;
     browser.windows.get(id, { populate: true }).then(info => {
-      console.log('info', info);
       setWindowTabs(info.tabs);
     });
   }, [windowId]);
@@ -52,12 +51,13 @@ function WindowDetails({ windowId, tabs }) {
 
   const handleCloseAll = () => {
     for (const id of tabIds) {
-      browser.tabs.discard(id);
+      browser.tabs.remove(id);
     }
     // browser.tabs.discard(tabIds);
   };
 
-  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs <a onClick=${handleOpen}>open</a> <a onClick=${handleCloseAll}>close all</a></div>`;
+  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs <a onClick=${handleOpen}>open</a> <a onClick=${handleCloseAll}>close${tabs.length>1 ? ' all': ''}</a>
+  </div>`;
 }
 
 function DuplicateTab({ url, tabs, onTabsChanged }) {
@@ -82,7 +82,6 @@ function DuplicateTab({ url, tabs, onTabsChanged }) {
     map[windowId].push(tab);
     return map;
   }, {});
-  console.log('foobar', groupedByWindow);
 
   return html`<div class="tab card">
   <div class="body">
@@ -93,7 +92,7 @@ function DuplicateTab({ url, tabs, onTabsChanged }) {
   <img src="${favIconUrl}"/>
   <span class="count">
     <span class="text">${tabs.length} in ${windowCount} window${windowCount !== 1 ? 's' : ''}</span>
-    <${AsyncButton} onClick=${handleClose}>Close<//>
+    <${AsyncButton} onClick=${handleClose}>Close ${tabs.length - 1} tab${tabs.length>2 ?'s' :''}<//>
   </span>
   </div>`;
 }
