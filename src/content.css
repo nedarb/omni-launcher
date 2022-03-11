@@ -330,6 +330,9 @@ html {
   align-items: baseline;
   justify-content: end;
   padding-top: 0.5em;
+  background: none;
+  height: auto;
+  width: auto;
 }
 .omni-launcher-extension .omni-item:hover .icon {
   border-left: solid 2px;
