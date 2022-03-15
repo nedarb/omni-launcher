@@ -64,7 +64,6 @@ class StorageCache {
         for (const [key, value] of Object.entries(items)) {
           this.#cache[key] = value;
         }
-        console.log('final items', this.#cache);
       });
   }
 

@@ -5,7 +5,7 @@ body {
   color: var(--text);
 }
 
-a {
+a:not(.omni-item) {
   text-decoration: underline;
   cursor: pointer;
 }
@@ -51,4 +51,17 @@ button:disabled {
 .card > * {
   flex: 1 1 auto;
   flex-basis: 50%;
+}
+
+.footer {
+  border-top: solid 1px var(--border);
+  padding-top: 0.5em;
+  margin-top: 1rem;
+  display: flex;
+  line-height: 20px;
+  justify-content: center;
+}
+
+.footer img.github-logo {
+  width: 20px;
 }

@@ -14,6 +14,7 @@ import {
 import { chain, inverse, bySelector } from '../utils/sorters.mjs';
 import getDupes from '../services/duplicateTabs.mjs';
 import switchTab from '../actions/switchTab.mjs';
+import Footer from '../components/Footer.mjs';
 
 async function closeTabs(...tabIds) {
   console.debug(`Closing ${tabIds.length} tabs`);
@@ -126,10 +127,11 @@ function Duplicates() {
     return html`<div>
     ${Array.from(dupes.entries()).map(([url, tabs]) =>
     html`<${DuplicateTab} key=${url} url=${url} tabs=${tabs} onTabsChanged=${onTabsChanged} />`)}
+    <${Footer} />
     </div>`;
   }
 
-  return html`<div>No duplicates</div>`;
+  return html`<div class="no-results"><span>No duplicates</span> <${Footer} /></div>`;
 }
 
 const dest = document.getElementById('app');

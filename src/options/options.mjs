@@ -5,6 +5,7 @@ import {
   render,
 } from '../lib/htm-preact-standalone.mjs';
 import CustomActions from './CustomActions.mjs';
+import Footer from '../components/Footer.mjs';
 import OptionalPermission from './OptionalPermissions.mjs';
 
 const url = browser.runtime.getURL('../assets/omni-logo-orange-dynamic.svg');
@@ -14,6 +15,7 @@ render(
   <img class="logo" src="${url}" />
     <${OptionalPermission} />
     <${CustomActions} />
+    <${Footer} />
   </div>`,
   document.getElementById('app')
 );
