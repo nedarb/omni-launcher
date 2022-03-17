@@ -41,7 +41,7 @@ function CustomSearch({ action, onSave, onDelete }) {
     },
     [action]
   );
-  return html`<div class="custom-action">
+  return html`<div class="custom-action card">
     <${ActionForm}
       action=${action}
       onDraftAction=${onDraftAction}

@@ -30,7 +30,8 @@ import {
   clearLocalStorage,
   clearPasswords,
 } from './actions/browsingDataActions.mjs';
-import { bySelector, chain, inverse } from './utils/sorters.mjs';
+import getDupes from './services/duplicateTabs.mjs';
+import switchTab from './actions/switchTab.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -793,36 +794,30 @@ const getCurrentTab = async () => {
 const getTabs = async () => {
   const tabs = await browser.tabs.query({});
   /** @type {Array<Action>} */
-  const result = tabs.map((tab) => ({
+  const result = [];
+
+  // check for duplicates
+  const duplicates = await getDupes(tabs);
+  if (duplicates.size > 0) {
+    const tabCountToRemove = Array.from(duplicates.entries()).map(([, tabs]) => tabs.length - 1).reduce((a, b) => a + b);
+    result.push({
+      type: 'action', action: RemoveDuplicateTabs,
+      title: `Remove ${tabCountToRemove} duplicate tabs`,
+      desc: `Remove ${tabCountToRemove} duplicate tabs`
+    });
+  }
+
+  result.push(...tabs.map((tab) => ({
     ...tab,
     title: tab.title,
     desc: 'Chrome tab',
     keycheck: false,
     action: 'switch-tab',
     type: 'tab',
-  }));
+  })));
 
-  // check for duplicates
-  const urlToTabsMap = result.reduce((map, tab)=> {
-    const existing = map.get(tab.url) || [];
-    map.set(tab.url, [...existing, tab]);
-    return map;
-  }, new Map());
-  const duplicates = Array.from(urlToTabsMap.entries()).filter(([,tabs])=>tabs.length>1);
-  if (duplicates.length>0) {
-    const tabsToRemove = duplicates.map(([,tabs])=>tabs.sort(chain(
-      inverse(bySelector(t=>t.active)),
-      bySelector(t=>t.highlighted),
-      bySelector(t=>t.selected),
-      bySelector(t=>t.id)
-    )))
-      .map(tabs=>tabs.slice(1))
-      .flat();
-    const tabCountToRemove = tabsToRemove.length;
-    result.push({type: 'action', action: RemoveDuplicateTabs, title: `Remove ${tabCountToRemove} duplicate tabs`, desc: `Remove ${tabCountToRemove} duplicate tabs`, payload: tabsToRemove.map(t=>t.id)});
-  }
-  const duplicatedTabs = duplicates.map(([,tabs])=> tabs).flat();
-  for(const tab of duplicatedTabs) {
+  const duplicatedTabs = Array.from(duplicates.values()).flat();
+  for (const tab of duplicatedTabs) {
     tab.isDuplicate = true;
   }
 
@@ -861,13 +856,6 @@ const getBookmarks = async () => {
 };
 
 // Lots of different actions
-const switchTab = (tab) => {
-  browser.tabs.highlight({
-    tabs: tab.index,
-    windowId: tab.windowId,
-  });
-  browser.windows.update(tab.windowId, { focused: true });
-};
 const goBack = (tab) => {
   browser.tabs.goBack(tab.id);
 };
@@ -1072,18 +1060,13 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       message.url,
       message.favIconUrl
     );
-  case RemoveDuplicateTabs: 
-    return await removeDuplicateTabs(message.payload);
+  case RemoveDuplicateTabs:
+    return await browser.tabs.create({ url: browser.runtime.getURL('/ui/duplicate-tabs.html') });
   default:
     console.warn('Unable to handle message', message);
     return false;
   }
 });
-
-async function removeDuplicateTabs(arrayOfTabIds) {
-  console.warn(`Removing ${arrayOfTabIds}`);
-  await browser.tabs.remove(arrayOfTabIds);
-}
 
 async function addSearchEngine(title, url, favIconUrl) {
   const existingAction = await getCustomActionForOpenXmlUrl(url);
@@ -1169,7 +1152,7 @@ async function addSearchEngine(title, url, favIconUrl) {
     }
 
     if (!props.shortcut && props.url) {
-      const parts = new URL(props.url).host.split('.').filter(p=>p!=='www');
+      const parts = new URL(props.url).host.split('.').filter(p => p !== 'www');
       props.shortcut = parts.join('.');
     }
 

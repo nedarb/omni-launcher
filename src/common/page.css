@@ -5,6 +5,11 @@ body {
   color: var(--text);
 }
 
+a:not(.omni-item) {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 input,
 button {
   display: inline-block;
@@ -14,8 +19,49 @@ button {
   padding: 0.5em;
   margin: 0 0.5em;
 }
+button {
+  cursor: pointer;
+}
 input:hover,
 button:hover {
   background-color: var(--placeholder);
   color: var(--text);
+}
+
+button:active {
+  background-color: var(--background);
+}
+button:disabled {
+  background-color: var(--background);
+  color: var(--text-2);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  border: solid 1px var(--border);
+  border-radius: 10px;
+  box-shadow: 2px 2px 8px #6666;
+  padding: 1em;
+  margin-bottom: 1rem;
+}
+
+.card > * {
+  flex: 1 1 auto;
+  flex-basis: 50%;
+}
+
+.footer {
+  border-top: solid 1px var(--border);
+  padding-top: 0.5em;
+  margin-top: 1rem;
+  display: flex;
+  line-height: 20px;
+  justify-content: center;
+}
+
+.footer img.github-logo {
+  width: 20px;
 }

@@ -118,6 +118,8 @@ html {
   background-color: #000;
   opacity: 0.6;
   transition: all 0.1s cubic-bezier(0.05, 0.03, 0.35, 1);
+  margin: 0;
+  max-width: none;
 }
 .omni-launcher-extension .omni {
   display: grid;
@@ -186,11 +188,6 @@ html {
   pointer-events: none;
 }
 .omni-launcher-extension #omni-overlay {
-  height: 100%;
-  width: 100%;
-  position: fixed;
-  top: 0px;
-  left: 0px;
   background-color: #000;
   opacity: 0.6;
   transition: all 0.1s cubic-bezier(0.05, 0.03, 0.35, 1);
@@ -333,6 +330,9 @@ html {
   align-items: baseline;
   justify-content: end;
   padding-top: 0.5em;
+  background: none;
+  height: auto;
+  width: auto;
 }
 .omni-launcher-extension .omni-item:hover .icon {
   border-left: solid 2px;
