@@ -1068,11 +1068,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   }
 });
 
-async function removeDuplicateTabs(arrayOfTabIds) {
-  console.warn(`Removing ${arrayOfTabIds}`);
-  await browser.tabs.remove(arrayOfTabIds);
-}
-
 async function addSearchEngine(title, url, favIconUrl) {
   const existingAction = await getCustomActionForOpenXmlUrl(url);
   if (existingAction) {
