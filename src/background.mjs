@@ -30,7 +30,6 @@ import {
   clearLocalStorage,
   clearPasswords,
 } from './actions/browsingDataActions.mjs';
-import { bySelector, chain, inverse } from './utils/sorters.mjs';
 import getDupes from './services/duplicateTabs.mjs';
 import switchTab from './actions/switchTab.mjs';
 
