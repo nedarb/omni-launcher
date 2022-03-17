@@ -137,8 +137,10 @@ html {
   z-index: 1;
 }
 .omni-launcher-extension .header {
+  display: block;
   grid-area: header;
   padding: 0;
+  background: var(--background);
 }
 .omni-launcher-extension .body {
   grid-area: body;
