@@ -51,13 +51,17 @@ function WindowDetails({ windowId, tabs }) {
   };
 
   const handleCloseAll = () => {
-    for (const id of tabIds) {
-      browser.tabs.remove(id);
+    if (window.confirm(`Really close all ${tabIds.length} tabs?`)) {
+      closeTabs(...tabIds);
     }
-    // browser.tabs.discard(tabIds);
   };
 
-  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs <a onClick=${handleOpen}>open</a> <a onClick=${handleCloseAll}>close${tabs.length>1 ? ' all': ''}</a>
+  const handleGroup = ()=>{
+    const [firstTab, ...rest] = tabs;
+    browser.tabs.move(rest.map(t=>t.id), { windowId: firstTab.windowId, index: firstTab.index});
+  };
+
+  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs <a onClick=${handleOpen}>open</a> <a onClick=${handleGroup}>group together</a> <a onClick=${handleCloseAll}>close${tabs.length>1 ? ' all': ''}</a>
   </div>`;
 }
 
@@ -99,13 +103,18 @@ function DuplicateTab({ url, tabs, onTabsChanged }) {
 }
 
 function addListenerToAll(handler, ...events) {
+  let timeout = null;
+  const debouncedCb = ()=>{
+    clearTimeout(timeout);
+    timeout = setTimeout(handler, 750);
+  }; 
   for (const e of events) {
-    e.addListener(handler);
+    e.addListener(debouncedCb);
   }
 
   return () => {
     for (const e of events) {
-      e.removeListener(handler);
+      e.removeListener(debouncedCb);
     }
   };
 }
