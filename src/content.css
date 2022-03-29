@@ -140,7 +140,9 @@ html {
   display: block;
   grid-area: header;
   padding: 0;
-  background: var(--background);
+  background: var(--background) !important;
+  width: auto;
+  height: auto;
 }
 .omni-launcher-extension .body {
   grid-area: body;
