@@ -292,7 +292,7 @@ html {
   grid-template-areas: "icon content keys";
   min-height: 60px;
   min-width: 350px;
-
+  border: none;
   background-color: var(--background);
 }
 .omni-launcher-extension .omni-item:hover {
