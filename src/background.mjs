@@ -32,6 +32,7 @@ import {
 } from './actions/browsingDataActions.mjs';
 import getDupes from './services/duplicateTabs.mjs';
 import switchTab from './actions/switchTab.mjs';
+import {saveFavIcon, getFavIcons} from './utils/cachedFavIcons.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -727,6 +728,8 @@ browser.runtime.onInstalled.addListener(async (object) => {
       return;
     }
 
+    saveFavIcon(tab.url, tab.favIconUrl);
+
     if (status === 'unloaded') {
       console.debug(`Skipping ${tab.url} because it's status is "unloaded".`);
       return;
@@ -807,6 +810,8 @@ const getTabs = async () => {
     });
   }
 
+  tabs.forEach(tab => saveFavIcon(tab.url, tab.favIconUrl));
+
   result.push(...tabs.map((tab) => ({
     ...tab,
     title: tab.title,
@@ -852,6 +857,10 @@ const getBookmarks = async () => {
   };
 
   process_bookmark(await browser.bookmarks.getRecent(100));
+  // add in icons
+  const favIconsByUrl = await getFavIcons(result.map(r=>r.url));
+  console.log('favIconsByUrl', favIconsByUrl);
+  result.forEach(r=>r.favIconUrl = favIconsByUrl[r.url]);
   return result;
 };
 
