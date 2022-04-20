@@ -1066,6 +1066,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     }
     break;
   case 'add-search-engine':
+    saveFavIcon(message.url, message.favIconUrl);
     return await addSearchEngine(
       message.title,
       message.url,
