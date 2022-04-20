@@ -58,13 +58,13 @@ export default function OmniItem({
   }
   const imgUrl =
     action.favIconUrl || browser.runtime.getURL('/assets/globe.svg');
-  const img = html`<div class="icon"><img
+  const img = html`<img
     src="${imgUrl}"
     class="omni-icon"
     alt="${action.title}"
-  /></div>`;
+  />`;
   const emoji = action.emoji
-    ? html`<div class="icon"><span class="omni-emoji-action">${action.emojiChar}</span></div>`
+    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
     : null;
   const missingPermissions = action.hasPermission === false;
 
@@ -90,7 +90,10 @@ export default function OmniItem({
     onClick=${handleClick}
     onMouseenter=${onMouseEnter}
   >
-    ${emoji || img}
+    <span class="icon ${classNames(img && 'favIcon', emoji && 'emoji')}">
+      ${img}
+      ${emoji}
+    </span>
     <div class="omni-item-details">
       <div class="omni-item-name">
       ${action.shortcut &&

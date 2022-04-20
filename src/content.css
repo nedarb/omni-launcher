@@ -337,6 +337,15 @@ html {
   background: none;
   height: auto;
   width: auto;
+  position: relative;
+}
+.omni-launcher-extension .icon.favIcon.emoji .omni-emoji-action {
+  position: absolute;
+  font-size: 12px;
+  height: 12px;
+  width: 12px;
+  top: 0;
+  right: -6px;
 }
 .omni-launcher-extension .omni-item:hover .icon {
   border-left: solid 2px;

@@ -1019,8 +1019,10 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       maxResults: message.maxResults || 1000,
       startTime: 31536000000 * 5,
     });
+    const favIcons = await getFavIcons(data.map(item=>item.url));
     const history = data.map((action) => ({
       ...action,
+      favIconUrl: favIcons[action.url],
       type: 'history',
       emoji: true,
       emojiChar: '🏛',
