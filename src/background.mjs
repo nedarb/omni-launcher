@@ -21,6 +21,7 @@ import {
   Options,
   RefreshActions,
   RemoveDuplicateTabs,
+  SaveFavIconUrl,
 } from './ActionNames.mjs';
 import {
   clearAllData,
@@ -1072,6 +1073,9 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       message.url,
       message.favIconUrl
     );
+  case SaveFavIconUrl:
+    saveFavIcon(message.url, message.favIconUrl);
+    return;
   case RemoveDuplicateTabs:
     return await browser.tabs.create({ url: browser.runtime.getURL('/ui/duplicate-tabs.html') });
   default:

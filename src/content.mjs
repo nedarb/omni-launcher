@@ -28,6 +28,13 @@ if (openSearchDescEl) {
     url: openSearchDescEl.href,
     favIconUrl: favIconEl?.href,
   });
+} else if (favIconEl) {
+  browser.runtime.sendMessage({
+    request: ActionNames.SaveFavIconUrl,
+    title: document.title,
+    url: window.location.href,
+    favIconUrl: favIconEl?.href,
+  });
 }
 
 export const CloseOmniAction = 'close-omni';
