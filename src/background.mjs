@@ -22,6 +22,7 @@ import {
   RefreshActions,
   RemoveDuplicateTabs,
   SaveFavIconUrl,
+  SearchBookmarks,
 } from './ActionNames.mjs';
 import {
   clearAllData,
@@ -1032,32 +1033,22 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
     }));
     return { history };
   }
-  case 'search-bookmarks': {
+  case SearchBookmarks: {
     const data = await browser.bookmarks.search({ query: message.query });
-    // The index property of the bookmark appears to be causing issues, iterating separately...
-    data
-      .filter((x) => x.index == 0)
-      .forEach((action, index) => {
-        if (!action.url) {
-          data.splice(index, 1);
-        }
-        action.type = 'bookmark';
-        action.emoji = true;
-        action.emojiChar = '⭐️';
-        action.action = 'bookmark';
-        action.keyCheck = false;
-      });
-    data.forEach((action, index) => {
-      if (!action.url) {
-        data.splice(index, 1);
-      }
-      action.type = 'bookmark';
-      action.emoji = true;
-      action.emojiChar = '⭐️';
-      action.action = 'bookmark';
-      action.keyCheck = false;
-    });
-    return { bookmarks: data };
+    const favIcons = await getFavIcons(data.map(b=>b.url));
+
+    return {
+      bookmarks: data.filter(a=>a.url).map((action) => {
+        return { ...action,
+          type :'bookmark',
+          emoji : true,
+          emojiChar : '⭐️',
+          action : 'bookmark',
+          keyCheck :false,
+          favIconUrl : favIcons[action.url]
+        };
+      }).filter(Boolean)
+    };
   }
   case 'remove':
     if (message.type == 'bookmark') {

@@ -165,7 +165,7 @@ function BookmarksSearch({ searchTerm, allActions, handleAction }) {
       if (tempvalue != '/bookmarks' && tempvalue != '') {
         const query = searchTerm.replace('/bookmarks ', '');
         const response = await browser.runtime.sendMessage({
-          request: 'search-bookmarks',
+          request: ActionNames.SearchBookmarks,
           query,
         });
         console.log('got bookmarks', response);

@@ -9,3 +9,4 @@ export const ClearHistory = 'remove-history';
 export const RemoveDuplicateTabs = 'remove-duplicate-tabs';
 export const RefreshActions = 'refresh-actions';
 export const SaveFavIconUrl = 'sav-fav-icon-url';
+export const SearchBookmarks = 'search-bookmarks';
