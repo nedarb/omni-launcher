@@ -14,6 +14,7 @@ function SearchResults({
   onOverItem,
   selectedIndex,
   selectVerb = 'Select',
+  footer
 }) {
   const sliced = useMemo(() => actions.slice(0, 250), [actions]);
   const total = actions.length;
@@ -38,7 +39,7 @@ function SearchResults({
     <div id="omni-list" class="${classNames('omni-list', list.length === 0 && 'empty')}">${listCmp}</div>
     <div id="omni-footer">
       <div id="omni-results">
-        ${list.length}${list.length < total ? '+' : ''} results
+        ${list.length}${list.length < total ? '+' : ''} results ${footer}
       </div>
       <div id="omni-arrows">
         Use arrow keys <span class="omni-shortcut">↑</span
@@ -52,6 +53,7 @@ export default function SearchResultsWrapper({
   actions,
   handleAction,
   selectVerb = 'Select',
+  footer
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   useEffect(() => {
@@ -103,5 +105,6 @@ export default function SearchResultsWrapper({
       selectedIndex=${selectedIndex}
       selectVerb=${selectVerb}
       onOverItem=${onOverItem}
+      footer=${footer}
     />`;
 }

@@ -337,9 +337,13 @@ function OmniList({ searchTerm, handleAction }) {
     return html`<${RenderCommands} handleAction=${handleAction} />`;
   }
 
+  const tabs = allActions.filter(tab=>tab.type=== 'tab');
+  const totalTabs = tabs.length;
+  const totalWindows = new Set(tabs.map(tab=>tab.windowId)).size;
   return html`<${SearchResultsWrapper}
     actions=${[...filteredActions, ...(historySearchResults || [])]}
     handleAction=${handleAction}
+    footer=${html`<span style='font-style: italic'>${totalTabs} tabs in ${totalWindows} window${totalWindows !== 1 ? 's' : ''}</span>`}
   />`;
 }
 
