@@ -137,8 +137,12 @@ html {
   z-index: 1;
 }
 .omni-launcher-extension .header {
+  display: block;
   grid-area: header;
   padding: 0;
+  background: var(--background) !important;
+  width: auto;
+  height: auto;
 }
 .omni-launcher-extension .body {
   grid-area: body;
@@ -288,7 +292,7 @@ html {
   grid-template-areas: "icon content keys";
   min-height: 60px;
   min-width: 350px;
-
+  border: none;
   background-color: var(--background);
 }
 .omni-launcher-extension .omni-item:hover {
@@ -333,6 +337,15 @@ html {
   background: none;
   height: auto;
   width: auto;
+  position: relative;
+}
+.omni-launcher-extension .icon.favIcon.emoji .omni-emoji-action {
+  position: absolute;
+  font-size: 12px;
+  height: 12px;
+  width: 12px;
+  top: 0;
+  right: -6px;
 }
 .omni-launcher-extension .omni-item:hover .icon {
   border-left: solid 2px;
@@ -400,6 +413,7 @@ html {
 .omni-launcher-extension .omni-item-desc .url {
   opacity: 0.7;
   font-size: 90%;
+  display: inline;
 }
 .omni-launcher-extension #omni-footer {
   height: 45px;

@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
 } from '../lib/htm-preact-standalone.mjs';
 import classNames from '../utils/classNames.mjs';
 
@@ -29,6 +30,9 @@ export default function OmniItem({
   isSelected,
   selectVerb = 'Select',
 }) {
+  const imgUrl =
+    action.favIconUrl || browser.runtime.getURL('/assets/globe.svg');
+  const [showImg, setShowImg] = useState(true);
   const ref = useRef(null);
   const handleClick = useCallback(
     (e) => {
@@ -41,6 +45,10 @@ export default function OmniItem({
     () => onOverItem && onOverItem(index),
     [index]
   );
+  const onImgError =useCallback((err)=>{
+    console.warn(err);
+    setShowImg(false);
+  },[imgUrl]);
   useEffect(() => {
     if (isSelected) {
       ref?.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -56,15 +64,14 @@ export default function OmniItem({
   })}
     </div>`;
   }
-  const imgUrl =
-    action.favIconUrl || browser.runtime.getURL('/assets/globe.svg');
-  const img = html`<div class="icon"><img
+  const img = showImg ? html`<img
     src="${imgUrl}"
     class="omni-icon"
     alt="${action.title}"
-  /></div>`;
+    onerror=${onImgError}
+  />`: null;
   const emoji = action.emoji
-    ? html`<div class="icon"><span class="omni-emoji-action">${action.emojiChar}</span></div>`
+    ? html`<span class="omni-emoji-action">${action.emojiChar}</span>`
     : null;
   const missingPermissions = action.hasPermission === false;
 
@@ -90,7 +97,10 @@ export default function OmniItem({
     onClick=${handleClick}
     onMouseenter=${onMouseEnter}
   >
-    ${emoji || img}
+    <span class="icon ${classNames(img && 'favIcon', emoji && 'emoji')}">
+      ${img}
+      ${emoji}
+    </span>
     <div class="omni-item-details">
       <div class="omni-item-name">
       ${action.shortcut &&

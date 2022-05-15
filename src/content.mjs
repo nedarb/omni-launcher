@@ -28,6 +28,13 @@ if (openSearchDescEl) {
     url: openSearchDescEl.href,
     favIconUrl: favIconEl?.href,
   });
+} else if (favIconEl) {
+  browser.runtime.sendMessage({
+    request: ActionNames.SaveFavIconUrl,
+    title: document.title,
+    url: window.location.href,
+    favIconUrl: favIconEl?.href,
+  });
 }
 
 export const CloseOmniAction = 'close-omni';
@@ -158,7 +165,7 @@ function BookmarksSearch({ searchTerm, allActions, handleAction }) {
       if (tempvalue != '/bookmarks' && tempvalue != '') {
         const query = searchTerm.replace('/bookmarks ', '');
         const response = await browser.runtime.sendMessage({
-          request: 'search-bookmarks',
+          request: ActionNames.SearchBookmarks,
           query,
         });
         console.log('got bookmarks', response);
@@ -330,9 +337,13 @@ function OmniList({ searchTerm, handleAction }) {
     return html`<${RenderCommands} handleAction=${handleAction} />`;
   }
 
+  const tabs = allActions.filter(tab=>tab.type=== 'tab');
+  const totalTabs = tabs.length;
+  const totalWindows = new Set(tabs.map(tab=>tab.windowId)).size;
   return html`<${SearchResultsWrapper}
     actions=${[...filteredActions, ...(historySearchResults || [])]}
     handleAction=${handleAction}
+    footer=${html`<span style='font-style: italic'>${totalTabs} tabs in ${totalWindows} window${totalWindows !== 1 ? 's' : ''}</span>`}
   />`;
 }
 
