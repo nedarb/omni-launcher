@@ -35,7 +35,7 @@
       "matches": ["<all_urls>"],
       "run_at": "document_end",
       "js": ["content_loader.js"],
-      "css": ["content.css"]
+      "css": ["fonts.css"]
     }
   ],
   "web_accessible_resources": [

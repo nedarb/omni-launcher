@@ -1,0 +1,27 @@
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 500;
+    src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Medium.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-SemiBold.ttf");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 700;
+    src: url("chrome-extension://__MSG_@@extension_id__/assets/Inter-Bold.ttf");
+}
