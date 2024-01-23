@@ -137,6 +137,7 @@ html {
   z-index: 1;
 }
 .omni-launcher-extension .header {
+  position: relative;
   display: block;
   grid-area: header;
   padding: 0;
