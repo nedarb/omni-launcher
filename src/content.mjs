@@ -481,10 +481,19 @@ export function App({ isOpen: isOpenByDefault } = { isOpen: false}) {
 export function renderElement() {
   const div = document.createElement('div');
   div.id = 'omni-launcher-extension-wrapper';
-  // document.body.appendChild(div);
+  div.attachShadow({mode:'open'});
+  document.body.appendChild(div);
+
+  // <link rel="stylesheet" href="https://dev.to/assets/crayons-7870bae01e6b6faa36fdd09d45db8386c7fbdd6a6823dd54f8c94a6c936abd06.css" media="all" id="main-crayons-stylesheet">
+  const linkTag = document.createElement('link');
+  linkTag.rel='stylesheet';
+  linkTag.type='text/css';
+  const url = browser.runtime.getURL('content.css');
+  linkTag.href = url;
+  div.shadowRoot.appendChild(linkTag);
   // document.appendChild(div);
-  document.head.after(div);
+  // document.head.after(div);
   // document.insertBefore(div, document.body);
   
-  render(html`<${App} />`, div);
+  render(html`<${App} />`, div.shadowRoot);
 }

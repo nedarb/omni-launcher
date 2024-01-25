@@ -2,7 +2,7 @@
   "name": "Omni Launcher",
   "description": "Quick launcher for Chrome - manage tabs, bookmarks, your browser history",
   "offline_enabled": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "manifest_version": 3,
   "action": {
     "icons": {
@@ -35,7 +35,7 @@
       "matches": ["<all_urls>"],
       "run_at": "document_end",
       "js": ["content_loader.js"],
-      "css": ["content.css"]
+      "css": ["fonts.css"]
     }
   ],
   "web_accessible_resources": [
