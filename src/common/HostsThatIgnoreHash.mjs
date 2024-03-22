@@ -19,8 +19,11 @@ const facade = {
 
     return next;
   },
+  /**
+   * @returns {Promise<string[]>}
+   */
   async getHosts() {
-    return await storage.get(key);
+    return (await storage.get(key)) ?? [];
   }
 };
 export default facade;
