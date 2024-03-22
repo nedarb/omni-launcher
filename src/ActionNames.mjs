@@ -7,6 +7,5 @@ export const ClearLocalStorage = 'remove-local-storage';
 export const ClearPasswords = 'remove-passwords';
 export const ClearHistory = 'remove-history';
 export const RemoveDuplicateTabs = 'remove-duplicate-tabs';
-export const RefreshActions = 'refresh-actions';
 export const SaveFavIconUrl = 'sav-fav-icon-url';
 export const SearchBookmarks = 'search-bookmarks';

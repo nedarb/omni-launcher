@@ -1,11 +1,10 @@
 /**
- * @typedef { import("./global").Action } Action
+ * @typedef { import("./@types/global.js").Action } Action
  */
 import {
   getCustomActionForOpenXmlUrl,
   getCustomActions,
   upsertCustomAction,
-  refresh,
 } from './services/customActions.mjs';
 import './lib/webextension-polyfill.js';
 
@@ -19,7 +18,6 @@ import {
   ClearPasswords,
   CustomSearch,
   Options,
-  RefreshActions,
   RemoveDuplicateTabs,
   SaveFavIconUrl,
   SearchBookmarks,
@@ -1001,9 +999,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
   case Options:
     browser.runtime.openOptionsPage();
     break;
-  case RefreshActions:
-    refresh();
-    break;
   case 'history': // Fallthrough
   case 'downloads':
   case 'extensions':
@@ -1085,7 +1080,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       url: browser.runtime.getURL('/ui/duplicate-tabs.html'),
     });
   default:
-    console.warn('Unable to handle message', message);
+    console.warn(`Unable to handle message: ${JSON.stringify(message)}`);
     return false;
   }
 });

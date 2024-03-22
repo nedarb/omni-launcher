@@ -1,5 +1,5 @@
 /**
- * @typedef { import("./global").Action } Action
+ * @typedef { import("./@types/global.js").Action } Action
  */
 import './lib/webextension-polyfill.js';
 
