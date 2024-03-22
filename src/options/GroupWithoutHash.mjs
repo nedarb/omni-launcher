@@ -55,6 +55,7 @@ export default function GroupWithoutHash() {
   
   return html`<div>
     <h2>Group the following domains without hash:</h2>
+    <p>To deduplicate tabs excluding the hash (anything after "#"), add that host to this list:</p>
     <table>
       <tr>
         <th>Host</th>
