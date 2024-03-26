@@ -47,4 +47,27 @@ export async function getGroupedByUrl(collection, urlKey) {
   }, new Map());
 }
 
+/**
+ * @param {Array<T>} collection 
+ * @param {keyof T} urlKey
+ * @returns {Promise<Array<T>>}
+ */
+export async function getOnePerUrl(collection, urlKey) {
+  const hosts = await facade.getHosts();
+
+  const set = new Set();
+  const result = [];
+  for (const item of collection) {
+    const url = item[urlKey];
+    const urlObj = url ? new URL(url) : null;
+    const shouldIgnoreHash = !!hosts.find(host=>urlObj.host.endsWith(host));
+    const key = shouldIgnoreHash ? urlObj.origin + urlObj.pathname : url;
+    if (!set.has(key)) {
+      result.push(item);
+    }
+    set.add(key);
+  }
+  return result;
+}
+
 export default facade;

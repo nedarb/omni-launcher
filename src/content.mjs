@@ -239,7 +239,7 @@ function OmniList({ searchTerm, handleAction }) {
       const response = await browser.runtime.sendMessage({
         request: 'search-history',
         query: searchTerm,
-        maxResults: 30,
+        maxResults: 50,
       });
       return response.history;
     },

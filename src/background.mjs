@@ -34,6 +34,7 @@ import getDupes from './services/duplicateTabs.mjs';
 import switchTab from './actions/switchTab.mjs';
 import { saveFavIcon, getFavIcons } from './utils/cachedFavIcons.mjs';
 import { bySelector, inverse } from './utils/sorters.mjs';
+import { getOnePerUrl } from './common/HostsThatIgnoreHash.mjs';
 
 const PermissionNames = {
   BrowsingData: 'browsingData',
@@ -1026,7 +1027,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       startTime: 31536000000 * 5,
     });
     const favIcons = await getFavIcons(data.map((item) => item.url));
-    const history = data.map((action) => ({
+    const history = await getOnePerUrl(data.map((action) => ({
       ...action,
       favIconUrl: favIcons[action.url],
       type: 'history',
@@ -1034,7 +1035,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
       emojiChar: '🏛',
       action: 'history',
       keyCheck: false,
-    }));
+    })), 'url');
     return { history };
   }
   case SearchBookmarks: {
