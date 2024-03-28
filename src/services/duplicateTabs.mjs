@@ -1,5 +1,9 @@
 import storage from '../common/HostsThatIgnoreHash.mjs';
 
+/**
+ * @param {import('webextension-polyfill').Tabs.Tab[]} [tabs]
+ * @returns {Promise<Map<string, import('webextension-polyfill').Tabs.Tab[]>>}
+ */
 export default async function getDupes(tabs) {
   const currentTabs = tabs ?? await browser.tabs.query({});
   const hosts = await storage.getHosts();
