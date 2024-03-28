@@ -400,6 +400,12 @@ export default function MainApp(props) {
     handleAction({ action: CloseOmniAction });
   }, [handleAction]);
 
+  const handleKeyUp = useCallback(e=>{
+    if (e.code?.startsWith('Key')) {
+      e.stopPropagation();
+    }
+  }, []);
+
   return html`<div
     id="omni-launcher-extension"
     class="${classNames('omni-launcher-extension', !showing && 'omni-closing')}"
@@ -412,6 +418,7 @@ export default function MainApp(props) {
         placeholder="Type a command or search"
         value=${search}
         onInput=${onSearchChange}
+        onKeyDown=${handleKeyUp}
       />
     </div></div>
       <!-- OMNI LIST -->
