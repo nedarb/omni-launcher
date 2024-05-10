@@ -488,6 +488,9 @@ export function App({ isOpen: isOpenByDefault } = { isOpen: false}) {
 export function renderElement() {
   const div = document.createElement('div');
   div.id = 'omni-launcher-extension-wrapper';
+  div.style.position ='absolute';
+  div.style.top = '0';
+  div.style.left = '0';
   div.attachShadow({mode:'open'});
   document.body.appendChild(div);
 
