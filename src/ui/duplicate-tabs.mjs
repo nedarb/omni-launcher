@@ -1,5 +1,5 @@
 /**
- * @typedef { import("../global").Action } Action
+ * @typedef { import("../@types/global.js").Action } Action
  */
 import '../lib/webextension-polyfill.js';
 
@@ -8,6 +8,7 @@ import {
   render,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from '../lib/htm-preact-standalone.mjs';
 
@@ -61,7 +62,9 @@ function WindowDetails({ windowId, tabs }) {
     browser.tabs.move(rest.map(t=>t.id), { windowId: firstTab.windowId, index: firstTab.index});
   };
 
-  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs <a onClick=${handleOpen}>open</a> <a onClick=${handleGroup}>group together</a> <a onClick=${handleCloseAll}>close${tabs.length>1 ? ' all': ''}</a>
+  const tabsInGroup = windowTabs.filter(t=>t.groupId>=0).length;
+
+  return html`<div>${tabs.length} in window with ${windowTabs?.length} tabs (${tabsInGroup} in tab groups) <a onClick=${handleOpen}>open</a> <a onClick=${handleGroup}>group together</a> <a onClick=${handleCloseAll}>close${tabs.length>1 ? ' all': ''}</a>
   </div>`;
 }
 
@@ -70,23 +73,24 @@ function DuplicateTab({ url, tabs, onTabsChanged }) {
   const title = (tabs.find(t => t.title !== t.url) ?? tabs[0]).title;
   const windowCount = new Set(tabs.map(tab => tab.windowId)).size;
 
-  const tabsToRemove = tabs.sort(chain(
+  const tabsToRemove = useMemo(()=>tabs.sort(chain(
+    inverse(bySelector(t=>t.groupId)),
     inverse(bySelector(t => t.active)),
     bySelector(t => t.highlighted),
     bySelector(t => t.selected),
     bySelector(t => t.id)
-  )).slice(1);
+  )).slice(1), [tabs]);
 
   const handleClose = () => {
     closeTabs(...tabsToRemove.map(t => t.id)).then(onTabsChanged);
   };
 
-  const groupedByWindow = tabs.reduce((map, tab) => {
+  const groupedByWindow = useMemo(()=>tabs.reduce((map, tab) => {
     const { windowId } = tab;
     map[windowId] = map[windowId] || [];
     map[windowId].push(tab);
     return map;
-  }, {});
+  }, {}), [tabs]);
 
   return html`<div class="tab card">
   <div class="body">
@@ -102,6 +106,10 @@ function DuplicateTab({ url, tabs, onTabsChanged }) {
   </div>`;
 }
 
+/**
+ * @param {function(): any} handler 
+ * @param  {...import('webextension-polyfill').Events.Event} events 
+ */
 function addListenerToAll(handler, ...events) {
   let timeout = null;
   const debouncedCb = ()=>{

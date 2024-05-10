@@ -1,5 +1,5 @@
 /**
- * @typedef { import("../global").Action } Action
+ * @typedef { import("../@types/global").Action } Action
  */
 import {
   html,

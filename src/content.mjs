@@ -1,5 +1,5 @@
 /**
- * @typedef { import("./global").Action } Action
+ * @typedef { import("./@types/global.js").Action } Action
  */
 import './lib/webextension-polyfill.js';
 
@@ -239,7 +239,7 @@ function OmniList({ searchTerm, handleAction }) {
       const response = await browser.runtime.sendMessage({
         request: 'search-history',
         query: searchTerm,
-        maxResults: 30,
+        maxResults: 50,
       });
       return response.history;
     },
@@ -400,6 +400,12 @@ export default function MainApp(props) {
     handleAction({ action: CloseOmniAction });
   }, [handleAction]);
 
+  const handleKeyUp = useCallback(e=>{
+    if (e.code?.startsWith('Key')) {
+      e.stopPropagation();
+    }
+  }, []);
+
   return html`<div
     id="omni-launcher-extension"
     class="${classNames('omni-launcher-extension', !showing && 'omni-closing')}"
@@ -412,6 +418,7 @@ export default function MainApp(props) {
         placeholder="Type a command or search"
         value=${search}
         onInput=${onSearchChange}
+        onKeyDown=${handleKeyUp}
       />
     </div></div>
       <!-- OMNI LIST -->
@@ -481,6 +488,9 @@ export function App({ isOpen: isOpenByDefault } = { isOpen: false}) {
 export function renderElement() {
   const div = document.createElement('div');
   div.id = 'omni-launcher-extension-wrapper';
+  div.style.position ='absolute';
+  div.style.top = '0';
+  div.style.left = '0';
   div.attachShadow({mode:'open'});
   document.body.appendChild(div);
 

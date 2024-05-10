@@ -1,5 +1,5 @@
 /**
- * @typedef { import("../global").Action } Action
+ * @typedef { import("../@types/global.js").Action } Action
  */
 import '../lib/webextension-polyfill.js';
 
@@ -55,7 +55,7 @@ const actionHandler = async (action, eventOptions) => {
   }
   
   if (action.action === 'history' && action.url) {
-    handleAction(action, eventOptions);
+    handleAction(action);
     return;
   }
 
@@ -67,7 +67,7 @@ const actionHandler = async (action, eventOptions) => {
   });
   if (response === false) {
     console.warn(`NOTHING DONE IN BG FOR ${action.action}`, action);
-    handleAction(action, eventOptions);
+    handleAction(action);
   }
 };
 

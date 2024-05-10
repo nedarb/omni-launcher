@@ -1,27 +1,21 @@
 /**
- * @typedef { import("../global").Action } Action
+ * @typedef { import("../@types/global.js").Action } Action
  */
-import { RefreshActions } from '../ActionNames.mjs';
 import '../lib/webextension-polyfill.js';
+import StorageCache from '../common/PersistentStoreCache.mjs';
 
 const CustomActionPrefix = 'custom-action:';
-
-const isInServiceWorker = 'serviceWorker' in globalThis;
-const broadcastToBackground = !isInServiceWorker ? 
-  ()=> browser.runtime.sendMessage({ request: RefreshActions}) :
-  ()=>{};
 
 // @ts-ignore
 const uuid = () => crypto.randomUUID();
 
 const GetStorageKeyForId = id => `${CustomActionPrefix}${id}`;
 
-const LegacyActionsMigration = async (items, removeFn, setFn)=>{
+const LegacyActionsMigration = async (items)=>{
   const {customActions} = items;
   if (customActions) {
     const result = {...items};
     delete result.customActions;
-    await removeFn('customActions');
 
     // split up custom actions
     console.log('customActions=', Object.entries(customActions));
@@ -29,7 +23,6 @@ const LegacyActionsMigration = async (items, removeFn, setFn)=>{
       const {id} = action;
       const key = GetStorageKeyForId(id);
       result[key] = action;
-      await setFn({[key]: action});
     }
     return result;
   }
@@ -53,55 +46,7 @@ const RemoveDuplicates = async (map, removeFn) =>{
   return result;
 };
 
-class StorageCache {
-  #cache = {};
-  #initPromise;
-  constructor() {
-    this.#initPromise = browser.storage.sync.get(null)
-      .then(items=>LegacyActionsMigration(items, browser.storage.sync.remove, browser.storage.sync.set))
-      .then(items=>RemoveDuplicates(items, browser.storage.sync.remove, browser.storage.sync.set))
-      .then(items => {
-        for (const [key, value] of Object.entries(items)) {
-          this.#cache[key] = value;
-        }
-      });
-  }
-
-  async get(key) {
-    await this.#initPromise;
-    return this.#cache[key];
-  }
-  async set(key, value) {
-    await this.#initPromise;
-    await browser.storage.sync.set({[key]: value});
-    broadcastToBackground();
-    this.#cache[key] = value;
-  }
-  async remove(key) {
-    await this.#initPromise;
-    delete this.#cache[key];
-    await browser.storage.sync.remove(key);
-    broadcastToBackground();
-  }
-
-  async getAll(keyPrefix = '') {
-    const result = {};
-    await this.#initPromise;
-    for (const [key, value] of Object.entries(this.#cache)) {
-      if (key.startsWith(keyPrefix)) {
-        result[key] = value;
-      }
-    }
-
-    return result;
-  }
-}
-
-let storageCache = new StorageCache();
-
-export function refresh() {
-  storageCache = new StorageCache();
-}
+const storageCache = new StorageCache(null, LegacyActionsMigration, RemoveDuplicates);
 
 export async function getCustomActionForOpenXmlUrl(openSearchXmlUrl) {
   const existing = await getCustomActions();
