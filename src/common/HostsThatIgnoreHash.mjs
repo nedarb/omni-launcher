@@ -14,7 +14,8 @@ const facade = {
   },
   async remove(index) {
     const current = await this.getHosts();
-    const next = [...current].splice(index,1);
+    const next = [...current];
+    next.splice(index,1);
     await storage.set(key, next);
 
     return next;
@@ -29,7 +30,7 @@ const facade = {
 
 /**
  * @typedef {any} T
- * @param {Array<T>} collection 
+ * @param {Array<T>} collection
  * @param {keyof T} urlKey
  * @returns {Promise<Map<string, Array<T>>>}
  */
@@ -48,7 +49,7 @@ export async function getGroupedByUrl(collection, urlKey) {
 }
 
 /**
- * @param {Array<T>} collection 
+ * @param {Array<T>} collection
  * @param {keyof T} urlKey
  * @returns {Promise<Array<T>>}
  */

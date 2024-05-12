@@ -105,7 +105,7 @@ export default function ActionForm({
       value=${draftAction.shortcut}
       onChange=${handleFieldChange}
       onRevert=${handleFieldReset}
-      pattern="[\\w\\d\\.-]+"
+      pattern="[\\w\\d\\.\\-]+"
       required="required"
     />
     <${Input}
