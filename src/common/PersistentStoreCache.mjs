@@ -1,11 +1,11 @@
 import '../lib/webextension-polyfill.js';
 
-const UPDATED_MESSAGE = 'udpated';
+const UPDATED_MESSAGE = 'updated';
 
 const isInServiceWorker = 'serviceWorker' in globalThis;
 
 /**
- * @typedef {(values: Record<string, any>) => Promise<Record<string, any>>} Migrator
+ * @typedef {(values: Record<string, any>, removeFn: (key: string) => void) => Promise<Record<string, any>>} Migrator
  */
 export default class StorageCache {
   #cache = {};
@@ -36,11 +36,11 @@ export default class StorageCache {
     let values = await this.#storage.get(keys);
     for(const m of migrations) {
       const original = JSON.stringify(values);
-      const updated = await m(values);
+      const updated = await m(values, this.#storage.remove);
       const different = JSON.stringify(updated) !== original;
       if (different) {
         this.#storage.set(updated);
-        values =updated;
+        values = updated;
       }
     }
 

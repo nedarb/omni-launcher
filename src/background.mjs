@@ -803,6 +803,14 @@ const getTabs = async () => {
 
   // check for duplicates
   const duplicates = await getDupes(tabs);
+  const duplicatedTabById = Array.from(duplicates.values()).flat().reduce(
+    (dupMap, dup) => ({
+      ...dupMap,
+      [dup.id]: dup,
+    }),
+    {}
+  );
+
   if (duplicates.size > 0) {
     const tabCountToRemove = Array.from(duplicates.entries())
       .map(([, tabs]) => tabs.length - 1)
@@ -828,13 +836,9 @@ const getTabs = async () => {
       keycheck: false,
       action: 'switch-tab',
       type: 'tab',
+      isDuplicate: !!duplicatedTabById[tab.id],
     }))
   );
-
-  const duplicatedTabs = Array.from(duplicates.values()).flat();
-  for (const tab of duplicatedTabs) {
-    tab.isDuplicate = true;
-  }
 
   return result;
 };
