@@ -39,3 +39,28 @@ jobs:
 
       - name: Run ESLint
         run: pnpm run lint
+
+  # Branch protection requires the check name "Analyze (javascript)".
+  # The standalone CodeQL workflow is disabled from inactivity and cannot
+  # be re-enabled via the API, so the required job lives here (active workflow).
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ javascript ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
