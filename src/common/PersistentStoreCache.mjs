@@ -36,7 +36,8 @@ export default class StorageCache {
     let values = await this.#storage.get(keys);
     for(const m of migrations) {
       const original = JSON.stringify(values);
-      const updated = await m(values, this.#storage.remove);
+      // Chrome StorageArea methods throw Illegal invocation if detached from `this`.
+      const updated = await m(values, (key) => this.#storage.remove(key));
       const different = JSON.stringify(updated) !== original;
       if (different) {
         this.#storage.set(updated);
